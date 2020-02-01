@@ -1,0 +1,1 @@
+{"version":3,"file":"druggroups.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/druggroups.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,gBAAgB,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IAChD,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IACnC,IAAI,EAAE,MAAM;CACf,CAAC,CAAC"}

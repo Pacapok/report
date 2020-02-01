@@ -2,7 +2,7 @@ export const AppConfig = {
 
   // -- configMongoDbs --
   //SIT1
-  // MONGODB_URL: 'mongodb://bdmsuser:bdmsuser@172.22.17.121:27017/arcusairdb',
+  MONGODB_URL: 'mongodb://bdmsuser:bdmsuser@172.22.17.121:27017/arcusairdb',
   //SIT3
   // MONGODB_URL: 'mongodb://bdmsuser:bdmsuser@172.22.17.132:27018/arcusairdb',
   //UAT
@@ -14,7 +14,7 @@ export const AppConfig = {
   //Kafka
   // MONGODB_URL: 'mongodb://bdmsuser:bdmsuser@172.18.73.91:27017/arcusairdb',
   //PROD
-   MONGODB_URL: 'mongodb+srv://jasperreport:ZOr7SdGRApSRNkRg@prod-mongodb-atlas-qduxy.mongodb.net/arcusairdb?retryWrites=true&w=majority',
+  //  MONGODB_URL: 'mongodb+srv://jasperreport:ZOr7SdGRApSRNkRg@prod-mongodb-atlas-qduxy.mongodb.net/arcusairdb?retryWrites=true&w=majority',
   // MONGODB_URL: 'mongodb+srv://jasperreport:ZOr7SdGRApSRNkRg@prod-mongodb-atlas-qduxy.mongodb.net/arcusairdb?replicaSet=arcusapp&readPreference=secondary',
   // MONGODB_URL: 'mongodb+srv://jasperreport:ZOr7SdGRApSRNkRg@prod-mongodb-atlas-qduxy.mongodb.net/arcusairdb?replicaSet=arcusapp&readPreference=secondaryPreferred',
 };

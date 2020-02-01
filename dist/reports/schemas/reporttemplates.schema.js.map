@@ -1,0 +1,1 @@
+{"version":3,"file":"reporttemplates.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/reporttemplates.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,qBAAqB,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IACrD,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IACnC,IAAI,EAAE,MAAM;CACf,CAAC,CAAC"}

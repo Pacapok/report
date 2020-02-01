@@ -1,0 +1,1 @@
+{"version":3,"file":"wards.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/wards.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,WAAW,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IAC3C,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IACnC,IAAI,EAAE,MAAM;IACZ,IAAI,EAAE,MAAM;CACf,CAAC,CAAC"}

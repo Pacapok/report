@@ -1,0 +1,1 @@
+{"version":3,"file":"payors.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/payors.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,YAAY,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IAC5C,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IACnC,IAAI,EAAE,MAAM;CACf,CAAC,CAAC"}

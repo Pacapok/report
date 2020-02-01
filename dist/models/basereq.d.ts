@@ -1,0 +1,34 @@
+export declare class BaseReq {
+    loginuid: string;
+    searchcriteria: string;
+    organisationuid: string;
+    patientuid: string;
+    patientvisituid: string;
+    fromdate: string;
+    todate: string;
+    incomesource: string;
+    storeuid: string;
+    itemuid: string;
+    itemmasteruid: string;
+    ReceiptNumber: string;
+    reporttemplateuid: string;
+    usersuid: string;
+    keywordSearch: string;
+    sequencenumber: string;
+    payoragreement: string;
+    isbill: string;
+    careprovideruids: string;
+    departmentuids: string;
+    orderset: string;
+    tpauid: string;
+    comment: string;
+    fromamount: string;
+    toamount: string;
+    entypeuid: string;
+    druggroupuid: string;
+    orderitemuid: string;
+    allocatebydate: boolean;
+    frequencyuid: string;
+    warduid: string;
+    printbydate: string;
+}

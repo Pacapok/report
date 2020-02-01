@@ -1,0 +1,1 @@
+{"version":3,"file":"organisationimages.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/organisationimages.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,wBAAwB,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IACxD,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IACnC,iBAAiB,EAAE,MAAM;IACzB,gBAAgB,EAAE,MAAM;IACxB,QAAQ,EAAE,MAAM;CACnB,CAAC,CAAC"}

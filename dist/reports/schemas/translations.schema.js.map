@@ -1,0 +1,1 @@
+{"version":3,"file":"translations.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/translations.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,kBAAkB,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IAClD,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IACnC,iBAAiB,EAAG,MAAM;IAC1B,WAAW,EAAG,MAAM;IACpB,aAAa,EAAG,MAAM;IACtB,IAAI,EAAG,MAAM;CAChB,CAAC,CAAC"}
