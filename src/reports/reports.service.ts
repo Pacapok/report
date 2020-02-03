@@ -45699,6 +45699,105 @@ return result;
         return result;
     }
 
+    async findRTCommon844(req: Rt999Req): Promise<any> {
+        let result = [];
+        try {
+            let storeuid = { $match: {} };
+            try {
+                if (req.storeuid != '' && req.storeuid != null) {
+                    storeuid = {
+                        $match:
+                        {
+                            'invstoreuid': new Types.ObjectId(req.storeuid),
+                        }
+                    }
+                }
+            }
+            catch (res) {
+                req.storeuid = '';
+            }
+            const _user = await this.findOrgByLoginId(req.loginuid);
+            const resultpatientorders = await this.patientordersModel.aggregate([
+                {
+                    $match:
+                    {
+                        'orguid': new Types.ObjectId(req.organisationuid)
+                        , 'orderdate': {
+                            $gte: DateUtils.convertGMTtoUTC(new Date(req.fromdate)),
+                            $lte: DateUtils.convertGMTtoUTC(new Date(req.todate))
+                        }
+                        , 'statusflag': "A"
+                    }
+                }, storeuid,
+                { $lookup: { from: "organisations", localField: "orguid", foreignField: "_id", as: "organisations" } },
+                    { $unwind: { path: "$organisations", preserveNullAndEmptyArrays: true } },
+                { $unwind: { path: '$patientorderitems', preserveNullAndEmptyArrays: true } },
+                { $match: { 'patientorderitems.ordercattype': 'SUPPLY' } },
+                { $lookup: { from: 'referencevalues', localField: 'patientorderitems.statusuid', foreignField: '_id', as: 'referencevalues' } },
+                { $unwind: { path: '$referencevalues', preserveNullAndEmptyArrays: true } },
+                { $match: { 'referencevalues.valuedescription': { $ne: 'Cancelled""' } } },
+                { $lookup: { from: 'itemmasters', localField: 'patientorderitems.orderitemuid', foreignField: 'orderitemuid', as: 'itemmasters' } },
+                { $unwind: { path: '$itemmasters', preserveNullAndEmptyArrays: true } },
+                { $addFields: { p_index: { $indexOfArray: ['$itemmasters.handlingstores.storeuid', '$invstoreuid'] } } },
+                { $addFields: { p_storeuid: { $arrayElemAt: ['$itemmasters.handlingstores.storeuid', '$p_index'] } } },
+                { $unwind: { path: '$itemmasters.handlingstores', preserveNullAndEmptyArrays: true } },
+                { $match: { $expr: { $eq: ['$itemmasters.handlingstores.storeuid', '$invstoreuid'] } } },
+                { $addFields: { p_binuid: '$itemmasters.handlingstores.binuid' } },
+                { $lookup: { from: 'inventorystores', localField: 'p_storeuid', foreignField: '_id', as: 'inventory' } },
+                { $unwind: { path: '$inventory', preserveNullAndEmptyArrays: true } },
+                { $addFields: { b_index: { $indexOfArray: ['$inventory.storebins._id', '$p_binuid'] } } },
+                { $addFields: { b_array: { $arrayElemAt: ['$inventory.storebins.name', { $cond: { if: { $eq: ['$b_index', -1] }, then: null, else: '$b_index' } }] }, } },
+                { $lookup: { from: 'departments', localField: 'orderdepartmentuid', foreignField: '_id', as: 'departments' } },
+                { $unwind: { path: '$departments', preserveNullAndEmptyArrays: true } },
+                { $lookup: { from: 'referencevalues', localField: 'patientorderitems.quantityUOM', foreignField: '_id', as: 'uom' } },
+                { $unwind: { path: '$uom', preserveNullAndEmptyArrays: true } },
+                // {
+                //     $project: {
+                //         department: '$departments.name',
+                //         chargecode: '$patientorderitems.chargecode',
+                //         orderitemname: '$patientorderitems.orderitemname',
+                //         binname: '$b_array',
+                //         uom: '$uom.valuedescription',
+                //         ordercattype: '$ordercattype',
+                //         store: '$inventory.name',
+                //         qty: '$patientorderitems.quantity',
+                //         orgname: { $ifNull: ['$organisations.name', '-'] },
+                //     }
+                // },
+                {$group:{_id:{
+                    department:'$departments.name',
+                    chargecode:'$patientorderitems.chargecode',
+                    orderitemname:'$patientorderitems.orderitemname',
+                    binname:'$b_array',
+                    uom:'$uom.valuedescription',
+                    ordercattype:'$ordercattype',
+                    store:'$inventory.name',
+                    orgname: { $ifNull: ['$organisations.name', '-'] },
+                    },
+                    quantity:{$sum:'$patientorderitems.quantity'},
+                }},
+                {$project:{
+                    department:'$_id.department',
+                    chargecode:'$_id.chargecode',
+                    orderitemname:'$_id.orderitemname',    
+                    store:'$_id.store',    
+                    uom:'$_id.uom',    
+                    binname:{ $ifNull: ['$_id.binname', '-'] },
+                    orgname:'$_id.orgname',    
+                    qty:'$quantity',
+                    fromdate: { $dateToString: { format: "%d/%m/%Y", date: new Date(req.fromdate), timezone: "+07:00", onNull: "-" } },
+                    todate: { $dateToString: { format: "%d/%m/%Y", date: new Date(req.todate), timezone: "+07:00", onNull: "-" } },                        
+                    printby: _user.name,                
+                    }}    
+            ])
+                .exec();
+            result = resultpatientorders;
+        } catch (error) {
+            this.logger.error('findRTCommon844 error:', error);
+        }
+        return result;
+        }
+
     async findRTCommon845(req: Rt185Req): Promise<any> {
         let result = [];
         try {

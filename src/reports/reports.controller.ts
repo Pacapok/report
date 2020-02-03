@@ -2841,6 +2841,19 @@ export class ReportsController {
         this.logger.log('End rt_common_843');
         return res.status(HttpStatus.OK).json(data);
     }
+
+    @Post('/rt_common_844')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReport844(@Response() res, @Body() req: Rt999Req) {
+        this.logger.log("Start rt_common_844");
+        this.logger.debug('Req', req);
+        const data = await this.reportsService.findRTCommon844(req);
+        this.logger.debug('Res', data);
+        this.logger.log('End rt_common_844');
+        return res.status(HttpStatus.OK).json(data);
+    }
  
     @Post('/rt_common_845')
 	@ApiResponse({ status: 403, description: 'Forbidden.' })
@@ -2967,4 +2980,17 @@ export class ReportsController {
         this.logger.log('End ping');
         return res.status(HttpStatus.OK).json('Success');
     }
+//testStructure
+    // @Post('/reportServiceName')
+    // @ApiResponse({ status: 403, description: 'Forbidden.' })
+    // @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    // @ApiResponse({ status: 200, description: "OK" })
+    // public async reportNameCallHere(@Response() res, @Body() req: Rt999Req) {
+    //     this.logger.log("Start texttoStartLog");
+    //     this.logger.debug('Req', req);
+    //     const data = await this.reportsService.reportServiceName(req); //name from reportservice
+    //     this.logger.debug('Res', data);
+    //     this.logger.log('End texttoEndLog');
+    //     return res.status(HttpStatus.OK).json(data);
+    // }
 }

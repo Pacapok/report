@@ -2231,6 +2231,16 @@ let ReportsController = class ReportsController {
             return res.status(common_1.HttpStatus.OK).json(data);
         });
     }
+    getReport844(res, req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.logger.log("Start rt_common_844");
+            this.logger.debug('Req', req);
+            const data = yield this.reportsService.findRTCommon844(req);
+            this.logger.debug('Res', data);
+            this.logger.log('End rt_common_844');
+            return res.status(common_1.HttpStatus.OK).json(data);
+        });
+    }
     getReport845(res, req) {
         return __awaiter(this, void 0, void 0, function* () {
             this.logger.log("Start rt_common_845");
@@ -4368,6 +4378,16 @@ __decorate([
     __metadata("design:paramtypes", [Object, rt999req_1.Rt999Req]),
     __metadata("design:returntype", Promise)
 ], ReportsController.prototype, "getReport843", null);
+__decorate([
+    common_1.Post('/rt_common_844'),
+    swagger_1.ApiResponse({ status: 403, description: 'Forbidden.' }),
+    swagger_1.ApiResponse({ status: 400, description: "Missing info: parameter" }),
+    swagger_1.ApiResponse({ status: 200, description: "OK" }),
+    __param(0, common_1.Response()), __param(1, common_1.Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, rt999req_1.Rt999Req]),
+    __metadata("design:returntype", Promise)
+], ReportsController.prototype, "getReport844", null);
 __decorate([
     common_1.Post('/rt_common_845'),
     swagger_1.ApiResponse({ status: 403, description: 'Forbidden.' }),

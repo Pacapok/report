@@ -411,6 +411,7 @@ export declare class ReportsController {
     getReport842sub8(res: any, req: Rt999Req): Promise<any>;
     getReport842sub9(res: any, req: Rt999Req): Promise<any>;
     getReport843(res: any, req: Rt999Req): Promise<any>;
+    getReport844(res: any, req: Rt999Req): Promise<any>;
     getReport845(res: any, req: Rt185Req): Promise<any>;
     getReport846(res: any, req: Rt185Req): Promise<any>;
     getReport847(res: any, req: Rt185Req): Promise<any>;
