@@ -12353,13 +12353,19 @@ export class ReportsService implements IReportsService {
                     };
                 }
             }
+            let packageflag = { $match: {} };
+            if(req.ispackage == false){
+                packageflag = { $match: {
+                    'statusflag': 'A'
+                } };
+            };
             const resultPatientbills = await this.PatientchargecodesModel.aggregate([
+                
                 {
                     $match:
                     {
                         'patientvisituid': new Types.ObjectId(req.patientvisituid),
-                        "orguid": new Types.ObjectId(req.organisationuid),
-                        'statusflag': 'A'
+                        "orguid": new Types.ObjectId(req.organisationuid), 
                     }
                 },
                 {
