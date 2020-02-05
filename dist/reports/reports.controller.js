@@ -21,6 +21,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const statmrdfolderlastvisit_report_servie_1 = require("./report.services/statmrdfolderlastvisit.report.servie");
+const stattraume_report_servie_1 = require("./report.services/stattraume.report.servie");
 const sublabresults_report_servie_1 = require("./report.services/sublabresults.report.servie");
 const subradio_report_servie_1 = require("./report.services/subradio.report.servie");
 const printerlist_report_servie_1 = require("./report.services/printerlist.report.servie");
@@ -202,12 +203,12 @@ const sublabresultsreq_1 = require("../models/sublabresultsreq");
 const statptvipreq_1 = require("../models/statptvipreq");
 const ptrevisit2dayreq_1 = require("../models/ptrevisit2dayreq");
 const statdiagnosisreq_1 = require("../models/statdiagnosisreq");
-const statvipappointreq_1 = require("../models/statvipappointreq");
 const statconsultdeptreq_1 = require("../models/statconsultdeptreq");
 const statconsultbydeptreq_1 = require("../models/statconsultbydeptreq");
 const statmrdfolderlastvisits_1 = require("../models/statmrdfolderlastvisits");
+const stattraumareq_1 = require("../models/stattraumareq");
 let ReportsController = class ReportsController {
-    constructor(reportsService, OPDClaimFormreportsService, IPDClaimFormPart1reportsService, IPDClaimFormPart2reportsService, MC5ENReportService, MC5THReportService, MCAIRENReportService, MCAIRTHReportService, MCGENENReportService, MCGENTHReportService, MCEXTENENReportService, MCEXTENTHReportService, MCGEReportService, MCWORKENReportService, MCWORKTHReportService, REFERENReportService, REFERTHReportService, SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService, PrinterListReportService, STATMRDFolderLastVisitReportService, logger) {
+    constructor(reportsService, OPDClaimFormreportsService, IPDClaimFormPart1reportsService, IPDClaimFormPart2reportsService, MC5ENReportService, MC5THReportService, MCAIRENReportService, MCAIRTHReportService, MCGENENReportService, MCGENTHReportService, MCEXTENENReportService, MCEXTENTHReportService, MCGEReportService, MCWORKENReportService, MCWORKTHReportService, REFERENReportService, REFERTHReportService, SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService, PrinterListReportService, STATMRDFolderLastVisitReportService, STATTraumaReportService, logger) {
         this.reportsService = reportsService;
         this.OPDClaimFormreportsService = OPDClaimFormreportsService;
         this.IPDClaimFormPart1reportsService = IPDClaimFormPart1reportsService;
@@ -230,6 +231,7 @@ let ReportsController = class ReportsController {
         this.SUBLABRESULTSReportService = SUBLABRESULTSReportService;
         this.PrinterListReportService = PrinterListReportService;
         this.STATMRDFolderLastVisitReportService = STATMRDFolderLastVisitReportService;
+        this.STATTraumaReportService = STATTraumaReportService;
         this.logger = logger;
     }
     getReportMCGENEN(res, req) {
@@ -412,11 +414,11 @@ let ReportsController = class ReportsController {
             return res.status(common_1.HttpStatus.OK).json(data);
         });
     }
-    getReportresultSTATVIPAppointment(res, req) {
+    getReportresultSTATTrauma(res, req) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.logger.log("Start Patientvisit");
+            this.logger.log("Start Triagedetails");
             this.logger.debug('Req', req);
-            const data = yield this.reportsService.findSTATVPIAppointment(req);
+            const data = yield this.STATTraumaReportService.findSTATTRAUMA(req);
             this.logger.debug('Res', data);
             return res.status(common_1.HttpStatus.OK).json(data);
         });
@@ -2311,16 +2313,6 @@ let ReportsController = class ReportsController {
             return res.status(common_1.HttpStatus.OK).json(data);
         });
     }
-    FnPatientbill(res, req) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.logger.log("Start FnPatientbill");
-            this.logger.debug('Req', req);
-            const data = yield this.reportsService.FnPatientbill(req);
-            this.logger.debug('Res', data);
-            this.logger.log('End FnPatientbill');
-            return res.status(common_1.HttpStatus.OK).json(data);
-        });
-    }
     getReportOrganisation(res, req) {
         return __awaiter(this, void 0, void 0, function* () {
             this.logger.log("Start Organisation");
@@ -2539,15 +2531,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ReportsController.prototype, "getReportresultSTATMRDFolderLastVisit", null);
 __decorate([
-    common_1.Post('/statvipappointment'),
+    common_1.Post('/stattrauma'),
     swagger_1.ApiResponse({ status: 403, description: 'Forbidden.' }),
     swagger_1.ApiResponse({ status: 400, description: "Missing info: parameter" }),
     swagger_1.ApiResponse({ status: 200, description: "OK" }),
     __param(0, common_1.Response()), __param(1, common_1.Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, statvipappointreq_1.STATVPIAppointmentReq]),
+    __metadata("design:paramtypes", [Object, stattraumareq_1.STATTRAUMAReq]),
     __metadata("design:returntype", Promise)
-], ReportsController.prototype, "getReportresultSTATVIPAppointment", null);
+], ReportsController.prototype, "getReportresultSTATTrauma", null);
 __decorate([
     common_1.Post('/consultdept'),
     swagger_1.ApiResponse({ status: 403, description: 'Forbidden.' }),
@@ -4459,16 +4451,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ReportsController.prototype, "getReport851", null);
 __decorate([
-    common_1.Post('/FnPatientbill'),
-    swagger_1.ApiResponse({ status: 403, description: 'Forbidden.' }),
-    swagger_1.ApiResponse({ status: 400, description: "Missing info: parameter" }),
-    swagger_1.ApiResponse({ status: 200, description: "OK" }),
-    __param(0, common_1.Response()), __param(1, common_1.Body()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, rt999req_1.Rt999Req]),
-    __metadata("design:returntype", Promise)
-], ReportsController.prototype, "FnPatientbill", null);
-__decorate([
     common_1.Post('/rtorganisation'),
     swagger_1.ApiResponse({ status: 403, description: 'Forbidden.' }),
     swagger_1.ApiResponse({ status: 400, description: "Missing info: parameter" }),
@@ -4513,6 +4495,7 @@ ReportsController = __decorate([
         sublabresults_report_servie_1.SUBLABRESULTSReportService,
         printerlist_report_servie_1.PrinterListReportService,
         statmrdfolderlastvisit_report_servie_1.STATMRDFolderLastVisitReportService,
+        stattraume_report_servie_1.STATTRAUMAReportService,
         logger_1.ConsoleLogger])
 ], ReportsController);
 exports.ReportsController = ReportsController;

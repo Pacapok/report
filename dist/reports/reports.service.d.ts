@@ -446,7 +446,6 @@ export declare class ReportsService implements IReportsService {
     findRTCommon849(req: Rt999Req): Promise<any>;
     findRTCommon850(req: Rt999Req): Promise<any>;
     findRTCommon851(req: Rt999Req): Promise<any>;
-    FnPatientbill(req: Rt999Req): Promise<any>;
     findRTCommondept1(req: Rt999Req): Promise<any>;
     findRTCommondept2(req: Rt999Req): Promise<any>;
     findOrganisation(req: OrganisationReq): Promise<any>;

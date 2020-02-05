@@ -283,5 +283,4 @@ export interface IReportsService {
     findOrgByLoginId(loginId: String): Promise<any>;
     findRTCommondept1(req: Rt999Req): Promise<any>;
     findRTCommondept2(req: Rt999Req): Promise<any>;
-    FnPatientbill(req: Rt999Req): Promise<any>;
 }

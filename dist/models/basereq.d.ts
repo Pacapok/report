@@ -31,4 +31,6 @@ export declare class BaseReq {
     frequencyuid: string;
     warduid: string;
     printbydate: string;
+    ordercategoryuid: string;
+    ordersubcategoryuids: string;
 }

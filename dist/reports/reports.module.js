@@ -30,6 +30,7 @@ const subdiagnosis_report_servie_1 = require("./../reports/report.services/subdi
 const sublabresults_report_servie_1 = require("./report.services/sublabresults.report.servie");
 const subradio_report_servie_1 = require("./report.services/subradio.report.servie");
 const statmrdfolderlastvisit_report_servie_1 = require("./report.services/statmrdfolderlastvisit.report.servie");
+const stattraume_report_servie_1 = require("./report.services/stattraume.report.servie");
 const common_module_1 = require("../common/common.module");
 const mongoose_1 = require("@nestjs/mongoose");
 const itemmasters_schema_1 = require("./schemas/itemmasters.schema");
@@ -88,6 +89,7 @@ const patientformdetails_schema_1 = require("./schemas/patientformdetails.schema
 const ordersets_schema_1 = require("./schemas/ordersets.schema");
 const printerconfigurations_schema_1 = require("./schemas/printerconfigurations.schema");
 const creditnotes_schema_1 = require("./schemas/creditnotes.schema");
+const triagedetails_schema_1 = require("./schemas/triagedetails.schema");
 let ReportsModule = class ReportsModule {
 };
 ReportsModule = __decorate([
@@ -151,11 +153,12 @@ ReportsModule = __decorate([
                 { name: 'ordersets', schema: ordersets_schema_1.OrdersetsSchema },
                 { name: 'printerconfigurations', schema: printerconfigurations_schema_1.PrinterconfiguraitonsSchema },
                 { name: 'creditnotes', schema: creditnotes_schema_1.CreditnotesSchema },
+                { name: 'triagedetails', schema: triagedetails_schema_1.TriagedetailsSchema },
             ]),
             common_module_1.CommonModule
         ],
         controllers: [reports_controller_1.ReportsController],
-        providers: [reports_service_1.ReportsService, opdclaimform_report_servie_1.OPDClaimFormReportService, ipdclaimformpart1_report_servie_1.IPDClaimFormPart1ReportService, ipdclaimformpart2_report_servie_1.IPDClaimFormPart2ReportService, mc5en_report_servie_1.MC5ENReportService, mc5th_report_servie_1.MC5THReportService, mcairen_report_servie_1.MCAIRENReportService, mcairth_report_servie_1.MCAIRTHReportService, mcgenen_report_servie_1.MCGENENReportService, mcgenth_report_servie_1.MCGENTHReportService, mcextenen_report_servie_1.MCEXTENENReportService, mcextenth_report_servie_1.MCEXTENTHReportService, mcge_report_servie_1.MCGEReportService, mcworken_report_servie_1.MCWORKENReportService, mcworkth_report_servie_1.MCWORKTHReportService, printerlist_report_servie_1.PrinterListReportService, referen_report_servie_1.REFERENReportService, referth_report_servie_1.REFERTHReportService, subdiagnosis_report_servie_1.SUBDIAGReportService, subradio_report_servie_1.SUBRADIOLOGYRESULTSReportService, sublabresults_report_servie_1.SUBLABRESULTSReportService, statmrdfolderlastvisit_report_servie_1.STATMRDFolderLastVisitReportService]
+        providers: [reports_service_1.ReportsService, opdclaimform_report_servie_1.OPDClaimFormReportService, ipdclaimformpart1_report_servie_1.IPDClaimFormPart1ReportService, ipdclaimformpart2_report_servie_1.IPDClaimFormPart2ReportService, mc5en_report_servie_1.MC5ENReportService, mc5th_report_servie_1.MC5THReportService, mcairen_report_servie_1.MCAIRENReportService, mcairth_report_servie_1.MCAIRTHReportService, mcgenen_report_servie_1.MCGENENReportService, mcgenth_report_servie_1.MCGENTHReportService, mcextenen_report_servie_1.MCEXTENENReportService, mcextenth_report_servie_1.MCEXTENTHReportService, mcge_report_servie_1.MCGEReportService, mcworken_report_servie_1.MCWORKENReportService, mcworkth_report_servie_1.MCWORKTHReportService, printerlist_report_servie_1.PrinterListReportService, referen_report_servie_1.REFERENReportService, referth_report_servie_1.REFERTHReportService, subdiagnosis_report_servie_1.SUBDIAGReportService, subradio_report_servie_1.SUBRADIOLOGYRESULTSReportService, sublabresults_report_servie_1.SUBLABRESULTSReportService, statmrdfolderlastvisit_report_servie_1.STATMRDFolderLastVisitReportService, stattraume_report_servie_1.STATTRAUMAReportService]
     })
 ], ReportsModule);
 exports.ReportsModule = ReportsModule;

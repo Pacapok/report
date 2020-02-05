@@ -7,15 +7,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   const options = new DocumentBuilder()
-  .setTitle('Report API SIT Environment')
-    // .setTitle('Report API UAT Environment')
+  //.setTitle('Report API SIT Environment')
+  //  .setTitle('Report API UAT Environment')
   // .setTitle('Report API GLS Environment')
   // .setTitle('Report API MR Environment')
-  // .setTitle('Report API Production Environment')
+  .setTitle('Report API Production Environment')
   .setDescription('<h1>The Report API description</h1>'
                   )
   // .setVersion('1.0')
-  .setVersion('version 1.0.8.3.3-DEV-SJ')
+  .setVersion('version 1.0.9.0')
     .addTag('reports')
     .build();
   const document = SwaggerModule.createDocument(app, options);
