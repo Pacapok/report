@@ -1,4 +1,5 @@
 import { STATMRDFolderLastVisitReportService } from './report.services/statmrdfolderlastvisit.report.servie';
+import { STATTRAUMAReportService } from './report.services/stattraume.report.servie';
 import { SUBLABRESULTSReportService } from './report.services/sublabresults.report.servie';
 import { SUBRADIOLOGYRESULTSReportService } from './report.services/subradio.report.servie';
 import { PrinterListReportService } from './report.services/printerlist.report.servie';
@@ -194,6 +195,7 @@ import {STATPTConsultReq} from '../models/statptconsultreq';
 import {STATConsultDeptReq} from '../models/statconsultdeptreq';
 import {STATConsultByDeptReq} from '../models/statconsultbydeptreq';
 import {STATMRDFolderLastVisitReq} from '../models/statmrdfolderlastvisits'
+import { STATTRAUMAReq } from '../models/stattraumareq'
 
 import { from } from 'rxjs';
 
@@ -223,6 +225,7 @@ export class ReportsController {
         private readonly SUBLABRESULTSReportService: SUBLABRESULTSReportService,
         private readonly PrinterListReportService: PrinterListReportService,
         private readonly STATMRDFolderLastVisitReportService: STATMRDFolderLastVisitReportService,
+        private readonly STATTraumaReportService: STATTRAUMAReportService,
         private logger: ConsoleLogger,
         // private jasper: JasperService
     ) {
@@ -468,14 +471,14 @@ export class ReportsController {
         return res.status(HttpStatus.OK).json(data);
     }
 
-    @Post('/statvipappointment')
+    @Post('/stattrauma')
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     @ApiResponse({ status: 400, description: "Missing info: parameter" })
     @ApiResponse({ status: 200, description: "OK" })
-    public async getReportresultSTATVIPAppointment(@Response() res, @Body() req: STATVPIAppointmentReq) {
-        this.logger.log("Start Patientvisit");
+    public async getReportresultSTATTrauma(@Response() res, @Body() req: STATTRAUMAReq) {
+        this.logger.log("Start Triagedetails");
         this.logger.debug('Req', req);
-        const data = await this.reportsService.findSTATVPIAppointment(req);
+        const data = await this.STATTraumaReportService.findSTATTRAUMA(req);
         this.logger.debug('Res', data)
         return res.status(HttpStatus.OK).json(data);
     }
@@ -2842,6 +2845,19 @@ export class ReportsController {
         return res.status(HttpStatus.OK).json(data);
     }
  
+    @Post('/rt_common_844')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReport844(@Response() res, @Body() req: Rt999Req) {
+        this.logger.log("Start rt_common_844");
+        this.logger.debug('Req', req);
+        const data = await this.reportsService.findRTCommon844(req);
+        this.logger.debug('Res', data);
+        this.logger.log('End rt_common_844');
+        return res.status(HttpStatus.OK).json(data);
+    }
+
     @Post('/rt_common_845')
 	@ApiResponse({ status: 403, description: 'Forbidden.' })
     @ApiResponse({ status: 400, description: "Missing info: parameter" })
@@ -2930,19 +2946,6 @@ export class ReportsController {
         const data = await this.reportsService.findRTCommon851(req);
         this.logger.debug('Res', data);
         this.logger.log('End rt_common_851');
-        return res.status(HttpStatus.OK).json(data);
-    }
-
-    @Post('/FnPatientbill')
-    @ApiResponse({ status: 403, description: 'Forbidden.' })
-    @ApiResponse({ status: 400, description: "Missing info: parameter" })
-    @ApiResponse({ status: 200, description: "OK" })
-    public async FnPatientbill(@Response() res, @Body() req: Rt999Req) {
-        this.logger.log("Start FnPatientbill");
-        this.logger.debug('Req', req);
-        const data = await this.reportsService.FnPatientbill(req);
-        this.logger.debug('Res', data);
-        this.logger.log('End FnPatientbill');
         return res.status(HttpStatus.OK).json(data);
     }
 

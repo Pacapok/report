@@ -324,6 +324,11 @@ export class ReportsService implements IReportsService {
                     $unwind: { path: "$nametitle", preserveNullAndEmptyArrays: true }
                 },
 
+                { $lookup: { from: "referencevalues", localField: "patients.localnametitleuid", foreignField: "_id", as: "localnametitle" } },
+                { $unwind: { path: "$localnametitle", preserveNullAndEmptyArrays: true } },
+                { $lookup: { from: "referencevalues", localField: "patients.preflanguid", foreignField: "_id", as: "preflang" } },
+                { $unwind: { path: "$preflang", preserveNullAndEmptyArrays: true } },
+
                 { $addFields: { "bed_last": { $arrayElemAt: ["$bedoccupancy.beduid", -1] } } },
                 { $lookup: { from: "beds", localField: "bed_last", foreignField: "_id", as: "beds" } },
                 { $unwind: { path: "$beds", preserveNullAndEmptyArrays: true } },
@@ -407,7 +412,51 @@ export class ReportsService implements IReportsService {
                         nationality: { $ifNull: ["$nationality.valuedescription", ""] },
                         orguidName: { $ifNull: ['$organisations.name', '-'] },
                         HN: "$patients.mrn",
-                        patientname: { $concat: [{ $ifNull: ["$nametitle.valuedescription", ""] }, " ", { $ifNull: ["$patients.firstname", ""] }, " ", { $ifNull: ["$patients.middlename", ""] }, " ", { $ifNull: ["$patients.lastname", ""] }] },
+                        patientname:
+                        {
+                            $cond: {
+                                if: { $eq: ["$patients.isanonymous", true] }, then: " Anonymous"
+                                , else: {
+                                    $cond: {
+                                        if: { $eq: ["$preflang.valuedescription", "Thai"] }, then: { $concat: [{ $ifNull: ["$localnametitle.valuedescription", ""] }, " ", { $ifNull: ["$patients.localfirstname", ""] }, " ", { $ifNull: ["$patients.localmiddlename", ""] }, " ", { $ifNull: ["$patients.locallastname", ""] }] }
+                                        , else: { $concat: [{ $ifNull: ["$nametitle.valuedescription", ""] }, " ", { $ifNull: ["$patients.firstname", ""] }, " ", { $ifNull: ["$patients.middlename", ""] }, " ", { $ifNull: ["$patients.lastname", ""] }] },
+                                    }
+                                }
+                            }
+                        },
+                        patientnameEN:
+                        {
+                            $cond: {
+                                if: { $eq: ["$patients.isanonymous", true] },
+                                then: { $concat: [{ $ifNull: ['$nametitle.valuedescription', ""] }, " Anonymous"] },
+                                else: {
+                                    $ifNull: [{
+                                        $concat: [{ $ifNull: ['$nametitle.valuedescription', ""] }, ' ', { $ifNull: ['$patients.firstname', ""] }, ' ',
+                                        {
+                                            $cond: { if: { $eq: [{ $ifNull: ["$patients.middlename", ""] }, ""] }, then: "", else: { $concat: ['$patients.middlename', ' '] } }
+                                        },
+                                        { $ifNull: [{ $ifNull: ['$patients.lastname', ""] }, ""] }]
+                                    }, '-']
+                                }
+                            }
+                        },
+                        patientnameTH:
+                        {
+                            $cond: {
+                                if: { $eq: ["$patients.isanonymous", true] },
+                                then: { $concat: [{ $ifNull: ['$localnametitle.valuedescription', ""] }, " Anonymous"] },
+                                else: {
+                                    $ifNull: [{
+                                        $concat: [{ $ifNull: ['$localnametitle.valuedescription', ""] }, ' ', { $ifNull: ["$patients.localfirstname", ""] }, ' ',
+                                        {
+                                            $cond: { if: { $eq: [{ $ifNull: ["$patients.localmiddlename", ""] }, ""] }, then: "", else: { $concat: ['$patients.localmiddlename', ' '] } }
+                                        },
+                                        { $ifNull: ["$patients.locallastname", ""] }]
+                                    }, '-']
+                                }
+                            }
+                        },
+
                         EN: "$visitid",
                         TYPE: { $cond: { if: { $lte: [{ $divide: [{ $subtract: [new Date(), "$patients.createdat"] }, (1000 * 3600 * 24)] }, 2] }, then: 'NEW', else: 'OLD' } },                        
                         AgeString:{$concat: [{$toString: '$year2'},' ปี ',{$toString: '$month2'},' เดือน ',{$toString: '$date2'},' วัน']},                           
@@ -12304,13 +12353,19 @@ export class ReportsService implements IReportsService {
                     };
                 }
             }
+            let packageflag = { $match: {} };
+            if(req.ispackage == false){
+                packageflag = { $match: {
+                    'statusflag': 'A'
+                } };
+            };
             const resultPatientbills = await this.PatientchargecodesModel.aggregate([
+                
                 {
                     $match:
                     {
                         'patientvisituid': new Types.ObjectId(req.patientvisituid),
-                        "orguid": new Types.ObjectId(req.organisationuid),
-                        'statusflag': 'A'
+                        "orguid": new Types.ObjectId(req.organisationuid), 
                     }
                 },
                 {
@@ -12696,572 +12751,6 @@ export class ReportsService implements IReportsService {
         }
         return result;
     }
-
-    // async findRTCommon287(req: Rt287Req): Promise<any> {
-    //     const _user = await this.findOrgByLoginId(req.loginuid);
-    //     let result = [];
-    //     // search จาก amount 
-    //     let fromamount = { $match: {} };
-    //     if (req.fromamount != '' && req.fromamount != null) {
-    //         fromamount = {
-    //             $match:
-    //             {
-    //                 'sumunitprice': { $gte: parseInt(req.fromamount) },
-    //             }
-    //         }
-
-    //     } else {
-    //         req.fromamount = '';
-    //     }
-    //     let toamount = { $match: {} };
-    //     if (req.toamount != '' && req.toamount != null) {
-    //         toamount = {
-    //             $match:
-    //             {
-    //                 'sumunitprice': { $lte: parseInt(req.toamount) },
-    //             }
-    //         }
-    //     } else {
-    //         req.toamount = '';
-    //     }
-    //     try {
-    //         const resultpatientvisits = await this.patientvisitsModel.aggregate([
-
-    //             { $unwind: { path: "$bedoccupancy", preserveNullAndEmptyArrays: true } },
-    //             { $unwind: { path: "$visitpayors", preserveNullAndEmptyArrays: true } },
-    //             {
-    //                 $addFields: {
-    //                     enddate: { $ifNull: ['$enddate', null] }
-    //                 }
-    //             },
-    //             {
-    //                 $match:
-    //                 {
-    //                     'statusflag': "A"
-    //                     , 'orguid': new Types.ObjectId(req.organisationuid)
-    //                     , 'enddate': { $eq: null }
-    //                     , 'visitid': { $regex: /I/ }
-    //                     , 'bedoccupancy.isactive': true
-    //                     , "bedoccupancy.islodgerbed": { "$ne": true }
-    //                 }
-    //             },
-
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "referencevalues",
-    //                     localField: "visitstatusuid",
-    //                     foreignField: "_id",
-    //                     as: "referencevalues_financial_discharge"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$referencevalues_financial_discharge", preserveNullAndEmptyArrays: true }
-    //             },
-    //             { $addFields: { visitjourneys_FinalDischarge: { $indexOfArray: ['$visitjourneys.comments', 'Final Discharge'] } } },
-    //             { $match: { $expr: { $or: [{ $ne: ['$referencevalues_financial_discharge.valuedescription', 'Financial Discharge'] }, { $eq: ['$visitjourneys_FinalDischarge', -1] },] } } },            
-    //             { $addFields: { visitcareproviders_index: { $indexOfArray: ['$visitcareproviders.isprimarycareprovider', true] } } },
-    //             { $addFields: { visitcareproviders_lookup: { $arrayElemAt: ["$visitcareproviders.careprovideruid", { $cond: { if: { $eq: ["$visitcareproviders_index", -1] }, then: null, else: "$visitcareproviders_index" } }] }, } },
-    //             {
-    //                 $group: {
-    //                     _id: {
-    //                         idvisit: "$_id",
-    //                         EN: "$visitid",
-    //                         idpatient: "$patientuid",
-    //                         firstcare: '$visitcareproviders_lookup',
-    //                         patientbilluid_isnull: '$patientbilluid_isnull'
-    //                     },
-    //                     sumunitprice: { $sum: '$unitprice' },
-    //                     sumpayordiscount: { $sum: '$payordiscount' },
-    //                     sumtotalprice: { $sum: '$totalprice' },                        
-    //                     firststartdate: { $first: "$startdate" },
-    //                     firstbed: { $last: "$bedoccupancy.beduid" },
-    //                     firstward: { $last: "$bedoccupancy.warduid" },                        
-    //                     firsttpa: { $first: "$visitpayors.tpauid" },
-    //                     firstpayor: { $first: "$visitpayors.payoragreementuid" }
-    //                 }
-    //             },
-
-    //             {
-    //                 $project:
-    //                 {
-    //                     idvisit: "$_id.idvisit",
-    //                     EN: "$_id.EN",
-    //                     idpatient: "$_id.idpatient",
-    //                     sumunitprice: "$sumunitprice",
-    //                     sumpayordiscount: "$sumpayordiscount",
-    //                     sumtotalprice: "$sumtotalprice",
-    //                     firststartdate: "$firststartdate",
-    //                     firstbed: "$firstbed",
-    //                     firstward: "$firstward",
-    //                     firstcare: "$_id.firstcare",
-    //                     firsttpa: "$firsttpa",
-    //                     firstpayor: "$firstpayor",
-    //                 }
-    //             },
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "deposits",
-    //                     localField: "_id.idpatient",
-    //                     foreignField: "patientuid",
-    //                     as: "deposits"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$deposits", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $project:
-    //                 {
-    //                     idvisit: "$_id.idvisit",
-    //                     EN: "$_id.EN",
-    //                     idpatient: "$_id.idpatient",
-    //                     sumunitprice: "$sumunitprice",
-    //                     sumpayordiscount: "$sumpayordiscount",
-    //                     sumtotalprice: "$sumtotalprice",
-    //                     firststartdate: "$firststartdate",
-    //                     firstbed: "$firstbed",
-    //                     firstward: "$firstward",
-    //                     firstcare: "$firstcare",
-    //                     firsttpa: "$firsttpa",
-    //                     firstpayor: "$firstpayor",
-    //                     sumdeposit: "$deposits.paidamount"
-    //                 }
-    //             },
-    //             {
-    //                 $group: {
-    //                     _id: {
-    //                         idvisit: "$idvisit",
-    //                         EN: "$EN",
-    //                         idpatient: "$idpatient",
-    //                         sumunitprice: "$sumunitprice",
-    //                         sumpayordiscount: "$sumpayordiscount",
-    //                         sumtotalprice: "$sumtotalprice",
-    //                         firststartdate: "$firststartdate",
-    //                         firstbed: "$firstbed",
-    //                         firstward: "$firstward",
-    //                         firstcare: "$firstcare",
-    //                         firsttpa: "$firsttpa",
-    //                         firstpayor: "$firstpayor",
-    //                     },
-    //                     sumdeposit: { $sum: "$sumdeposit" }
-    //                 }
-    //             },
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "patients",
-    //                     localField: "_id.idpatient",
-    //                     foreignField: "_id",
-    //                     as: "patients"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$patients", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "referencevalues",
-    //                     localField: "patients.titleuid",
-    //                     foreignField: "_id",
-    //                     as: "nametitle"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$nametitle", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "beds",
-    //                     localField: "_id.firstbed",
-    //                     foreignField: "_id",
-    //                     as: "beds"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$beds", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {$addFields:{bedtemp: { $ifNull: ['$beds.iscensusbed', false] }}},
-    //             // { $match:{bedtemp : true}},
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "users",
-    //                     localField: "_id.firstcare",
-    //                     foreignField: "_id",
-    //                     as: "users"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$users", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "tpas",
-    //                     let: { p1: "$_id.firsttpa" },
-    //                     pipeline: [
-    //                         {
-    //                             $match:
-    //                             {
-    //                                 $expr:
-    //                                 {
-    //                                     $and:
-    //                                         [
-    //                                             { $eq: ['$_id', '$$p1'] }
-    //                                         ]
-    //                                 }
-    //                             }
-    //                         }
-    //                     ],
-    //                     as: "tpas"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$tpas", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "payoragreements",
-    //                     let: { p1: "$_id.firstpayor" },
-    //                     pipeline: [
-    //                         {
-    //                             $match:
-    //                             {
-    //                                 $expr:
-    //                                 {
-    //                                     $and:
-    //                                         [
-    //                                             { $eq: ['$_id', '$$p1'] }
-    //                                         ]
-    //                                 }
-    //                             }
-    //                         }
-    //                     ],
-    //                     as: "payors"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$payors", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "diagnoses",
-    //                     localField: "_id.idvisit",
-    //                     foreignField: "patientvisituid",
-    //                     as: "diagnoses"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$diagnoses", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $addFields: {
-    //                     problemuid_last: { $max: "$diagnoses.diagnosis.problemuid" },
-    //                 }
-    //             },
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "problems",
-    //                     localField: "problemuid_last",
-    //                     foreignField: "_id",
-    //                     as: "problems"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$problems", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "wards",
-    //                     localField: "_id.firstward",
-    //                     foreignField: "_id",
-    //                     as: "wards"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$wards", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "referencevalues",
-    //                     localField: "patients.genderuid",
-    //                     foreignField: "_id",
-    //                     as: "referencevalues2"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$referencevalues2", preserveNullAndEmptyArrays: true }
-    //             },
-    //             { $lookup: { from: "referencevalues", localField: "patients.preflanguid", foreignField: "_id", as: "preflang" } },
-    //             { $unwind: { path: "$preflang", preserveNullAndEmptyArrays: true } },
-    //             {
-    //                 $addFields:
-    //                 {
-    //                     PatientNameEN:
-    //                     {
-    //                         $cond: {
-    //                             if: { $eq: ["$patients.isanonymous", true] },
-    //                             then: { $concat: [{ $ifNull: ['$nametitle.valuedescription', ""] }, " Anonymous"] },
-    //                             else: {
-    //                                 $ifNull: [{
-    //                                     $concat: [{ $ifNull: ['$nametitle.valuedescription', ""] }, ' ', { $ifNull: ['$patients.firstname', ""] }, ' ',
-    //                                     {
-    //                                         $cond: { if: { $eq: [{ $ifNull: ["$patients.middlename", ""] }, ""] }, then: "", else: { $concat: ['$patients.middlename', ' '] } }
-    //                                     },
-    //                                     { $ifNull: [{ $ifNull: ['$patients.lastname', ""] }, ""] }]
-    //                                 }, '-']
-    //                             }
-    //                         }
-    //                     },
-    //                 }
-    //             },
-    //             {
-    //                 $addFields:
-    //                 {
-    //                     PatientNameTH:
-    //                     {
-    //                         $cond: {
-    //                             if: { $eq: ["$patients.isanonymous", true] },
-    //                             then: { $concat: [{ $ifNull: ['$localnametitle.valuedescription', ""] }, " Anonymous"] },
-    //                             else: {
-    //                                 $ifNull: [{
-    //                                     $concat: [{ $ifNull: ['$localnametitle.valuedescription', ""] }, ' ', { $ifNull: ["$patients.localfirstname", ""] }, ' ',
-    //                                     {
-    //                                         $cond: { if: { $eq: [{ $ifNull: ["$patients.localmiddlename", ""] }, ""] }, then: "", else: { $concat: ['$patients.localmiddlename', ' '] } }
-    //                                     },
-    //                                     { $ifNull: ["$patients.locallastname", ""] }]
-    //                                 }, '-']
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //             },
-    //             {$lookup:{from: "referencevalues",localField: "patients.nationalityuid",foreignField: "_id",as: "nationality"}},
-    //             {$unwind: { path: "$nationality", preserveNullAndEmptyArrays: true }},
-    //             {
-    //                 $group:
-    //                 {
-    //                     _id: {
-    //                         "idvisit": "$_id.idvisit",
-    //                         "Time": { $dateToString: { format: "%Y/%m/%d %H:%M", date: "$_id.firststartdate", timezone: "+07:00", onNull: "-" } },
-    //                         "EN": "$_id.EN",
-    //                         "HN": "$patients.mrn",
-    //                         "nationality": { $ifNull: ["$nationality.valuedescription", ""] },                            
-    //                         "PatientName": {
-    //                             $cond: {
-    //                                 if: { $eq: ["$preflang.valuedescription", "Thai"] }, //kung
-    //                                 then: { $ifNull: [{ $ifNull: ["$PatientNameTH", ""] }, ""] },//kung
-    //                                 else: { $ifNull: ["$PatientNameEN", ""] }
-    //                             }
-    //                         },                            
-    //                         "Room": { $ifNull: ["$beds.name", "-"] },
-    //                         "istemporarybed": { $ifNull: ["$beds.istemporarybed", false] },
-    //                         "DOB": { $dateToString: { format: "%Y/%m/%d", date: "$patients.dateofbirth", timezone: "+07:00", onNull: "-" } },
-    //                         "Age": { $trunc: { $divide: [{ $subtract: [new Date(), "$patients.dateofbirth"] }, (365 * 24 * 60 * 60 * 1000)] } },
-    //                         "Doctor": { $concat: [{ $ifNull: ["$users.name", ""] }, " ", { $ifNull: ["$users.lastname", ""] }] },
-    //                         "Payor_Office": { $ifNull: ["$tpas.name", "-"] },
-    //                         "Plan": { $ifNull: ["$payors.name", "-"] },
-    //                         "LOS": { $floor: { $divide: [{ $subtract: [new Date(), "$_id.firststartdate"] }, 1000 * 3600 * 24] } },
-    //                         "Deposit": { $ifNull: ["$sumdeposit", 0] },                            
-    //                         "Amount": { $ifNull: ["$_id.sumunitprice", 0] },
-    //                         "Discount": { $ifNull: ["$_id.sumpayordiscount", 0] },
-    //                         "Net_Balance": { $ifNull: ["$_id.sumtotalprice", 0] },
-    //                         "Type": { $cond: { if: { $lte: [{ $divide: [{ $subtract: [new Date(), "$patients.createdat"] }, (1000 * 3600 * 24)] }, 2] }, then: 'NEW', else: 'OLD' } },
-    //                         "Ward": { $ifNull: ["$wards.name", "-"] },
-    //                         "MALE": { $cond: { if: { $eq: ["$referencevalues2.valuedescription", "MALE"] }, then: 'MALE', else: null } },
-    //                         "FEMALE": { $cond: { if: { $eq: ["$referencevalues2.valuedescription", "FEMALE"] }, then: 'FEMALE', else: null } },
-    //                     },
-    //                     "Diagnosis": { $push: "$problems._id" }
-    //                 }
-    //             },
-    //             {
-    //                 $addFields: {
-    //                     Diagnosis_last: { $max: "$Diagnosis" },
-    //                 }
-    //             },
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "problems",
-    //                     localField: "Diagnosis_last",
-    //                     foreignField: "_id",
-    //                     as: "problems_last"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$problems_last", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $project:
-    //                 {
-    //                     _id: 0,
-    //                     'istemporarybed': '$_id.istemporarybed',
-    //                     "idvisit": "$_id.idvisit",
-    //                     "Time": "$_id.Time",
-    //                     "EN": "$_id.EN",
-    //                     "HN": "$_id.HN",
-    //                     "PatientName": "$_id.PatientName",
-    //                     "Room": "$_id.Room",
-    //                     "DOB": "$_id.DOB",
-    //                     "Age": "$_id.Age",
-    //                     "Doctor": "$_id.Doctor",
-    //                     "Payor_Office": "$_id.Payor_Office",
-    //                     "Plan": "$_id.Plan",
-    //                     "LOS": "$_id.LOS",
-    //                     "Deposit": "$_id.Deposit",
-    //                     "Amount": "$_id.Amount",
-    //                     "Discount": "$_id.Discount",
-    //                     "Net_Balance": "$_id.Net_Balance",
-    //                     "Type": "$_id.Type",
-    //                     "Ward": "$_id.Ward",
-    //                     "MALE": "$_id.MALE",
-    //                     "FEMALE": "$_id.FEMALE",
-    //                     "Diagnosis": { $ifNull: ["$problems_last.description", '-'] },
-    //                     "fromamount": { $cond: { if: { $eq: [req.fromamount, ""] }, then: 'min', else: req.fromamount } },
-    //                     "toamount": { $cond: { if: { $eq: [req.toamount, ""] }, then: 'max', else: req.toamount } },                        
-    //                     "nationality": "$_id.nationality",
-    //                 }
-    //             },                
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "patientchargecodes",
-    //                     localField: "idvisit",
-    //                     foreignField: "patientvisituid",
-    //                     as: "patientchargecodes"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$patientchargecodes", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $unwind: { path: "$patientchargecodes.chargecodes", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $match:
-    //                 {
-    //                     'patientchargecodes.chargecodes.statusflag': 'A'
-    //                     , "$or": [{ "patientchargecodes.isr2c": { "$eq": null } }, { "patientchargecodes.isr2c": { "$eq": false } }],    //17May
-    //                 }
-    //             },
-
-    //             { $addFields: { patientbilluid_isnull: { $cond: { if: { $eq: [{ $ifNull: ['$patientchargecodes.chargecodes.patientbilluid', null] }, null] }, then: '-', else: '$patientchargecodes.chargecodes.patientbilluid' } }, } },
-    //             { $addFields: { totalprice: { $cond: { if: { $eq: [{ $ifNull: ['$patientchargecodes.chargecodes.patientbilluid', null] }, null] }, then: '$patientchargecodes.chargecodes.netamount', else: 0 } }, } },
-    //             {
-    //                 $addFields:
-    //                 {
-    //                     payordiscount:
-    //                     {
-    //                         $cond: {
-    //                             if: { $eq: [{ $ifNull: ['$patientchargecodes.chargecodes.patientbilluid', null] }, null] },
-    //                             then: '$patientchargecodes.chargecodes.payordiscount',
-    //                             else: 0
-    //                         }
-    //                     },
-    //                 }
-    //             },
-    //             {
-    //                 $addFields:
-    //                 {
-    //                     unitprice:
-    //                     {
-    //                         $cond: {
-    //                             if: { $eq: [{ $ifNull: ['$patientchargecodes.chargecodes.patientbilluid', null] }, null] },
-    //                             then: { $multiply: ['$patientchargecodes.chargecodes.orgquantity', '$patientchargecodes.chargecodes.unitprice'] },
-    //                             else: 0
-    //                         }
-    //                     },
-    //                 }
-    //             },
-
-    //             {
-    //                 $group: {
-    //                     _id: {
-    //                         'istemporarybed': '$istemporarybed',
-    //                         "Time": "$Time",
-    //                         "EN": "$EN",
-    //                         "HN": "$HN",
-    //                         "PatientName": "$PatientName",
-    //                         "Room": "$Room",
-    //                         "DOB": "$DOB",
-    //                         "Age": "$Age",
-    //                         "Doctor": "$Doctor",
-    //                         "Payor_Office": "$Payor_Office",
-    //                         "Plan": "$Plan",
-    //                         "LOS": "$LOS",
-    //                         "Deposit": "$Deposit",
-    //                         "Amount": "$Amount",
-    //                         "Discount": "$Discount",
-    //                         "Net_Balance": "$Net_Balance",
-    //                         "Type": "$Type",
-    //                         "Ward": "$Ward",
-    //                         "MALE": "$MALE",
-    //                         "FEMALE": "$FEMALE",
-    //                         "Diagnosis": "$Diagnosis",
-    //                         "nationality": "$nationality",
-    //                     },
-    //                     sumunitprice: { $sum: '$unitprice' },
-    //                     sumpayordiscount: { $sum: '$payordiscount' },
-    //                     sumtotalprice: { $sum: '$totalprice' },
-
-    //                     firststartdate: { $first: "$startdate" },
-    //                     firstbed: { $last: "$bedoccupancy.beduid" },
-    //                     firstward: { $last: "$bedoccupancy.warduid" },
-    //                     firsttpa: { $first: "$visitpayors.tpauid" },
-    //                     firstpayor: { $first: "$visitpayors.payoragreementuid" }
-    //                 }
-    //             },
-
-    //             {
-    //                 $project:
-    //                 {
-    //                     _id: 0,
-    //                     'istemporarybed': '$_id.istemporarybed',
-    //                     "idvisit": "$_id.idvisit",
-    //                     "Time": "$_id.Time",
-    //                     "EN": "$_id.EN",
-    //                     "HN": "$_id.HN",
-    //                     "PatientName": "$_id.PatientName",
-    //                     "Room": "$_id.Room",
-    //                     "DOB": "$_id.DOB",
-    //                     "Age": "$_id.Age",
-    //                     "Doctor": "$_id.Doctor",
-    //                     "Payor_Office": "$_id.Payor_Office",
-    //                     "Plan": "$_id.Plan",
-    //                     "LOS": "$_id.LOS",
-    //                     "Deposit": "$_id.Deposit",
-    //                     "Amount": "$sumtotalprice",
-    //                     "Discount": "$sumpayordiscount",
-    //                     "Net_Balance": "$sumtotalprice",
-    //                     "Type": "$_id.Type",
-    //                     "Ward": "$_id.Ward",
-    //                     "MALE": "$_id.MALE",
-    //                     "FEMALE": "$_id.FEMALE",
-    //                     "Diagnosis": "$_id.Diagnosis",
-    //                     "user": _user.name,
-    //                     "nationality": "$_id.nationality",
-    //                 }
-    //             },
-    //             {
-    //                 $sort: { Ward: 1, EN: 1 }
-    //             }
-    //         ])
-    //             .exec();
-    //         result = resultpatientvisits;
-    //     } catch (error) {
-    //         this.logger.error('findRTCommon287 error:', error);
-    //     }
-    //     return result;
-    // }
 
     async findRTCommon287(req: Rt287Req): Promise<any> {
         const _user = await this.findOrgByLoginId(req.loginuid);
@@ -17671,191 +17160,17 @@ export class ReportsService implements IReportsService {
         return result;
     }
 
-    // async findRTCommon320(req: Rt320Req): Promise<any> {
-    //     let result = [];
-    //     try {
-    //         const _user = await this.findOrgByLoginId(req.loginuid);
-    //         let fromdate = DateUtils.convertISOtoDatetimeSlash(DateUtils.convertUTCtoGMT(new Date(req.fromdate)));
-    //         let todate = DateUtils.convertISOtoDatetimeSlash(DateUtils.convertUTCtoGMT(new Date(req.todate)));
-    //         const resultPatientorders = await this.patientbillsModel.aggregate([
-    //             {
-    //                 $match:
-    //                 {
-    //                     "orguid": new Types.ObjectId(req.organisationuid),
-    //                     "statusflag": "A",
-    //                     'billdate': {
-    //                         $gte: new Date(req.fromdate),
-    //                         $lte: new Date(req.todate)
-    //                     },
-    //                      'iscancelled': false                        
-    //                 }
-    //             },                                                                
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "patientvisits",
-    //                     localField: "patientvisituid",
-    //                     foreignField: "_id",
-    //                     as: "patientvisits"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$patientvisits", preserveNullAndEmptyArrays: true }
-    //             },             
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "patients",
-    //                     localField: "patientuid",
-    //                     foreignField: "_id",
-    //                     as: "patients"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$patients", preserveNullAndEmptyArrays: true }
-    //             },
-    //             { $lookup: { from: "referencevalues", localField: "patients.preflanguid", foreignField: "_id", as: "preflang" } },
-    //             { $unwind: { path: "$preflang", preserveNullAndEmptyArrays: true } },
-    //             { $lookup: { from: "referencevalues", localField: "patients.titleuid", foreignField: "_id", as: "nametitle" } },
-    //                 { $unwind: { path: "$nametitle", preserveNullAndEmptyArrays: true } },
-    //                 { $lookup: { from: "referencevalues", localField: "patients.localnametitleuid", foreignField: "_id", as: "localnametitle" } },
-    //                 { $unwind: { path: "$localnametitle", preserveNullAndEmptyArrays: true } },
-    //                 {
-    //                 $lookup:
-    //                 {
-    //                     from: "users",
-    //                     localField: "useruid",
-    //                     foreignField: "_id",
-    //                     as: "users"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$users", preserveNullAndEmptyArrays: true }
-    //             },              
-    //             {$unwind: '$patientbilleditems'},
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "patientorders",
-    //                     localField: "patientbilleditems.patientorderuid",
-    //                     foreignField: "_id",
-    //                     as: "patientorders"
-    //                 }
-    //             },
-    //             { $addFields: {orderdate: { $ifNull: ["$patientorders.orderdate", "-"] }  } },                
-    //             {$unwind: { path: "$orderdate", preserveNullAndEmptyArrays: false }},                
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "departments",
-    //                     localField: "patientbilleditems.departmentuid",
-    //                     foreignField: "_id",
-    //                     as: "departments"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$departments", preserveNullAndEmptyArrays: true }
-    //             },
-                
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "orderitems",
-    //                     localField: "patientbilleditems.orderitemuid",
-    //                     foreignField: "_id",
-    //                     as: "orderitems"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$orderitems", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $match:
-    //                 {
-    //                     'orderitems.isdoctorshareitem': true,                        
-    //                 }
-    //             },
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "users",
-    //                     localField: "patientbilleditems.careprovideruid",
-    //                     foreignField: "_id",
-    //                     as: "doctor"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$doctor", preserveNullAndEmptyArrays: true }
-    //             },              
-    //             {
-    //                 $lookup:
-    //                 {
-    //                     from: "ordercategories",
-    //                     localField: "orderitems.ordercatuid",
-    //                     foreignField: "_id",
-    //                     as: "ordercategories2"
-    //                 }
-    //             },
-    //             {
-    //                 $unwind: { path: "$ordercategories2", preserveNullAndEmptyArrays: true }
-    //             },
-    //             {
-    //                 $project:
-    //                 {
-    //                     fromdate: fromdate,
-    //                     todate: todate,
-    //                     user: _user.name,                                             
-    //                     DoctorCode: { $ifNull: ['$doctor.code', '-'] },
-    //                     DoctorName: { $ifNull: ['$doctor.description', '-'] },
-    //                     Type: { $ifNull: [{ $cond: { if: { $eq: [{ $substr: ["$patientvisits.visitid", 0, 1] }, "I"] }, then: "I", else: "O" } }, '-'] },
-    //                     BillNo: { $ifNull: ['$sequencenumber', '-'] },
-    //                     TypeBill: { $ifNull: ['$fivedigits2', '-'] },
-    //                     HN: { $ifNull: ['$patients.mrn', '-'] },
-    //                     EN: { $ifNull: ['$patientvisits.visitid', '-'] },
-    //                     PatientName:
-    //                     {
-    //                         $cond: {
-    //                             if: { $eq: ["$preflang.valuedescription", "Thai"] },
-    //                             then: {
-    //                                 $cond: {
-    //                                     if: { $eq: ["$patients.isanonymous", true] },
-    //                                     then: { $concat: [{ $ifNull: ['$localnametitle.valuedescription', ""] }, " Anonymous"] },
-    //                                     else: { $concat: [{ $ifNull: ["$localnametitle.valuedescription", ""] }, " ", { $ifNull: ["$patients.localfirstname", ""] }, " ", { $ifNull: ["$patients.localmiddlename", ""] }, " ", { $ifNull: ["$patients.locallastname", ""] }] }
-    //                                 }
-    //                             },
-    //                             else: {
-    //                                 $cond: {
-    //                                     if: { $eq: ["$patients.isanonymous", true] },
-    //                                     then: { $concat: [{ $ifNull: ['$nametitle.valuedescription', ""] }, " Anonymous"] },
-    //                                     else: { $concat: [{ $ifNull: ["$nametitle.valuedescription", ""] }, " ", { $ifNull: ["$patients.firstname", ""] }, " ", { $ifNull: ["$patients.middlename", ""] }, " ", { $ifNull: ["$patients.lastname", ""] }] }
-    //                                 }
-    //                             }
-    //                         }
-    //                     },
-    //                     Location: { $ifNull: ['$departments.name', '-'] },
-    //                     BillDate: { $dateToString: { format: "%d/%m/%Y", date: '$billdate', timezone: "+07:00", onNull: "-" } },
-    //                     PatientOrderDate: { $dateToString: { format: "%d/%m/%Y %H:%M", date: "$orderdate", timezone: "+07:00", onNull: "-" } },
-    //                     OrderItem: { $ifNull: ['$orderitems.name', '-'] },
-    //                     CodeOrder: { $ifNull: ['$orderitems.code', '-'] },
-    //                     DF: { $ifNull: ['$patientbilleditems.netamount', '-'] },
-    //                     VerifyDate: { $dateToString: { format: "%d/%m/%Y", date: "$modifiedat", timezone: "+07:00", onNull: "-" } },
-    //                     VerifyTime: { $dateToString: { format: "%H:%M  ", date: "$modifiedat", timezone: "+07:00", onNull: "-" } },
-    //                     UserKey: { $ifNull: ['$users.name', '-'] },
-    //                     StatusOrder: { $ifNull: ['$referencevalues.valuedescription', '-'] },
-    //                     TypeOrder: { $ifNull: ['$ordercategories2.description', '-'] },
-    //                     DoctorFee: { $ifNull: ['$orderitems.isdoctorshareitem', '-'] },
-    //                     Execute: { $ifNull: ['$orderitems.istaskgenerationreqd', '-'] }
-    //                 }
-    //             }
-    //         ]).exec()
-    //         result = resultPatientorders
-    //     } catch (error) {
-    //         this.logger.error('findRTCommon320 error:', error);
-    //     }
-    //     return result;
-    // }
     async findRTCommon320(req: Rt320Req): Promise<any> {
         let result = [];
+        let careprovideruids = { $match: {} };
+        if (req.careprovideruids != '') {
+            careprovideruids = {
+                $match:
+                {
+                    'patientorderitems.careprovideruid': new Types.ObjectId(req.careprovideruids),
+                }
+            }
+        }
         try {
             const _user = await this.findOrgByLoginId(req.loginuid);
             let fromdate = DateUtils.convertISOtoDatetimeSlash(DateUtils.convertUTCtoGMT(new Date(req.fromdate)));
@@ -17885,6 +17200,7 @@ export class ReportsService implements IReportsService {
                 {$lookup:{from: "departments",localField: "orderdepartmentuid",foreignField: "_id",as: "departments"}},
                 {$unwind: { path: "$departments", preserveNullAndEmptyArrays: true }},                                                
                 {$unwind: '$patientorderitems'},
+                careprovideruids,
                 {$match:{'patientorderitems.isdoctorshareitem': true}},
                 {$lookup:{from: "ordercategories",localField: "patientorderitems.ordercatuid",foreignField: "_id",as: "ordercategories2"}},
                 {$unwind: { path: "$ordercategories2", preserveNullAndEmptyArrays: true }},
@@ -18175,13 +17491,22 @@ export class ReportsService implements IReportsService {
 
     async findRTCommon323(req: Rt323Req): Promise<any> {
         let result = [];
+        let user = { $match: {} };
+        if (req.usersuid != '') {
+            user = {
+                $match:
+                {
+                    'useruid': new Types.ObjectId(req.usersuid),
+                }
+            }
+        };
         try {
             const _user = await this.findOrgByLoginId(req.loginuid);
             const resultPatientbills = await this.patientbillsModel.aggregate([
+                user,
                 {
                     $match:
                     {
-                        'useruid': new Types.ObjectId(req.usersuid),
                         'billdate': {
                             $gte: DateUtils.convertGMTtoUTC(new Date(req.fromdate)),
                             $lte: DateUtils.convertGMTtoUTC(new Date(req.todate))
@@ -18190,6 +17515,16 @@ export class ReportsService implements IReportsService {
                         , 'statusflag': "A"
                         , 'iscancelled': false
                         , 'isrefund': false
+                    }
+                },
+                {
+                    $match:
+                    {
+                        $or:
+                            [
+                                { 'sequencenumber': { $regex: /R/ } },
+                                { 'sequencenumber': { $regex: /S/ } }
+                            ]
                     }
                 },
                 {
@@ -25832,19 +25167,19 @@ return result;
                     }
                 },
                                 
-                { $addFields: { 'postaudits': { $arrayElemAt: ['$patients.patientdemochanges.postaudit', -1] } } },
-                { $addFields: { sLocationF: { $indexOfBytes: ["$postaudits", '"firstname'] } } },
-                { $addFields: { eLocationF: { $indexOfBytes: ["$postaudits", ",", '$sLocationF'] } } },
-                { $addFields: { FirstName: { $substr: ["$postaudits", { $add: ['$sLocationF', 13] }, { $subtract: [{ $subtract: ['$eLocationF', '$sLocationF'] }, 14] }] } } },
-                { $addFields: { sLocationL: { $indexOfBytes: ["$postaudits", '"lastname'] } } },
-                { $addFields: { eLocationL: { $indexOfBytes: ["$postaudits", ",", '$sLocationL'] } } },
-                { $addFields: { LastName: { $substr: ["$postaudits", { $add: ['$sLocationL', 12] }, { $subtract: [{ $subtract: ['$eLocationL', '$sLocationL'] }, 13] }] } } },
-                { $addFields: { sposF: { $indexOfBytes: ["$postaudits", "localfirstname"] } } },
-                { $addFields: { eposF: { $indexOfBytes: ["$postaudits", ",", '$sposF'] } } },
-                { $addFields: { LocalFirstName: { $substr: ["$postaudits", { $add: ['$sposF', 17] }, { $subtract: [{ $subtract: ['$eposF', '$sposF'] }, 18] }] } } },
-                { $addFields: { sposL: { $indexOfBytes: ["$postaudits", "locallastname"] } } },
-                { $addFields: { eposL: { $indexOfBytes: ["$postaudits", ",", '$sposL'] } } },
-                { $addFields: { LocalLastName: { $substr: ["$postaudits", { $add: ['$sposL', 16] }, { $subtract: [{ $subtract: ['$eposL', '$sposL'] }, 17] }] } } },
+                { $addFields: { 'postaudits': { $arrayElemAt: ['$patients.patientdemochanges.postaudit', -1] } } },                  
+                  { $addFields: { sLocationF: { $ifNull: [{ $indexOfBytes: ["$postaudits", '"firstname'] } ,0]}} },
+                  { $addFields: { eLocationF: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sLocationF'] } ,0]}} },                       
+                  { $addFields: { FirstName: { $substr: ["$postaudits", { $add: ['$sLocationF', 13] }, { $subtract: [{ $subtract: ['$eLocationF', '$sLocationF'] }, 14] }] } } },                  
+                  { $addFields: { sLocationL: { $ifNull: [{ $indexOfBytes: ["$postaudits", '"lastname'] } ,0]}} },
+                  { $addFields: { eLocationL: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sLocationL'] } ,0]}} },
+                  { $addFields: { LastName: { $substr: ["$postaudits", { $add: ['$sLocationL', 12] }, { $subtract: [{ $subtract: ['$eLocationL', '$sLocationL'] }, 13] }] } } },
+                  { $addFields: { sposF: { $ifNull: [{ $indexOfBytes: ["$postaudits", "localfirstname"] } ,0]}} },
+                  { $addFields: { eposF: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sposF'] } ,0]}} },                  
+                  { $addFields: { LocalFirstName: { $substr: ["$postaudits", { $add: ['$sposF', 17] }, { $subtract: [{ $subtract: ['$eposF', '$sposF'] }, 18] }] } } },
+                  { $addFields: { sposL: { $ifNull: [{ $indexOfBytes: ["$postaudits", "locallastname"] } ,0]}} },
+                  { $addFields: { eposL: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sposL'] } ,0]}} },
+                  { $addFields: { LocalLastName: { $substr: ["$postaudits", { $add: ['$sposL', 16] }, { $subtract: [{ $subtract: ['$eposL', '$sposL'] }, 17] }] } } },
 
                 {
                     $project:
@@ -26458,19 +25793,19 @@ return result;
                 { $lookup: { from: "patientorders", localField: "patientchargecodes.chargecodes.patientorderuid", foreignField: "_id", as: "pod" } },
                 { $unwind: { path: "$pod", preserveNullAndEmptyArrays: true } },
 
-                { $addFields: { 'postaudits': { $arrayElemAt: ['$patients.patientdemochanges.postaudit', -1] } } },
-                { $addFields: { sLocationF: { $indexOfBytes: ["$postaudits", '"firstname'] } } },
-                { $addFields: { eLocationF: { $indexOfBytes: ["$postaudits", ",", '$sLocationF'] } } },
-                { $addFields: { FirstName: { $substr: ["$postaudits", { $add: ['$sLocationF', 13] }, { $subtract: [{ $subtract: ['$eLocationF', '$sLocationF'] }, 14] }] } } },
-                { $addFields: { sLocationL: { $indexOfBytes: ["$postaudits", '"lastname'] } } },
-                { $addFields: { eLocationL: { $indexOfBytes: ["$postaudits", ",", '$sLocationL'] } } },
-                { $addFields: { LastName: { $substr: ["$postaudits", { $add: ['$sLocationL', 12] }, { $subtract: [{ $subtract: ['$eLocationL', '$sLocationL'] }, 13] }] } } },
-                { $addFields: { sposF: { $indexOfBytes: ["$postaudits", "localfirstname"] } } },
-                { $addFields: { eposF: { $indexOfBytes: ["$postaudits", ",", '$sposF'] } } },
-                { $addFields: { LocalFirstName: { $substr: ["$postaudits", { $add: ['$sposF', 17] }, { $subtract: [{ $subtract: ['$eposF', '$sposF'] }, 18] }] } } },
-                { $addFields: { sposL: { $indexOfBytes: ["$postaudits", "locallastname"] } } },
-                { $addFields: { eposL: { $indexOfBytes: ["$postaudits", ",", '$sposL'] } } },
-                { $addFields: { LocalLastName: { $substr: ["$postaudits", { $add: ['$sposL', 16] }, { $subtract: [{ $subtract: ['$eposL', '$sposL'] }, 17] }] } } },
+                { $addFields: { 'postaudits': { $arrayElemAt: ['$patients.patientdemochanges.postaudit', -1] } } },                  
+                  { $addFields: { sLocationF: { $ifNull: [{ $indexOfBytes: ["$postaudits", '"firstname'] } ,0]}} },
+                  { $addFields: { eLocationF: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sLocationF'] } ,0]}} },                       
+                  { $addFields: { FirstName: { $substr: ["$postaudits", { $add: ['$sLocationF', 13] }, { $subtract: [{ $subtract: ['$eLocationF', '$sLocationF'] }, 14] }] } } },                  
+                  { $addFields: { sLocationL: { $ifNull: [{ $indexOfBytes: ["$postaudits", '"lastname'] } ,0]}} },
+                  { $addFields: { eLocationL: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sLocationL'] } ,0]}} },
+                  { $addFields: { LastName: { $substr: ["$postaudits", { $add: ['$sLocationL', 12] }, { $subtract: [{ $subtract: ['$eLocationL', '$sLocationL'] }, 13] }] } } },
+                  { $addFields: { sposF: { $ifNull: [{ $indexOfBytes: ["$postaudits", "localfirstname"] } ,0]}} },
+                  { $addFields: { eposF: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sposF'] } ,0]}} },                  
+                  { $addFields: { LocalFirstName: { $substr: ["$postaudits", { $add: ['$sposF', 17] }, { $subtract: [{ $subtract: ['$eposF', '$sposF'] }, 18] }] } } },
+                  { $addFields: { sposL: { $ifNull: [{ $indexOfBytes: ["$postaudits", "locallastname"] } ,0]}} },
+                  { $addFields: { eposL: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sposL'] } ,0]}} },
+                  { $addFields: { LocalLastName: { $substr: ["$postaudits", { $add: ['$sposL', 16] }, { $subtract: [{ $subtract: ['$eposL', '$sposL'] }, 17] }] } } },
               
                 {
                     $project:
@@ -32751,19 +32086,19 @@ return result;
                 { $unwind: { path: "$departments2", preserveNullAndEmptyArrays: true } },
                 { $lookup: { from: "patientpackages", localField: "patientchargecodes.chargecodes.patientorderuid", foreignField: "_id", as: "patientpackages1" } },
                 { $unwind: { path: "$patientpackages1", preserveNullAndEmptyArrays: true } },
-                { $addFields: { 'postaudits': { $arrayElemAt: ['$patients.patientdemochanges.postaudit', -1] } } },
-                { $addFields: { sLocationF: { $indexOfBytes: ["$postaudits", '"firstname'] } } },
-                { $addFields: { eLocationF: { $indexOfBytes: ["$postaudits", ",", '$sLocationF'] } } },
-                { $addFields: { FirstName: { $substr: ["$postaudits", { $add: ['$sLocationF', 13] }, { $subtract: [{ $subtract: ['$eLocationF', '$sLocationF'] }, 14] }] } } },
-                { $addFields: { sLocationL: { $indexOfBytes: ["$postaudits", '"lastname'] } } },
-                { $addFields: { eLocationL: { $indexOfBytes: ["$postaudits", ",", '$sLocationL'] } } },
-                { $addFields: { LastName: { $substr: ["$postaudits", { $add: ['$sLocationL', 12] }, { $subtract: [{ $subtract: ['$eLocationL', '$sLocationL'] }, 13] }] } } },
-                { $addFields: { sposF: { $indexOfBytes: ["$postaudits", "localfirstname"] } } },
-                { $addFields: { eposF: { $indexOfBytes: ["$postaudits", ",", '$sposF'] } } },
-                { $addFields: { LocalFirstName: { $substr: ["$postaudits", { $add: ['$sposF', 17] }, { $subtract: [{ $subtract: ['$eposF', '$sposF'] }, 18] }] } } },
-                { $addFields: { sposL: { $indexOfBytes: ["$postaudits", "locallastname"] } } },
-                { $addFields: { eposL: { $indexOfBytes: ["$postaudits", ",", '$sposL'] } } },
-                { $addFields: { LocalLastName: { $substr: ["$postaudits", { $add: ['$sposL', 16] }, { $subtract: [{ $subtract: ['$eposL', '$sposL'] }, 17] }] } } },
+                { $addFields: { 'postaudits': { $arrayElemAt: ['$patients.patientdemochanges.postaudit', -1] } } },                  
+                  { $addFields: { sLocationF: { $ifNull: [{ $indexOfBytes: ["$postaudits", '"firstname'] } ,0]}} },
+                  { $addFields: { eLocationF: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sLocationF'] } ,0]}} },                       
+                  { $addFields: { FirstName: { $substr: ["$postaudits", { $add: ['$sLocationF', 13] }, { $subtract: [{ $subtract: ['$eLocationF', '$sLocationF'] }, 14] }] } } },                  
+                  { $addFields: { sLocationL: { $ifNull: [{ $indexOfBytes: ["$postaudits", '"lastname'] } ,0]}} },
+                  { $addFields: { eLocationL: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sLocationL'] } ,0]}} },
+                  { $addFields: { LastName: { $substr: ["$postaudits", { $add: ['$sLocationL', 12] }, { $subtract: [{ $subtract: ['$eLocationL', '$sLocationL'] }, 13] }] } } },
+                  { $addFields: { sposF: { $ifNull: [{ $indexOfBytes: ["$postaudits", "localfirstname"] } ,0]}} },
+                  { $addFields: { eposF: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sposF'] } ,0]}} },                  
+                  { $addFields: { LocalFirstName: { $substr: ["$postaudits", { $add: ['$sposF', 17] }, { $subtract: [{ $subtract: ['$eposF', '$sposF'] }, 18] }] } } },
+                  { $addFields: { sposL: { $ifNull: [{ $indexOfBytes: ["$postaudits", "locallastname"] } ,0]}} },
+                  { $addFields: { eposL: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sposL'] } ,0]}} },
+                  { $addFields: { LocalLastName: { $substr: ["$postaudits", { $add: ['$sposL', 16] }, { $subtract: [{ $subtract: ['$eposL', '$sposL'] }, 17] }] } } },
                 {
                     $project:
                     {
@@ -33990,19 +33325,19 @@ return result;
                         iscareprovider_doc: { $ifNull: [{ $ifNull: ["$doctor1.iscareprovider", '$users_first.iscareprovider'] }, '-'] }
                     }
                 },
-                { $addFields: { 'postaudits': { $arrayElemAt: ['$patients.patientdemochanges.postaudit', -1] } } },
-                { $addFields: { sLocationF: { $indexOfBytes: ["$postaudits", '"firstname'] } } },
-                { $addFields: { eLocationF: { $indexOfBytes: ["$postaudits", ",", '$sLocationF'] } } },
-                { $addFields: { FirstName: { $substr: ["$postaudits", { $add: ['$sLocationF', 13] }, { $subtract: [{ $subtract: ['$eLocationF', '$sLocationF'] }, 14] }] } } },
-                { $addFields: { sLocationL: { $indexOfBytes: ["$postaudits", '"lastname'] } } },
-                { $addFields: { eLocationL: { $indexOfBytes: ["$postaudits", ",", '$sLocationL'] } } },
-                { $addFields: { LastName: { $substr: ["$postaudits", { $add: ['$sLocationL', 12] }, { $subtract: [{ $subtract: ['$eLocationL', '$sLocationL'] }, 13] }] } } },
-                { $addFields: { sposF: { $indexOfBytes: ["$postaudits", "localfirstname"] } } },
-                { $addFields: { eposF: { $indexOfBytes: ["$postaudits", ",", '$sposF'] } } },
-                { $addFields: { LocalFirstName: { $substr: ["$postaudits", { $add: ['$sposF', 17] }, { $subtract: [{ $subtract: ['$eposF', '$sposF'] }, 18] }] } } },
-                { $addFields: { sposL: { $indexOfBytes: ["$postaudits", "locallastname"] } } },
-                { $addFields: { eposL: { $indexOfBytes: ["$postaudits", ",", '$sposL'] } } },
-                { $addFields: { LocalLastName: { $substr: ["$postaudits", { $add: ['$sposL', 16] }, { $subtract: [{ $subtract: ['$eposL', '$sposL'] }, 17] }] } } },
+                { $addFields: { 'postaudits': { $arrayElemAt: ['$patients.patientdemochanges.postaudit', -1] } } },                  
+                  { $addFields: { sLocationF: { $ifNull: [{ $indexOfBytes: ["$postaudits", '"firstname'] } ,0]}} },
+                  { $addFields: { eLocationF: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sLocationF'] } ,0]}} },                       
+                  { $addFields: { FirstName: { $substr: ["$postaudits", { $add: ['$sLocationF', 13] }, { $subtract: [{ $subtract: ['$eLocationF', '$sLocationF'] }, 14] }] } } },                  
+                  { $addFields: { sLocationL: { $ifNull: [{ $indexOfBytes: ["$postaudits", '"lastname'] } ,0]}} },
+                  { $addFields: { eLocationL: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sLocationL'] } ,0]}} },
+                  { $addFields: { LastName: { $substr: ["$postaudits", { $add: ['$sLocationL', 12] }, { $subtract: [{ $subtract: ['$eLocationL', '$sLocationL'] }, 13] }] } } },
+                  { $addFields: { sposF: { $ifNull: [{ $indexOfBytes: ["$postaudits", "localfirstname"] } ,0]}} },
+                  { $addFields: { eposF: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sposF'] } ,0]}} },                  
+                  { $addFields: { LocalFirstName: { $substr: ["$postaudits", { $add: ['$sposF', 17] }, { $subtract: [{ $subtract: ['$eposF', '$sposF'] }, 18] }] } } },
+                  { $addFields: { sposL: { $ifNull: [{ $indexOfBytes: ["$postaudits", "locallastname"] } ,0]}} },
+                  { $addFields: { eposL: { $ifNull: [{ $indexOfBytes: ["$postaudits", ",", '$sposL'] } ,0]}} },
+                  { $addFields: { LocalLastName: { $substr: ["$postaudits", { $add: ['$sposL', 16] }, { $subtract: [{ $subtract: ['$eposL', '$sposL'] }, 17] }] } } },
                 {
                     $project:
                     {
@@ -45069,6 +44404,7 @@ return result;
                 { $addFields: { firstdepartmentflag: { $cond: { if: { $eq: ["$departmentuid", '$firstdepartmentuid'] }, then: 'Y', else: 'N' } } } },
                 { $lookup: { from: "departments", localField: "departmentuid", foreignField: "_id", as: "department" } },
                 { $unwind: { path: "$department", preserveNullAndEmptyArrays: true } },
+                {$match:{"department.name": { $ne: 'Registration' }}},
                 { $lookup: { from: "departments", localField: "firstdepartmentuid", foreignField: "_id", as: "firstdepartment" } },
                 { $unwind: { path: "$firstdepartment", preserveNullAndEmptyArrays: true } },
                 { $addFields: { E: { $cond: { if: { $and: [{ $eq: ['$ET', "E"] }, { $eq: ['$firstdepartmentflag', "Y"] },] }, then: 1, else: 0 } } } },
@@ -45107,6 +44443,17 @@ return result;
                         user: _user.name,
                         startdate: { $dateToString: { format: "%d/%m/%Y", date: new Date(req.fromdate), timezone: "+07:00", onNull: "-" } },
                         enddate: { $dateToString: { format: "%d/%m/%Y", date: new Date(req.todate), timezone: "+07:00", onNull: "-" } },                                                
+                        dpt:{$substr:['$department.name',0,7]},
+                    }
+                },                
+                {
+                    $match:
+                    {
+                        $or:
+                            [
+                                {"dpt": { $ne: 'Cashier' }},
+                                {$and:[{"dpt": { $eq: 'Cashier' }},{"entype": { $ne: 'C' }}]},                                
+                            ]
                     }
                 },
                 { $sort: { 'visitid': 1, firstdepartmentflag: -1 } }
@@ -45170,7 +44517,8 @@ return result;
                 { $addFields: { firstdepartmentflag: { $cond: { if: { $eq: ["$departmentuid", '$firstdepartmentuid'] }, then: 'Y', else: 'N' } } } },
                 { $lookup: { from: "departments", localField: "departmentuid", foreignField: "_id", as: "department" } },
                 { $unwind: { path: "$department", preserveNullAndEmptyArrays: true } },
-                { $lookup: { from: "departments", localField: "firstdepartmentuid", foreignField: "_id", as: "firstdepartment" } },
+                {$match:{"department.name": { $ne: 'Registration' }}},
+                { $lookup: { from: "departments", localField: "firstdepartmentuid", foreignField: "_id", as: "firstdepartment" } },                
                 { $unwind: { path: "$firstdepartment", preserveNullAndEmptyArrays: true } },
                 { $addFields: { E: { $cond: { if: { $and: [{ $eq: ['$ET', "E"] }, { $eq: ['$firstdepartmentflag', "Y"] },] }, then: 1, else: 0 } } } },
                 { $addFields: { O: { $cond: { if: { $or:[
@@ -45208,6 +44556,17 @@ return result;
                         user: _user.name,
                         startdate: { $dateToString: { format: "%d/%m/%Y", date: new Date(req.fromdate), timezone: "+07:00", onNull: "-" } },
                         enddate: { $dateToString: { format: "%d/%m/%Y", date: new Date(req.todate), timezone: "+07:00", onNull: "-" } },                                                
+                        dpt:{$substr:['$department.name',0,7]},
+                    }
+                },                
+                {
+                    $match:
+                    {
+                        $or:
+                            [
+                                {"dpt": { $ne: 'Cashier' }},
+                                {$and:[{"dpt": { $eq: 'Cashier' }},{"entype": { $ne: 'C' }}]},                                
+                            ]
                     }
                 },
                 { $sort: { 'visitid': 1, firstdepartmentflag: -1 } }
@@ -45698,6 +45057,105 @@ return result;
         }
         return result;
     }
+    
+    async findRTCommon844(req: Rt999Req): Promise<any> {
+        let result = [];
+        try {
+            let storeuid = { $match: {} };
+            try {
+                if (req.storeuid != '' && req.storeuid != null) {
+                    storeuid = {
+                        $match:
+                        {
+                            'invstoreuid': new Types.ObjectId(req.storeuid),
+                        }
+                    }
+                }
+            }
+            catch (res) {
+                req.storeuid = '';
+            }
+            const _user = await this.findOrgByLoginId(req.loginuid);
+            const resultpatientorders = await this.patientordersModel.aggregate([
+                {
+                    $match:
+                    {
+                        'orguid': new Types.ObjectId(req.organisationuid)
+                        , 'orderdate': {
+                            $gte: DateUtils.convertGMTtoUTC(new Date(req.fromdate)),
+                            $lte: DateUtils.convertGMTtoUTC(new Date(req.todate))
+                        }
+                        , 'statusflag': "A"
+                    }
+                }, storeuid,
+                { $lookup: { from: "organisations", localField: "orguid", foreignField: "_id", as: "organisations" } },
+                    { $unwind: { path: "$organisations", preserveNullAndEmptyArrays: true } },
+                { $unwind: { path: '$patientorderitems', preserveNullAndEmptyArrays: true } },
+                { $match: { 'patientorderitems.ordercattype': 'SUPPLY' } },
+                { $lookup: { from: 'referencevalues', localField: 'patientorderitems.statusuid', foreignField: '_id', as: 'referencevalues' } },
+                { $unwind: { path: '$referencevalues', preserveNullAndEmptyArrays: true } },
+                { $match: { 'referencevalues.valuedescription': { $ne: 'Cancelled""' } } },
+                { $lookup: { from: 'itemmasters', localField: 'patientorderitems.orderitemuid', foreignField: 'orderitemuid', as: 'itemmasters' } },
+                { $unwind: { path: '$itemmasters', preserveNullAndEmptyArrays: true } },
+                { $addFields: { p_index: { $indexOfArray: ['$itemmasters.handlingstores.storeuid', '$invstoreuid'] } } },
+                { $addFields: { p_storeuid: { $arrayElemAt: ['$itemmasters.handlingstores.storeuid', '$p_index'] } } },
+                { $unwind: { path: '$itemmasters.handlingstores', preserveNullAndEmptyArrays: true } },
+                { $match: { $expr: { $eq: ['$itemmasters.handlingstores.storeuid', '$invstoreuid'] } } },
+                { $addFields: { p_binuid: '$itemmasters.handlingstores.binuid' } },
+                { $lookup: { from: 'inventorystores', localField: 'p_storeuid', foreignField: '_id', as: 'inventory' } },
+                { $unwind: { path: '$inventory', preserveNullAndEmptyArrays: true } },
+                { $addFields: { b_index: { $indexOfArray: ['$inventory.storebins._id', '$p_binuid'] } } },
+                { $addFields: { b_array: { $arrayElemAt: ['$inventory.storebins.name', { $cond: { if: { $eq: ['$b_index', -1] }, then: null, else: '$b_index' } }] }, } },
+                { $lookup: { from: 'departments', localField: 'orderdepartmentuid', foreignField: '_id', as: 'departments' } },
+                { $unwind: { path: '$departments', preserveNullAndEmptyArrays: true } },
+                { $lookup: { from: 'referencevalues', localField: 'patientorderitems.quantityUOM', foreignField: '_id', as: 'uom' } },
+                { $unwind: { path: '$uom', preserveNullAndEmptyArrays: true } },
+                // {
+                //     $project: {
+                //         department: '$departments.name',
+                //         chargecode: '$patientorderitems.chargecode',
+                //         orderitemname: '$patientorderitems.orderitemname',
+                //         binname: '$b_array',
+                //         uom: '$uom.valuedescription',
+                //         ordercattype: '$ordercattype',
+                //         store: '$inventory.name',
+                //         qty: '$patientorderitems.quantity',
+                //         orgname: { $ifNull: ['$organisations.name', '-'] },
+                //     }
+                // },
+                {$group:{_id:{
+                    department:'$departments.name',
+                    chargecode:'$patientorderitems.chargecode',
+                    orderitemname:'$patientorderitems.orderitemname',
+                    binname:'$b_array',
+                    uom:'$uom.valuedescription',
+                    ordercattype:'$ordercattype',
+                    store:'$inventory.name',
+                    orgname: { $ifNull: ['$organisations.name', '-'] },
+                    },
+                    quantity:{$sum:'$patientorderitems.quantity'},
+                }},
+                {$project:{
+                    department:'$_id.department',
+                    chargecode:'$_id.chargecode',
+                    orderitemname:'$_id.orderitemname',    
+                    store:'$_id.store',    
+                    uom:'$_id.uom',    
+                    binname:{ $ifNull: ['$_id.binname', '-'] },
+                    orgname:'$_id.orgname',    
+                    qty:'$quantity',
+                    fromdate: { $dateToString: { format: "%d/%m/%Y", date: new Date(req.fromdate), timezone: "+07:00", onNull: "-" } },
+                    todate: { $dateToString: { format: "%d/%m/%Y", date: new Date(req.todate), timezone: "+07:00", onNull: "-" } },                        
+                    printby: _user.name,                
+                    }}    
+            ])
+                .exec();
+            result = resultpatientorders;
+        } catch (error) {
+            this.logger.error('findRTCommon844 error:', error);
+        }
+        return result;
+        }
 
     async findRTCommon845(req: Rt185Req): Promise<any> {
         let result = [];
@@ -46247,8 +45705,36 @@ return result;
 
         async findRTCommon848(req: Rt999Req): Promise<any> {
             let result = [];
+            let ordercategory = { $match: {} };            
             try {
-                const _user = await this.findOrgByLoginId(req.loginuid);
+                if (req.ordercategoryuid != '' && req.ordercategoryuid != null) {
+                    ordercategory = {
+                        $match:
+                        {
+                            'patientorderitems.ordercatuid': new Types.ObjectId(req.ordercategoryuid),
+                        }
+                    }
+                }
+            }
+            catch (res) {
+                req.ordercategoryuid = '';
+            }            
+            let ordersubcategory = { $match: {} };            
+            try {
+                if (req.ordersubcategoryuids != '' && req.ordersubcategoryuids != null) {
+                    ordersubcategory = {
+                        $match:
+                        {
+                            'patientorderitems.ordercatuid': new Types.ObjectId(req.ordersubcategoryuids),
+                        }
+                    }
+                }
+            }
+            catch (res) {
+                req.ordersubcategoryuids = '';
+            }            
+            try {
+                //const _user = await this.findOrgByLoginId(req.loginuid);
                 const resultpatientvisits = await this.patientordersModel.aggregate([
                     {
                         $match: {
@@ -46256,7 +45742,10 @@ return result;
                             'orderdate': { $gte: new Date(req.fromdate), $lte: new Date(req.todate) },                        
                             'statusflag': "A",
                         }
-                    },
+                    },     
+                    { $unwind: { path: '$patientorderitems', preserveNullAndEmptyArrays: true } },               
+                    ordercategory,
+                    ordersubcategory,
                     { $lookup: { from: "organisations", localField: "orguid", foreignField: "_id", as: "organisations" } },
                     { $unwind: { path: "$organisations", preserveNullAndEmptyArrays: true } },
                     { $lookup: { from: 'departments', localField: "orderdepartmentuid", foreignField: "_id", as: 'orderdepartment' } },
@@ -46272,21 +45761,33 @@ return result;
                     { $lookup: { from: "referencevalues", localField: "patients.localnametitleuid", foreignField: "_id", as: "localnametitle" } },
                     { $unwind: { path: "$localnametitle", preserveNullAndEmptyArrays: true } },
                     { $lookup: { from: "referencevalues", localField: "patients.preflanguid", foreignField: "_id", as: "preflang" } },
-                    { $unwind: { path: "$preflang", preserveNullAndEmptyArrays: true } },
-                    { $unwind: { path: '$patientorderitems', preserveNullAndEmptyArrays: true } },
+                    { $unwind: { path: "$preflang", preserveNullAndEmptyArrays: true } },                    
                     { $lookup: { from: 'referencevalues', localField: 'patientorderitems.statusuid', foreignField: '_id', as: 'ordsts' } },
                     { $unwind: { path: '$ordsts', preserveNullAndEmptyArrays: true } },
                     { $match: { 'ordsts.valuedescription': { $ne: 'Cancelled' } } },
                     { $lookup: { from: 'orderitems', localField: 'patientorderitems.orderitemuid', foreignField: '_id', as: 'orderitems' } },
                     { $unwind: { path: '$orderitems', preserveNullAndEmptyArrays: true } },
-                    { $lookup: { from: 'ordercategories', localField: 'orderitems.ordercatuid', foreignField: '_id', as: 'cat' } },
+                    { $lookup: { from: 'ordercategories', localField: 'patientorderitems.ordercatuid', foreignField: '_id', as: 'cat' } },
                     { $unwind: { path: '$cat', preserveNullAndEmptyArrays: true } },
-                    { $lookup: { from: 'ordercategories', localField: 'orderitems.ordersubcatuid', foreignField: '_id', as: 'subcat' } },
-                    { $unwind: { path: '$subcat', preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: 'ordercategories', localField: 'patientorderitems.ordersubcatuid', foreignField: '_id', as: 'subcat' } },
+                    { $unwind: { path: '$subcat', preserveNullAndEmptyArrays: true } },      
+                    { $lookup: { from: "users", localField: "patientorderitems.careprovideruid", foreignField: "_id", as: "doctor" } },
+                    { $unwind: { path: "$doctor", preserveNullAndEmptyArrays: true } },              
+                    {$addFields:{IO: { $substr: ["$patientvisits.visitid", 0, 1] }}},  
+                    { $lookup: { from: "itemmasters", localField: "patientorderitems.orderitemuid", foreignField: "orderitemuid", as: "itemmasters" } },
+                    { $unwind: { path: "$itemmasters", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "stockledgers", localField: "itemmasters._id", foreignField: "itemmasteruid", as: "stockledgers" } },
+                    { $unwind: { path: "$stockledgers", preserveNullAndEmptyArrays: true } },
+                    { $addFields: { "ledgerstore": "$stockledgers.storeuid" } },
+                    {$addFields: { store: {$ifNull: ['$ledgerstore','-']}}},
+                    {$match:{$expr:{$or:[{ $eq: ['$store', '$invstoreuid'] },{ $eq: ['$store', '-'] }]}}},
+                    { $addFields: { "wac": { $arrayElemAt: ["$stockledgers.ledgerdetails.wac", -1] } } },
+                    { $addFields: { "nextwac": { $arrayElemAt: ["$stockledgers.ledgerdetails.nextwac", -1] } } },                  
                     {
                         $project:
                         {
-                            _id: 0,
+                            _id: 0,                            
+                            GroupIO: { $cond: { if: { $eq: ['$IO', "I"] }, then: "IPD", else: "OPD" } },
                             orgname: { $ifNull: ["$organisations.name", ""] },
                             sts1: '$ordsts.valuedescription',  
                             entyp: { $cond: { if: { $eq: ['$entype.valuecode', "INPAT"] }, then: "IPD", else: "OPD" } },                        
@@ -46307,13 +45808,16 @@ return result;
                             sequencenumber: '$ordernumber',
                             billdate: { $dateToString: { format: "%Y-%m-%d", date: "$orderdate", timezone: "+07:00", onNull: "-" } },
                             totalbillamount: '$patientorderitems.totalprice',
+                            payordiscount: '$patientorderitems.payordiscount',                            
+                            costprice: { $ifNull: [{ $cond: { if: { $eq: ["$nextwac", null] }, then: "$wac", else: "$nextwac" } }, 0] },
                             POM: { $ifNull: ['$patientorderitems.broughtfromoutside', false] }, 
                             quantity: '$patientorderitems.quantity',
-                            orderitemcode: '$orderitems.code',
-                            orderitemname: '$orderitems.name',
+                            orderitemcode: '$patientorderitems.chargecode',
+                            orderitemname: '$patientorderitems.orderitemname',
                             cat: '$cat.name',
                             subcat: '$subcat.name',
-                            user: _user.name,
+                            doctor: '$doctor.name',
+                            //user: _user.name,
                             startdate: { $dateToString: { format: "%d/%m/%Y", date: new Date(req.fromdate), timezone: "+07:00", onNull: "-" } },
                             enddate: { $dateToString: { format: "%d/%m/%Y", date: new Date(req.todate), timezone: "+07:00", onNull: "-" } },                                                
                         }
@@ -46548,67 +46052,7 @@ return result;
                 this.logger.error('findRTCommon850:', error);
             }
             return result;
-        }
-
-    async FnPatientbill(req: Rt999Req): Promise<any> {
-        let result = [];
-        try {
-            const resultpatientvisits = await this.patientbillsModel.aggregate([
-                {
-                    $match: {
-                        'orguid': new Types.ObjectId(req.organisationuid),
-                        'billdate': { $gte: new Date(req.fromdate), $lte: new Date(req.todate) },
-                        'iscancelled': false,
-                        'statusflag': "A",
-                    }
-                },
-                { $lookup: { from: "patientvisits", localField: "patientvisituid", foreignField: "_id", as: "patientvisits" } },
-                { $unwind: { path: "$patientvisits", preserveNullAndEmptyArrays: true } },
-                { $lookup: { from: "patients", localField: "patientuid", foreignField: "_id", as: "patients" } },
-                { $unwind: { path: "$patients", preserveNullAndEmptyArrays: true } },
-                { $lookup: { from: "referencevalues", localField: "patients.titleuid", foreignField: "_id", as: "nametitle" } },
-                { $unwind: { path: "$nametitle", preserveNullAndEmptyArrays: true } },
-                { $lookup: { from: "referencevalues", localField: "patients.localnametitleuid", foreignField: "_id", as: "localnametitle" } },
-                { $unwind: { path: "$localnametitle", preserveNullAndEmptyArrays: true } },
-                { $lookup: { from: "referencevalues", localField: "patients.preflanguid", foreignField: "_id", as: "preflang" } },
-                { $unwind: { path: "$preflang", preserveNullAndEmptyArrays: true } },
-                { $lookup: { from: "referencevalues", localField: "patients.nationalityuid", foreignField: "_id", as: "nationality" } },
-                { $unwind: { path: "$nationality", preserveNullAndEmptyArrays: true } },
-                { $addFields: { "paymentmode_first": { $arrayElemAt: ["$paymentdetails.paymentmodeuid", 0] } } },
-                { $lookup: { from: "referencevalues", localField: "paymentmode_first", foreignField: "_id", as: "paymentmode" } },
-                { $unwind: { path: "$paymentmode", preserveNullAndEmptyArrays: true } },
-                {
-                    $project: {
-                        _id: 0,
-                        HN: { $ifNull: ['$patients.mrn', '-'] },
-                        Name:
-                        {
-                            $cond: {
-                                if: { $eq: ["$patients.isanonymous", true] }, then: " Anonymous"
-                                , else: {
-                                    $cond: {
-                                        if: { $eq: ["$preflang.valuedescription", "Thai"] }, then: { $concat: [{ $ifNull: ["$localnametitle.valuedescription", ""] }, " ", { $ifNull: ["$patients.localfirstname", ""] }, " ", { $ifNull: ["$patients.localmiddlename", ""] }, " ", { $ifNull: ["$patients.locallastname", ""] }] }
-                                        , else: { $concat: [{ $ifNull: ["$nametitle.valuedescription", ""] }, " ", { $ifNull: ["$patients.firstname", ""] }, " ", { $ifNull: ["$patients.middlename", ""] }, " ", { $ifNull: ["$patients.lastname", ""] }] },
-                                    }
-                                }
-                            }
-                        },
-                        EN: { $ifNull: ['$patientvisits.visitid', '-'] },
-                        sequencenumber: '$sequencenumber',
-                        billdate: { $dateToString: { format: "%Y-%m-%d", date: "$billdate", timezone: "+07:00", onNull: "-" } },
-                        totalbillamount: '$totalbillamount',
-                        nationality: '$nationality.valuedescription',
-                        payor: '$payors.name',
-                        paymentmodeuid: '$paymentmode.valuedescription',
-                    }
-                },
-            ]).exec();
-            result = resultpatientvisits;
-        } catch (error) {
-            this.logger.error('FnPatientbill:', error);
-        }
-        return result;
-    }        
+        }    
 //  
     async findRTCommondept1(req: Rt999Req): Promise<any> {
         let result = [];

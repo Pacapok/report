@@ -24,6 +24,7 @@ import { SUBDIAGReportService } from './../reports/report.services/subdiagnosis.
 import { SUBLABRESULTSReportService } from './report.services/sublabresults.report.servie';
 import { SUBRADIOLOGYRESULTSReportService } from './report.services/subradio.report.servie';
 import { STATMRDFolderLastVisitReportService } from './report.services/statmrdfolderlastvisit.report.servie';
+import {STATTRAUMAReportService} from './report.services/stattraume.report.servie';
 
 import { CommonModule } from '../common/common.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -84,6 +85,7 @@ import { PatientformdetailsSchema } from './schemas/patientformdetails.schema';
 import { OrdersetsSchema } from './schemas/ordersets.schema';
 import { PrinterconfiguraitonsSchema } from './schemas/printerconfigurations.schema';
 import { CreditnotesSchema } from './schemas/creditnotes.schema';
+import { TriagedetailsSchema } from './schemas/triagedetails.schema';
 
 @Module({
   imports: [
@@ -145,10 +147,11 @@ import { CreditnotesSchema } from './schemas/creditnotes.schema';
       { name: 'ordersets', schema: OrdersetsSchema },
       { name: 'printerconfigurations', schema: PrinterconfiguraitonsSchema },
       { name: 'creditnotes', schema: CreditnotesSchema },
+      { name: 'triagedetails', schema: TriagedetailsSchema},
     ]),
     CommonModule
   ],
   controllers: [ReportsController],
-  providers: [ReportsService, OPDClaimFormReportService, IPDClaimFormPart1ReportService, IPDClaimFormPart2ReportService, MC5ENReportService, MC5THReportService, MCAIRENReportService, MCAIRTHReportService, MCGENENReportService, MCGENTHReportService, MCEXTENENReportService, MCEXTENTHReportService, MCGEReportService, MCWORKENReportService, MCWORKTHReportService, PrinterListReportService, REFERENReportService, REFERTHReportService, SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService, STATMRDFolderLastVisitReportService]
+  providers: [ReportsService, OPDClaimFormReportService, IPDClaimFormPart1ReportService, IPDClaimFormPart2ReportService, MC5ENReportService, MC5THReportService, MCAIRENReportService, MCAIRTHReportService, MCGENENReportService, MCGENTHReportService, MCEXTENENReportService, MCEXTENTHReportService, MCGEReportService, MCWORKENReportService, MCWORKTHReportService, PrinterListReportService, REFERENReportService, REFERTHReportService, SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService, STATMRDFolderLastVisitReportService, STATTRAUMAReportService]
 })
 export class ReportsModule { }

@@ -97,4 +97,10 @@ export class BaseReq {
 
     @ApiModelProperty({ description: 'printbydate', required: true, example: "" })
     printbydate: string;
+
+    @ApiModelProperty({ description: 'ordercategoryuid', required: true, example: "" })
+    ordercategoryuid: string;
+
+    @ApiModelProperty({ description: 'ordersubcategoryuids', required: true, example: "" })
+    ordersubcategoryuids: string;
 }   

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppConfig = {
-    MONGODB_URL: 'mongodb://bdmsuser:bdmsuser@172.22.17.121:27017/arcusairdb',
+    MONGODB_URL: 'mongodb+srv://jasperreport:ZOr7SdGRApSRNkRg@prod-mongodb-atlas-qduxy.mongodb.net/arcusairdb?retryWrites=true&w=majority',
 };
 //# sourceMappingURL=appconfig.js.map

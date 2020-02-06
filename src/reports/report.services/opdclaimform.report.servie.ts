@@ -65,6 +65,59 @@ async findOPDClaimForm(req: OPDClaimFormReq): Promise<any> {
                     "patientforms.patientuid": new Types.ObjectId(req.patientuid),
                 }
             },
+            //-----
+            {
+                $lookup: {
+                    from: "departments",
+                    localField: "patientforms.departmentuid",
+                    foreignField: "_id",
+                    as: "departments"
+                }
+            },
+            {
+                $unwind: { path: "$departments", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "patientforms.careprovideruid",
+                    foreignField: "_id",
+                    as: "careproviders"
+                }
+            },
+            {
+                $unwind: { path: "$careproviders", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $lookup: {
+                    from: "reportconfigurations",
+                    localField: "orguid",
+                    foreignField: "orguid",
+                    as: "reportconfigurations"
+                }
+            },
+            {
+                $unwind: { path: "$reportconfigurations", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $match: {
+                    "reportconfigurations.statusflag": "A",
+                    "reportconfigurations.orguid": new Types.ObjectId(req.organisationuid),
+                    "reportconfigurations.reporttemplateuid": new Types.ObjectId(req.reporttemplateuid)
+                }
+            },
+            {
+                $lookup: {
+                    from: "patientvisits",
+                    localField: "patientvisituid",
+                    foreignField: "_id",
+                    as: "patientvisit"
+                }
+            },
+            {
+                $unwind: { path: "$patientvisit", preserveNullAndEmptyArrays: true }
+            },
+//-----
                 //AddFileds สร้างชื่อ field ใหม่
             {
                 $addFields:{
@@ -616,6 +669,13 @@ async findOPDClaimForm(req: OPDClaimFormReq): Promise<any> {
             {
                 $group:{
                 _id:{patientvisituid:"$patientvisituid"},
+                    HEADDEPTCODE: { "$push": "$departments.code" },
+                    HEADDEPTNAME: { "$push": "$departments.name" },
+                    HEADDRCODE: { "$push": "$careproviders.code" },
+                    HEADDRNAME: { "$push": "$careproviders.name" },
+                    HEADREPORTTYPE: { "$push": "$reportconfigurations.documenttype" },
+                    HEADREPORTFM: { "$push": "$reportconfigurations.documentno" },
+                    EN: { "$push": "$patientvisit.visitid" },
                     ToInsurance:{"$push":{$arrayElemAt:["$ToInsurance.textvalue",-1]}},
                         FromHospitalDetail:{"$push":{$arrayElemAt:["$hospitalname.textvalue",-1]}},
                         HN:{"$push":{$arrayElemAt:["$hn.textvalue",-1]}},
@@ -755,6 +815,13 @@ async findOPDClaimForm(req: OPDClaimFormReq): Promise<any> {
         },
             {
                 $project:{
+                    HEADDEPTCODE: { $arrayElemAt: ["$HEADDEPTCODE", -1] },
+                    HEADDEPTNAME: { $arrayElemAt: ["$HEADDEPTNAME", -1] },
+                    HEADDRCODE: { $arrayElemAt: ["$HEADDRCODE", -1] },
+                    HEADDRNAME: { $arrayElemAt: ["$HEADDRNAME", -1] },
+                    HEADREPORTTYPE: { $arrayElemAt: ["$HEADREPORTTYPE", -1] },
+                    HEADREPORTFM: { $arrayElemAt: ["$HEADREPORTFM", -1] },
+                    EN: { $arrayElemAt: ["$EN", -1] },
                     ToInsurance:{$arrayElemAt:["$ToInsurance",-1]},
                     FromHospitalDetail:{$arrayElemAt:["$FromHospitalDetail",-1]},
                     HN:{$arrayElemAt:["$HN",-1]},

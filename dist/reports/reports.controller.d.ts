@@ -1,4 +1,5 @@
 import { STATMRDFolderLastVisitReportService } from './report.services/statmrdfolderlastvisit.report.servie';
+import { STATTRAUMAReportService } from './report.services/stattraume.report.servie';
 import { SUBLABRESULTSReportService } from './report.services/sublabresults.report.servie';
 import { SUBRADIOLOGYRESULTSReportService } from './report.services/subradio.report.servie';
 import { PrinterListReportService } from './report.services/printerlist.report.servie';
@@ -178,10 +179,10 @@ import { SUBLABRESULTSReq } from '../models/sublabresultsreq';
 import { STATPTVIPReq } from '../models/statptvipreq';
 import { PTRevisit2DayReq } from '../models/ptrevisit2dayreq';
 import { STATdiagnosisReq } from '../models/statdiagnosisreq';
-import { STATVPIAppointmentReq } from '../models/statvipappointreq';
 import { STATConsultDeptReq } from '../models/statconsultdeptreq';
 import { STATConsultByDeptReq } from '../models/statconsultbydeptreq';
 import { STATMRDFolderLastVisitReq } from '../models/statmrdfolderlastvisits';
+import { STATTRAUMAReq } from '../models/stattraumareq';
 export declare class ReportsController {
     private readonly reportsService;
     private readonly OPDClaimFormreportsService;
@@ -205,8 +206,9 @@ export declare class ReportsController {
     private readonly SUBLABRESULTSReportService;
     private readonly PrinterListReportService;
     private readonly STATMRDFolderLastVisitReportService;
+    private readonly STATTraumaReportService;
     private logger;
-    constructor(reportsService: ReportsService, OPDClaimFormreportsService: OPDClaimFormReportService, IPDClaimFormPart1reportsService: IPDClaimFormPart1ReportService, IPDClaimFormPart2reportsService: IPDClaimFormPart2ReportService, MC5ENReportService: MC5ENReportService, MC5THReportService: MC5THReportService, MCAIRENReportService: MCAIRENReportService, MCAIRTHReportService: MCAIRTHReportService, MCGENENReportService: MCGENENReportService, MCGENTHReportService: MCGENTHReportService, MCEXTENENReportService: MCEXTENENReportService, MCEXTENTHReportService: MCEXTENTHReportService, MCGEReportService: MCGEReportService, MCWORKENReportService: MCWORKENReportService, MCWORKTHReportService: MCWORKTHReportService, REFERENReportService: REFERENReportService, REFERTHReportService: REFERTHReportService, SUBDIAGReportService: SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService: SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService: SUBLABRESULTSReportService, PrinterListReportService: PrinterListReportService, STATMRDFolderLastVisitReportService: STATMRDFolderLastVisitReportService, logger: ConsoleLogger);
+    constructor(reportsService: ReportsService, OPDClaimFormreportsService: OPDClaimFormReportService, IPDClaimFormPart1reportsService: IPDClaimFormPart1ReportService, IPDClaimFormPart2reportsService: IPDClaimFormPart2ReportService, MC5ENReportService: MC5ENReportService, MC5THReportService: MC5THReportService, MCAIRENReportService: MCAIRENReportService, MCAIRTHReportService: MCAIRTHReportService, MCGENENReportService: MCGENENReportService, MCGENTHReportService: MCGENTHReportService, MCEXTENENReportService: MCEXTENENReportService, MCEXTENTHReportService: MCEXTENTHReportService, MCGEReportService: MCGEReportService, MCWORKENReportService: MCWORKENReportService, MCWORKTHReportService: MCWORKTHReportService, REFERENReportService: REFERENReportService, REFERTHReportService: REFERTHReportService, SUBDIAGReportService: SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService: SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService: SUBLABRESULTSReportService, PrinterListReportService: PrinterListReportService, STATMRDFolderLastVisitReportService: STATMRDFolderLastVisitReportService, STATTraumaReportService: STATTRAUMAReportService, logger: ConsoleLogger);
     getReportMCGENEN(res: any, req: MCGENReq): Promise<any>;
     getReportMCGENTH(res: any, req: MCGENReq): Promise<any>;
     getReportREFERTH(res: any, req: REFERReq): Promise<any>;
@@ -227,7 +229,7 @@ export declare class ReportsController {
     getReportsubradiologyresults(res: any, req: SUBRADIOLOGYRESULTSReq): Promise<any>;
     getReportsublabresults(res: any, req: SUBLABRESULTSReq): Promise<any>;
     getReportresultSTATMRDFolderLastVisit(res: any, req: STATMRDFolderLastVisitReq): Promise<any>;
-    getReportresultSTATVIPAppointment(res: any, req: STATVPIAppointmentReq): Promise<any>;
+    getReportresultSTATTrauma(res: any, req: STATTRAUMAReq): Promise<any>;
     getReportresultConsultDept(res: any, req: STATConsultDeptReq): Promise<any>;
     getReportresultSTATConsultByDeptReq(res: any, req: STATConsultByDeptReq): Promise<any>;
     getReportresultCounterVisitbyNation(res: any, req: CounterVisitbyNationReq): Promise<any>;
@@ -411,6 +413,7 @@ export declare class ReportsController {
     getReport842sub8(res: any, req: Rt999Req): Promise<any>;
     getReport842sub9(res: any, req: Rt999Req): Promise<any>;
     getReport843(res: any, req: Rt999Req): Promise<any>;
+    getReport844(res: any, req: Rt999Req): Promise<any>;
     getReport845(res: any, req: Rt185Req): Promise<any>;
     getReport846(res: any, req: Rt185Req): Promise<any>;
     getReport847(res: any, req: Rt185Req): Promise<any>;
@@ -418,7 +421,6 @@ export declare class ReportsController {
     getReport849(res: any, req: Rt999Req): Promise<any>;
     getReport850(res: any, req: Rt999Req): Promise<any>;
     getReport851(res: any, req: Rt999Req): Promise<any>;
-    FnPatientbill(res: any, req: Rt999Req): Promise<any>;
     getReportOrganisation(res: any, req: OrganisationReq): Promise<any>;
     ping(res: any, req: any): Promise<any>;
 }

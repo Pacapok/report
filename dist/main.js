@@ -16,9 +16,9 @@ function bootstrap() {
         const app = yield core_1.NestFactory.create(app_module_1.AppModule);
         app.enableCors();
         const options = new swagger_1.DocumentBuilder()
-            .setTitle('Report API SIT Environment')
+            .setTitle('Report API Production Environment')
             .setDescription('<h1>The Report API description</h1>')
-            .setVersion('version 1.0.8.3.3-DEV-SJ')
+            .setVersion('version 1.0.9.0')
             .addTag('reports')
             .build();
         const document = swagger_1.SwaggerModule.createDocument(app, options);

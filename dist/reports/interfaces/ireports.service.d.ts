@@ -271,6 +271,7 @@ export interface IReportsService {
     findRTCommon842sub8(req: Rt999Req): Promise<any>;
     findRTCommon842sub9(req: Rt999Req): Promise<any>;
     findRTCommon843(req: Rt999Req): Promise<any>;
+    findRTCommon844(req: Rt999Req): Promise<any>;
     findRTCommon845(req: Rt185Req): Promise<any>;
     findRTCommon846(req: Rt185Req): Promise<any>;
     findRTCommon847(req: Rt185Req): Promise<any>;
@@ -282,5 +283,4 @@ export interface IReportsService {
     findOrgByLoginId(loginId: String): Promise<any>;
     findRTCommondept1(req: Rt999Req): Promise<any>;
     findRTCommondept2(req: Rt999Req): Promise<any>;
-    FnPatientbill(req: Rt999Req): Promise<any>;
 }

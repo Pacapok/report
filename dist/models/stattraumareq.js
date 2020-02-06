@@ -9,37 +9,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const swagger_1 = require("@nestjs/swagger");
 const basereq_1 = require("./basereq");
-class Rt286Req extends basereq_1.BaseReq {
+const swagger_1 = require("@nestjs/swagger");
+class STATTRAUMAReq extends basereq_1.BaseReq {
 }
 __decorate([
     swagger_1.ApiModelProperty({ description: 'The cat\'s age' }),
     __metadata("design:type", String)
-], Rt286Req.prototype, "param1", void 0);
+], STATTRAUMAReq.prototype, "param1", void 0);
 __decorate([
     swagger_1.ApiModelProperty({ description: 'The cat\'s breed' }),
     __metadata("design:type", String)
-], Rt286Req.prototype, "param2", void 0);
+], STATTRAUMAReq.prototype, "param2", void 0);
 __decorate([
     swagger_1.ApiModelProperty({ description: 'The cat\'s name' }),
     __metadata("design:type", String)
-], Rt286Req.prototype, "param3", void 0);
-__decorate([
-    swagger_1.ApiModelProperty({ description: 'patientvisituid', required: true, example: "5b8a0a183238d86bf09e8167" }),
-    __metadata("design:type", String)
-], Rt286Req.prototype, "patientvisituid", void 0);
-__decorate([
-    swagger_1.ApiModelProperty({ description: 'billingSubGroupUids', required: true, example: "5b8a09cd3238d86bf08fb581" }),
-    __metadata("design:type", String)
-], Rt286Req.prototype, "billingSubGroupUids", void 0);
-__decorate([
-    swagger_1.ApiModelProperty({ description: 'billingGroupUids', required: true, example: "5b8a09cd3238d86bf08fb581" }),
-    __metadata("design:type", String)
-], Rt286Req.prototype, "billingGroupUids", void 0);
-__decorate([
-    swagger_1.ApiModelProperty({ description: 'ispackage', required: true, example: true }),
-    __metadata("design:type", Boolean)
-], Rt286Req.prototype, "ispackage", void 0);
-exports.Rt286Req = Rt286Req;
-//# sourceMappingURL=rt286req.js.map
+], STATTRAUMAReq.prototype, "param3", void 0);
+exports.STATTRAUMAReq = STATTRAUMAReq;
+//# sourceMappingURL=stattraumareq.js.map

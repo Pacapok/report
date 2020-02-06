@@ -140,5 +140,13 @@ __decorate([
     swagger_1.ApiModelProperty({ description: 'printbydate', required: true, example: "" }),
     __metadata("design:type", String)
 ], BaseReq.prototype, "printbydate", void 0);
+__decorate([
+    swagger_1.ApiModelProperty({ description: 'ordercategoryuid', required: true, example: "" }),
+    __metadata("design:type", String)
+], BaseReq.prototype, "ordercategoryuid", void 0);
+__decorate([
+    swagger_1.ApiModelProperty({ description: 'ordersubcategoryuids', required: true, example: "" }),
+    __metadata("design:type", String)
+], BaseReq.prototype, "ordersubcategoryuids", void 0);
 exports.BaseReq = BaseReq;
 //# sourceMappingURL=basereq.js.map
