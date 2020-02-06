@@ -10997,12 +10997,18 @@ let ReportsService = class ReportsService {
                         };
                     }
                 }
+                let packageflag = { $match: {} };
+                if (req.ispackage == false) {
+                    packageflag = { $match: {
+                            'statusflag': 'A'
+                        } };
+                }
+                ;
                 const resultPatientbills = yield this.PatientchargecodesModel.aggregate([
                     {
                         $match: {
                             'patientvisituid': new mongoose_1.Types.ObjectId(req.patientvisituid),
                             "orguid": new mongoose_1.Types.ObjectId(req.organisationuid),
-                            'statusflag': 'A'
                         }
                     },
                     {

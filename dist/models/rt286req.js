@@ -37,5 +37,9 @@ __decorate([
     swagger_1.ApiModelProperty({ description: 'billingGroupUids', required: true, example: "5b8a09cd3238d86bf08fb581" }),
     __metadata("design:type", String)
 ], Rt286Req.prototype, "billingGroupUids", void 0);
+__decorate([
+    swagger_1.ApiModelProperty({ description: 'ispackage', required: true, example: true }),
+    __metadata("design:type", Boolean)
+], Rt286Req.prototype, "ispackage", void 0);
 exports.Rt286Req = Rt286Req;
 //# sourceMappingURL=rt286req.js.map
