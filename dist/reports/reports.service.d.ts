@@ -337,6 +337,7 @@ export declare class ReportsService implements IReportsService {
     findRTCommon305(req: Rt305Req): Promise<any>;
     findRTCommon306(req: Rt306Req): Promise<any>;
     findRTCommon308(req: Rt308Req): Promise<any>;
+    findRTCommon310(req: Rt999Req): Promise<any>;
     findRTCommon311(req: Rt311Req): Promise<any>;
     findRTCommon313(req: Rt313Req): Promise<any>;
     findRTCommon316(req: Rt316Req): Promise<any>;
@@ -446,6 +447,7 @@ export declare class ReportsService implements IReportsService {
     findRTCommon849(req: Rt999Req): Promise<any>;
     findRTCommon850(req: Rt999Req): Promise<any>;
     findRTCommon851(req: Rt999Req): Promise<any>;
+    findRTCommon854(req: Rt999Req): Promise<any>;
     findRTCommondept1(req: Rt999Req): Promise<any>;
     findRTCommondept2(req: Rt999Req): Promise<any>;
     findOrganisation(req: OrganisationReq): Promise<any>;

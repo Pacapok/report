@@ -12,6 +12,7 @@ import { MCGENTHReportService } from './../reports/report.services/mcgenth.repor
 import { MCEXTENTHReportService } from './report.services/mcextenth.report.servie';
 import { MCEXTENENReportService } from './report.services/mcextenen.report.servie';
 import { MCAIRTHReportService } from './report.services/mcairth.report.servie';
+import { MCAIRTH2ReportService } from './report.services/mcairth2.report.service';
 import { MCAIRENReportService } from './report.services/mcairen.report.servie';
 import { MC5THReportService } from './report.services/mc5th.report.servie';
 import { MC5ENReportService } from './report.services/mc5en.report.servie';
@@ -211,6 +212,7 @@ export class ReportsController {
         private readonly MC5THReportService: MC5THReportService,
         private readonly MCAIRENReportService: MCAIRENReportService,
         private readonly MCAIRTHReportService: MCAIRTHReportService,
+        private readonly MCAIRTH2ReportService: MCAIRTH2ReportService,
         private readonly MCGENENReportService: MCGENENReportService,
         private readonly MCGENTHReportService: MCGENTHReportService,
         private readonly MCEXTENENReportService: MCEXTENENReportService,
@@ -311,6 +313,18 @@ export class ReportsController {
         this.logger.log("Start findMCAIRTH");
         this.logger.debug('Req', req);
         const data = await this.MCAIRTHReportService.findMCAIRTH(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+    
+    @Post('/mcairth2')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportMCAIRTH2(@Response() res, @Body() req: MCAIRTHReq) {
+        this.logger.log("Start findMCAIRTH2");
+        this.logger.debug('Req', req);
+        const data = await this.MCAIRTH2ReportService.findMCAIRTH2(req);
         this.logger.debug('Res', data)
         return res.status(HttpStatus.OK).json(data);
     }
@@ -1603,6 +1617,19 @@ export class ReportsController {
         const data = await this.reportsService.findRTCommon308(req);
         this.logger.debug('Res', data);
         this.logger.log('End rt_common_308');
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/rt_common_310')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReport310(@Response() res, @Body() req: Rt999Req) {
+        this.logger.log("Start rt_common_310");
+        this.logger.debug('Req', req);
+        const data = await this.reportsService.findRTCommon310(req);
+        this.logger.debug('Res', data);
+        this.logger.log('End rt_common_310');
         return res.status(HttpStatus.OK).json(data);
     }
 
@@ -2946,6 +2973,19 @@ export class ReportsController {
         const data = await this.reportsService.findRTCommon851(req);
         this.logger.debug('Res', data);
         this.logger.log('End rt_common_851');
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/rt_common_854')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReport854(@Response() res, @Body() req: Rt999Req) {
+        this.logger.log("Start rt_common_854");
+        this.logger.debug('Req', req);
+        const data = await this.reportsService.findRTCommon854(req);
+        this.logger.debug('Res', data);
+        this.logger.log('End rt_common_854');
         return res.status(HttpStatus.OK).json(data);
     }
 

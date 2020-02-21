@@ -659,6 +659,17 @@ let IPDClaimFormPart1ReportService = class IPDClaimFormPart1ReportService {
                     },
                     {
                         $addFields: {
+                            "SEC2PHYSIGNTIME": {
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "SEC2PHYSIGNTIME"] }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        $addFields: {
                             "SEC3ADMIT1": { $filter: {
                                     input: "$attributes",
                                     as: "vs",
@@ -793,6 +804,7 @@ let IPDClaimFormPart1ReportService = class IPDClaimFormPart1ReportService {
                             SEC2CASETYPE: { "$push": "$SEC2CASETYPE.textvalue" },
                             SEC2PRIVATECASEDETAIL: { "$push": "$SEC2PRIVATECASEDETAIL.textvalue" },
                             SEC2PHYSIGNDATE: { "$push": "$SEC2PHYSIGNDATE.textvalue" },
+                            SEC2PHYSIGNTIME: { "$push": "$SEC2PHYSIGNTIME.textvalue" },
                             SEC3ADMIT1: { "$push": "$SEC3ADMIT1.textvalue" },
                             SEC3ADMIT2: { "$push": "$SEC3ADMIT2.textvalue" },
                             SEC3ADMIT2COMMENT: { "$push": "$SEC3ADMIT2.actualvalue.additionalvalue" },
@@ -883,6 +895,7 @@ let IPDClaimFormPart1ReportService = class IPDClaimFormPart1ReportService {
                             SEC2CASETYPE: { $arrayElemAt: ["$SEC2CASETYPE", -1] },
                             SEC2PRIVATECASEDETAIL: { $arrayElemAt: ["$SEC2PRIVATECASEDETAIL", -1] },
                             SEC2PHYSIGNDATE: { $arrayElemAt: ["$SEC2PHYSIGNDATE", -1] },
+                            SEC2PHYSIGNTIME: { $arrayElemAt: ["$SEC2PHYSIGNTIME", -1] },
                             SEC3ADMIT1: { $arrayElemAt: ["$SEC3ADMIT1", -1] },
                             SEC3ADMIT2: { $arrayElemAt: ["$SEC3ADMIT2", -1] },
                             SEC3ADMIT2COMMENT: { $arrayElemAt: ["$SEC3ADMIT2COMMENT", -1] },

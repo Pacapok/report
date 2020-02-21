@@ -78,6 +78,46 @@ let MCEXTENENReportService = class MCEXTENENReportService {
                         }
                     },
                     {
+                        $lookup: {
+                            from: "departments",
+                            localField: "patientforms.departmentuid",
+                            foreignField: "_id",
+                            as: "departments"
+                        }
+                    },
+                    {
+                        $unwind: { path: "$departments", preserveNullAndEmptyArrays: true }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "patientforms.careprovideruid",
+                            foreignField: "_id",
+                            as: "careproviders"
+                        }
+                    },
+                    {
+                        $unwind: { path: "$careproviders", preserveNullAndEmptyArrays: true }
+                    },
+                    {
+                        $lookup: {
+                            from: "reportconfigurations",
+                            localField: "orguid",
+                            foreignField: "orguid",
+                            as: "reportconfigurations"
+                        }
+                    },
+                    {
+                        $unwind: { path: "$reportconfigurations", preserveNullAndEmptyArrays: true }
+                    },
+                    {
+                        $match: {
+                            "reportconfigurations.statusflag": "A",
+                            "reportconfigurations.orguid": new mongoose_1.Types.ObjectId(req.organisationuid),
+                            "reportconfigurations.reporttemplateuid": new mongoose_1.Types.ObjectId(req.reporttemplateuid)
+                        }
+                    },
+                    {
                         $addFields: {
                             HEADmcENPatientTitleName: { $arrayElemAt: [{
                                         $filter: {
@@ -184,6 +224,18 @@ let MCEXTENENReportService = class MCEXTENENReportService {
                                     }, -1]
                             }
                         }
+                    }, {
+                        $addFields: {
+                            HEADmcENTitleEN: {
+                                $arrayElemAt: [{
+                                        $filter: {
+                                            input: "$attributes",
+                                            as: "vs",
+                                            cond: { $eq: ["$$vs.attributename", "HEADmcENTitleEN"] }
+                                        }
+                                    }, -1]
+                            }
+                        }
                     },
                     {
                         $addFields: {
@@ -220,6 +272,18 @@ let MCEXTENENReportService = class MCEXTENENReportService {
                                     }, -1]
                             }
                         }
+                    }, {
+                        $addFields: {
+                            HEADERSIDEEFFECT: {
+                                $arrayElemAt: [{
+                                        $filter: {
+                                            input: "$attributes",
+                                            as: "vs",
+                                            cond: { $eq: ["$$vs.attributename", "HEADERSIDEEFFECT"] }
+                                        }
+                                    }, -1]
+                            }
+                        }
                     },
                     {
                         $addFields: {
@@ -252,6 +316,18 @@ let MCEXTENENReportService = class MCEXTENENReportService {
                                             input: "$attributes",
                                             as: "vs",
                                             cond: { $eq: ["$$vs.attributename", "MCVisaENPTname"] }
+                                        }
+                                    }, -1]
+                            }
+                        }
+                    }, {
+                        $addFields: {
+                            MCVisaTitleAddress: {
+                                $arrayElemAt: [{
+                                        $filter: {
+                                            input: "$attributes",
+                                            as: "vs",
+                                            cond: { $eq: ["$$vs.attributename", "MCVisaENAddr"] }
                                         }
                                     }, -1]
                             }
@@ -324,6 +400,105 @@ let MCEXTENENReportService = class MCEXTENENReportService {
                                             input: "$attributes",
                                             as: "vs",
                                             cond: { $eq: ["$$vs.attributename", "MCVisaENDateFrom3"] }
+                                        }
+                                    }, -1]
+                            }
+                        }
+                    },
+                    {
+                        $addFields: {
+                            MCGenENTypeofPatient: {
+                                $arrayElemAt: [{
+                                        $filter: {
+                                            input: "$attributes",
+                                            as: "vs",
+                                            cond: { $eq: ["$$vs.attributename", "MCGenENTypeofPatient"] }
+                                        }
+                                    }, -1]
+                            }
+                        }
+                    }, {
+                        $addFields: {
+                            MCGenENOUTENcounter: {
+                                $arrayElemAt: [{
+                                        $filter: {
+                                            input: "$attributes",
+                                            as: "vs",
+                                            cond: { $eq: ["$$vs.attributename", "MCGenENOUTENcounter"] }
+                                        }
+                                    }, -1]
+                            }
+                        }
+                    }, {
+                        $addFields: {
+                            MCGenENOUTVisitid: {
+                                $arrayElemAt: [{
+                                        $filter: {
+                                            input: "$attributes",
+                                            as: "vs",
+                                            cond: { $eq: ["$$vs.attributename", "MCGenENOUTVisitid"] }
+                                        }
+                                    }, -1]
+                            }
+                        }
+                    }, {
+                        $addFields: {
+                            MCGenENOUTdate: {
+                                $arrayElemAt: [{
+                                        $filter: {
+                                            input: "$attributes",
+                                            as: "vs",
+                                            cond: { $eq: ["$$vs.attributename", "MCGenENOUTdate"] }
+                                        }
+                                    }, -1]
+                            }
+                        }
+                    }, {
+                        $addFields: {
+                            MCGenENINVisitEncounter: {
+                                $arrayElemAt: [{
+                                        $filter: {
+                                            input: "$attributes",
+                                            as: "vs",
+                                            cond: { $eq: ["$$vs.attributename", "MCGenENINVisitEncounter"] }
+                                        }
+                                    }, -1]
+                            }
+                        }
+                    }, {
+                        $addFields: {
+                            MCGenENANINpatient: {
+                                $arrayElemAt: [{
+                                        $filter: {
+                                            input: "$attributes",
+                                            as: "vs",
+                                            cond: { $eq: ["$$vs.attributename", "MCGenENANINpatient"] }
+                                        }
+                                    }, -1]
+                            }
+                        }
+                    },
+                    {
+                        $addFields: {
+                            MCGenENdateIPD: {
+                                $arrayElemAt: [{
+                                        $filter: {
+                                            input: "$attributes",
+                                            as: "vs",
+                                            cond: { $eq: ["$$vs.attributename", "MCGenENdateIPD"] }
+                                        }
+                                    }, -1]
+                            }
+                        }
+                    },
+                    {
+                        $addFields: {
+                            MCGenENdatetoIPD: {
+                                $arrayElemAt: [{
+                                        $filter: {
+                                            input: "$attributes",
+                                            as: "vs",
+                                            cond: { $eq: ["$$vs.attributename", "MCGenENdatetoIPD"] }
                                         }
                                     }, -1]
                             }
@@ -593,6 +768,12 @@ let MCEXTENENReportService = class MCEXTENENReportService {
                     {
                         $group: {
                             _id: { patientvisituid: "$patientvisituid" },
+                            HEADmcDEPTCODE: { "$push": "$departments.code" },
+                            HEADmcDEPTNAME: { "$push": "$departments.name" },
+                            HEADmcDRCODE: { "$push": "$careproviders.code" },
+                            HEADmcDRNAME: { "$push": "$careproviders.name" },
+                            HEADmcREPORTTYPE: { "$push": "$reportconfigurations.documenttype" },
+                            HEADmcREPORTFM: { "$push": "$reportconfigurations.documentno" },
                             HEADmcENPatientTitle: { "$push": "$HEADmcENPatientTitleName.textvalue" },
                             HEADmcENPatientName: { "$push": "$HEADmcENPatientName.textvalue" },
                             HEADmcENMRN: { "$push": "$HEADmcENMRN.textvalue" },
@@ -605,9 +786,11 @@ let MCEXTENENReportService = class MCEXTENENReportService {
                             HEADmcENPhysicianName: { "$push": "$HEADmcENPhysicianName.textvalue" },
                             HEADmcENLicenseNo: { "$push": "$HEADmcENLicenseNo.textvalue" },
                             HEADmcENAllergies: { "$push": "$HEADmcENAllergies.textvalue" },
+                            HEADERSIDEEFFECT: { "$push": "$HEADERSIDEEFFECT.textvalue" },
                             DRNANE: { "$push": "$DRNANE.textvalue" },
                             DRLIC: { "$push": "$DRLIC.textvalue" },
                             PTNAME: { "$push": "$PTNAME.textvalue" },
+                            MCVisaTitleAddress: { "$push": "$MCVisaTitleAddress.textvalue" },
                             PTMRN: { "$push": "$PTMRN.textvalue" },
                             IsOPD: { "$push": "$IsOPD.textvalue" },
                             IsOPDDATE: { "$push": "$IsOPDDATE.textvalue" },
@@ -615,6 +798,14 @@ let MCEXTENENReportService = class MCEXTENENReportService {
                             IsIPDDATE: { "$push": "$IsIPDDATE.textvalue" },
                             IsIPDDATEFROM: { "$push": "$IsIPDDATEFROM.textvalue" },
                             IsIPDDATETO: { "$push": "$IsIPDDATETO.textvalue" },
+                            MCGenENTypeofPatient: { "$push": "$MCGenENTypeofPatient.textvalue" },
+                            MCGenENOUTENcounter: { "$push": "$MCGenENOUTENcounter.textvalue" },
+                            MCGenENOUTVisitid: { "$push": "$MCGenENOUTVisitid.textvalue" },
+                            MCGenENOUTdate: { "$push": "$MCGenENOUTdate.textvalue" },
+                            MCGenENINVisitEncounter: { "$push": "$MCGenENINVisitEncounter.textvalue" },
+                            MCGenENANINpatient: { "$push": "$MCGenENANINpatient.textvalue" },
+                            MCGenENdateIPD: { "$push": "$MCGenENdateIPD.textvalue" },
+                            MCGenENdatetoIPD: { "$push": "$MCGenENdatetoIPD.textvalue" },
                             TREATMENT1: { "$push": "$TREATMENT1.textvalue" },
                             TREATMENT2: { "$push": "$TREATMENT2.textvalue" },
                             TREATMENT2DETAIL: { "$push": { $arrayElemAt: ["$TREATMENT2.actualvalue.additionalvalue", -1] } },
@@ -670,6 +861,12 @@ let MCEXTENENReportService = class MCEXTENENReportService {
                     },
                     {
                         $project: {
+                            HEADmcDEPTCODE: { $arrayElemAt: ["$HEADmcDEPTCODE", -1] },
+                            HEADmcDEPTNAME: { $arrayElemAt: ["$HEADmcDEPTNAME", -1] },
+                            HEADmcDRCODE: { $arrayElemAt: ["$HEADmcDRCODE", -1] },
+                            HEADmcDRNAME: { $arrayElemAt: ["$HEADmcDRNAME", -1] },
+                            HEADmcREPORTTYPE: { $arrayElemAt: ["$HEADmcREPORTTYPE", -1] },
+                            HEADmcREPORTFM: { $arrayElemAt: ["$HEADmcREPORTFM", -1] },
                             HEADmcENPatientTitle: { $arrayElemAt: ["$HEADmcENPatientTitle", -1] },
                             HEADmcENPatientName: { $arrayElemAt: ["$HEADmcENPatientName", -1] },
                             HEADmcENMRN: { $arrayElemAt: ["$HEADmcENMRN", -1] },
@@ -682,9 +879,11 @@ let MCEXTENENReportService = class MCEXTENENReportService {
                             HEADmcENPhysicianName: { $arrayElemAt: ["$HEADmcENPhysicianName", -1] },
                             HEADmcENLicenseNo: { $arrayElemAt: ["$HEADmcENLicenseNo", -1] },
                             HEADmcENAllergies: { $arrayElemAt: ["$HEADmcENAllergies", -1] },
+                            HEADERSIDEEFFECT: { $arrayElemAt: ["$HEADERSIDEEFFECT", -1] },
                             DRNANE: { $arrayElemAt: ["$DRNANE", -1] },
                             DRLIC: { $arrayElemAt: ["$DRLIC", -1] },
                             PTNAME: { $arrayElemAt: ["$PTNAME", -1] },
+                            MCVisaTitleAddress: { $arrayElemAt: ["$MCVisaTitleAddress", -1] },
                             PTMRN: { $arrayElemAt: ["$PTMRN", -1] },
                             IsOPD: { $arrayElemAt: ["$IsOPD", -1] },
                             IsOPDDATE: { $arrayElemAt: ["$IsOPDDATE", -1] },
@@ -692,6 +891,14 @@ let MCEXTENENReportService = class MCEXTENENReportService {
                             IsIPDDATE: { $arrayElemAt: ["$IsIPDDATE", -1] },
                             IsIPDDATEFROM: { $arrayElemAt: ["$IsIPDDATEFROM", -1] },
                             IsIPDDATETO: { $arrayElemAt: ["$IsIPDDATETO", -1] },
+                            MCGenENTypeofPatient: { $arrayElemAt: ["$MCGenENTypeofPatient", -1] },
+                            MCGenENOUTENcounter: { $arrayElemAt: ["$MCGenENOUTENcounter", -1] },
+                            MCGenENOUTVisitid: { $arrayElemAt: ["$MCGenENOUTVisitid", -1] },
+                            MCGenENOUTdate: { $arrayElemAt: ["$MCGenENOUTdate", -1] },
+                            MCGenENINVisitEncounter: { $arrayElemAt: ["$MCGenENINVisitEncounter", -1] },
+                            MCGenENANINpatient: { $arrayElemAt: ["$MCGenENANINpatient", -1] },
+                            MCGenENdateIPD: { $arrayElemAt: ["$MCGenENdateIPD", -1] },
+                            MCGenENdatetoIPD: { $arrayElemAt: ["$MCGenENdatetoIPD", -1] },
                             TREATMENT1: { $arrayElemAt: ["$TREATMENT1", -1] },
                             TREATMENT2: { $arrayElemAt: ["$TREATMENT2", -1] },
                             TREATMENT2DETAIL: { $arrayElemAt: ["$TREATMENT2DETAIL", -1] },

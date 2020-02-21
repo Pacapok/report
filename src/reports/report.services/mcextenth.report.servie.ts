@@ -65,6 +65,48 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
                     "patientforms.patientuid": new Types.ObjectId(req.patientuid),
                 }
             },
+            //-----
+            {
+                $lookup: {
+                    from: "departments",
+                    localField: "patientforms.departmentuid",
+                    foreignField: "_id",
+                    as: "departments"
+                }
+            },
+            {
+                $unwind: { path: "$departments", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "patientforms.careprovideruid",
+                    foreignField: "_id",
+                    as: "careproviders"
+                }
+            },
+            {
+                $unwind: { path: "$careproviders", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $lookup: {
+                    from: "reportconfigurations",
+                    localField: "orguid",
+                    foreignField: "orguid",
+                    as: "reportconfigurations"
+                }
+            },
+            {
+                $unwind: { path: "$reportconfigurations", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $match: {
+                    "reportconfigurations.statusflag": "A",
+                    "reportconfigurations.orguid": new Types.ObjectId(req.organisationuid),
+                    "reportconfigurations.reporttemplateuid": new Types.ObjectId(req.reporttemplateuid)
+                }
+            },
+//-----
     //AddFileds สร้างชื่อ field ใหม่
     {
             $addFields:{
@@ -107,12 +149,12 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
         },
         {
             $addFields:{
-                            HEADmcTHPatientVisitDate:{$arrayElemAt:
+                HEADmcTHVisitDate:{$arrayElemAt:
                                                 [{ 
                                                     $filter:{
                                                         input:"$attributes",
                                                         as:"vs",
-                                                        cond:{$eq:["$$vs.attributename","HEADmcTHPatientVisitDate"]}
+                                                        cond: { $eq: ["$$vs.attributename","HEADmcTHVisitDate"]}
                                                     }
                                                 },-1]
                                             }
@@ -125,7 +167,7 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
                                                     $filter:{
                                                         input:"$attributes",
                                                         as:"vs",
-                                                        cond:{$eq:["$$vs.attributename","HEADmcTHBirthday"]}
+                                                        cond: { $eq: ["$$vs.attributename","HEADmcTHPatientBirthday"]}
                                                     }
                                                 },-1]
                                             }
@@ -151,7 +193,7 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
                                                     $filter:{
                                                         input:"$attributes",
                                                         as:"vs",
-                                                        cond:{$eq:["$$vs.attributename","HEADmcTHGender"]}
+                                                        cond: { $eq: ["$$vs.attributename","HEADmcTHPatientGender"]}
                                                     }
                                                 },-1]
                                             }
@@ -183,6 +225,20 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
                                             }
                         }
         },
+            {
+                $addFields: {
+                    HEADmcTHTitleEN: {
+                        $arrayElemAt:
+                            [{
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "HEADmcTHTitleEN"] }
+                                }
+                            }, -1]
+                    }
+                }
+            },
         {
             $addFields:{
                             HEADmcTHPhysicianName:{$arrayElemAt:
@@ -222,6 +278,20 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
                                             }
                         }
         },
+            {
+                $addFields: {
+                    HEADERSIDEEFFECT: {
+                        $arrayElemAt:
+                            [{
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "HEADERSIDEEFFECT"] }
+                                }
+                            }, -1]
+                    }
+                }
+            },
         //end MC Header//
         {
             $addFields:{
@@ -249,6 +319,20 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
                                             }
                         }
         },
+            {
+                $addFields: {
+                    MCVisaTHTitleAddress: {
+                        $arrayElemAt:
+                            [{
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "MCVisaTHTitleAddress"] }
+                                }
+                            }, -1]
+                    }
+                }
+            },
         {
             $addFields:{
                             PTNAME:{$arrayElemAt:
@@ -275,6 +359,7 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
                                             }
                         }
         },
+//---
         {
             $addFields:{
                             IsOPD:{$arrayElemAt:
@@ -340,6 +425,116 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
                                             }
                         }
         },
+        //---
+            {
+                $addFields: {
+                    MCGenTHTypeofPatient: {
+                        $arrayElemAt:
+                            [{
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "MCGenTHTypeofPatient"] }
+                                }
+                            }, -1]
+                    }
+                }
+            }, {
+                $addFields: {
+                    MCGenTHOUTENcounter: {
+                        $arrayElemAt:
+                            [{
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "MCGenTHOUTENcounter"] }
+                                }
+                            }, -1]
+                    }
+                }
+            }, {
+                $addFields: {
+                    MCGenTHOUTVisitid: {
+                        $arrayElemAt:
+                            [{
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "MCGenTHOUTVisitid"] }
+                                }
+                            }, -1]
+                    }
+                }
+            }, {
+                $addFields: {
+                    MCGenTHOUTdate: {
+                        $arrayElemAt:
+                            [{
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "MCGenTHOUTdate"] }
+                                }
+                            }, -1]
+                    }
+                }
+            }, {
+                $addFields: {
+                    MCGenTHINVisitEncounter: {
+                        $arrayElemAt:
+                            [{
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "MCGenTHINVisitEncounter"] }
+                                }
+                            }, -1]
+                    }
+                }
+            }, {
+                $addFields: {
+                    MCGenTHANINpatient: {
+                        $arrayElemAt:
+                            [{
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "MCGenTHANINpatient"] }
+                                }
+                            }, -1]
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    MCGenTHdateIPD: {
+                        $arrayElemAt:
+                            [{
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "MCGenTHdateIPD"] }
+                                }
+                            }, -1]
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    MCGenTHdatetoIPD: {
+                        $arrayElemAt:
+                            [{
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "MCGenTHdatetoIPD"] }
+                                }
+                            }, -1]
+                    }
+                }
+            },
+        //---
+//--
         {
             $addFields:{
                             TREATMENT1:{$arrayElemAt:
@@ -601,21 +796,30 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
     {
         $group:{
                     _id:{patientvisituid:"$patientvisituid"},
+            HEADmcDEPTCODE: { "$push": "$departments.code" },
+            HEADmcDEPTNAME: { "$push": "$departments.name" },
+            HEADmcDRCODE: { "$push": "$careproviders.code" },
+            HEADmcDRNAME: { "$push": "$careproviders.name" },
+            HEADmcREPORTTYPE: { "$push": "$reportconfigurations.documenttype" },
+            HEADmcREPORTFM: { "$push": "$reportconfigurations.documentno" },
                     HEADmcTHPatientTitle:{"$push":"$HEADmcTHPatientTitleName.textvalue"},
                     HEADmcTHPatientName:{"$push":"$HEADmcTHPatientName.textvalue"},
                     HEADmcTHMRN:{"$push":"$HEADmcTHMRN.textvalue"},
-                    HEADmcTHVisitDate:{"$push":"$HEADmcTHPatientVisitDate.textvalue"},
+            HEADmcTHVisitDate: { "$push":"$HEADmcTHVisitDate.textvalue"},
                     HEADmcTHPatientBirthday:{"$push":"$HEADmcTHBirthday.textvalue"},
                     HEADmcTHPatientAge:{"$push":"$HEADmcTHPatientAge.textvalue"},
                     HEADmcTHPatientGender:{"$push":"$HEADmcTHGender.textvalue"},
                     HEADmcTHPatientDep:{"$push":"$HEADmcTHPatientDep.textvalue"},
                     HEADmcTHPatientBed:{"$push":"$HEADmcTHBED.textvalue"},
+            HEADmcTHTitleEN: { "$push": "$HEADmcTHTitleEN.textvalue" },
                     HEADmcTHPhysicianName:{"$push":"$HEADmcTHPhysicianName.textvalue"},
                     HEADmcTHLicenseNo:{"$push":"$HEADmcTHLicenseNo.textvalue"},
                     HEADmcTHAllergies:{"$push":"$HEADmcTHAllergies.textvalue"},
+            HEADERSIDEEFFECT: { "$push": "$HEADERSIDEEFFECT.textvalue" },
                     //end MC Header//
                     DRNANE:{"$push":"$DRNANE.textvalue"},
                     DRLIC:{"$push":"$DRLIC.textvalue"},
+            MCVisaTHTitleAddress: { "$push": "$MCVisaTHTitleAddress.textvalue" },
                     PTNAME:{"$push":"$PTNAME.textvalue"},
                     PTMRN:{"$push":"$PTMRN.textvalue"},
                     IsOPD:{"$push":"$IsOPD.textvalue"},
@@ -624,6 +828,16 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
                     IsIPDDATE:{"$push":"$IsIPDDATE.textvalue"},
                     IsIPDDATEFROM:{"$push":"$IsIPDDATEFROM.textvalue"},
                     IsIPDDATETO:{"$push":"$IsIPDDATETO.textvalue"},
+//---
+            MCGenTHTypeofPatient: { "$push": "$MCGenTHTypeofPatient.textvalue" },
+            MCGenTHOUTENcounter: { "$push": "$MCGenTHOUTENcounter.textvalue" },
+            MCGenTHOUTVisitid: { "$push": "$MCGenTHOUTVisitid.textvalue" },
+            MCGenTHOUTdate: { "$push": "$MCGenTHOUTdate.textvalue" },
+            MCGenTHINVisitEncounter: { "$push": "$MCGenTHINVisitEncounter.textvalue" },
+            MCGenTHANINpatient: { "$push": "$MCGenTHANINpatient.textvalue" },
+            MCGenTHdateIPD: { "$push": "$MCGenTHdateIPD.textvalue" },
+            MCGenTHdatetoIPD: { "$push": "$MCGenTHdatetoIPD.textvalue" },
+//---
                     TREATMENT1:{"$push":"$TREATMENT1.textvalue"},
                     TREATMENT2:{"$push":"$TREATMENT2.textvalue"},
                     TREATMENT21:{"$push":{$arrayElemAt:["$TREATMENT2.actualvalue.additionalvalue",0]}},
@@ -681,6 +895,12 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
     // //Project
     {
         $project:{
+            HEADmcDEPTCODE: { $arrayElemAt: ["$HEADmcDEPTCODE", -1] },
+            HEADmcDEPTNAME: { $arrayElemAt: ["$HEADmcDEPTNAME", -1] },
+            HEADmcDRCODE: { $arrayElemAt: ["$HEADmcDRCODE", -1] },
+            HEADmcDRNAME: { $arrayElemAt: ["$HEADmcDRNAME", -1] },
+            HEADmcREPORTTYPE: { $arrayElemAt: ["$HEADmcREPORTTYPE", -1] },
+            HEADmcREPORTFM: { $arrayElemAt: ["$HEADmcREPORTFM", -1] },
                     HEADmcTHPatientTitle:{$arrayElemAt:["$HEADmcTHPatientTitle",-1]},
                     HEADmcTHPatientName:{$arrayElemAt:["$HEADmcTHPatientName",-1]},
                     HEADmcTHMRN:{$arrayElemAt:["$HEADmcTHMRN",-1]},
@@ -690,12 +910,15 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
                     HEADmcTHPatientGender:{$arrayElemAt:["$HEADmcTHPatientGender",-1]},
                     HEADmcTHPatientDep:{$arrayElemAt:["$HEADmcTHPatientDep",-1]},
                     HEADmcTHPatientBed:{$arrayElemAt:["$HEADmcTHPatientBed",-1]},
+            HEADmcTHTitleEN: { $arrayElemAt: ["$HEADmcTHTitleEN", -1] },
                     HEADmcTHPhysicianName:{$arrayElemAt:["$HEADmcTHPhysicianName",-1]},
+            HEADERSIDEEFFECT: { $arrayElemAt: ["$HEADERSIDEEFFECT", -1] },
                     HEADmcTHLicenseNo:{$arrayElemAt:["$HEADmcTHLicenseNo",-1]},
                     HEADmcTHAllergies:{$arrayElemAt:["$HEADmcTHAllergies",-1]},
                     //end MC Header//
                     DRNANE:{$arrayElemAt:["$DRNANE",-1]},
                     DRLIC:{$arrayElemAt:["$DRLIC",-1]},
+            MCVisaTHTitleAddress: { $arrayElemAt: ["$MCVisaTHTitleAddress", -1] },
                     PTNAME:{$arrayElemAt:["$PTNAME",-1]},
                     PTMRN:{$arrayElemAt:["$PTMRN",-1]},
                     IsOPD:{$arrayElemAt:["$IsOPD",-1]},
@@ -704,6 +927,16 @@ async findMCEXTENTH(req: MCEXTENTHReq): Promise<any> {
                     IsIPDDATE:{$arrayElemAt:["$IsIPDDATE",-1]},
                     IsIPDDATEFROM:{$arrayElemAt:["$IsIPDDATEFROM",-1]},
                     IsIPDDATETO:{$arrayElemAt:["$IsIPDDATETO",-1]},
+//----
+            MCGenTHTypeofPatient: { $arrayElemAt: ["$MCGenTHTypeofPatient", -1] },
+            MCGenTHOUTENcounter: { $arrayElemAt: ["$MCGenTHOUTENcounter", -1] },
+            MCGenTHOUTVisitid: { $arrayElemAt: ["$MCGenTHOUTVisitid", -1] },
+            MCGenTHOUTdate: { $arrayElemAt: ["$MCGenTHOUTdate", -1] },
+            MCGenTHINVisitEncounter: { $arrayElemAt: ["$MCGenTHINVisitEncounter", -1] },
+            MCGenTHANINpatient: { $arrayElemAt: ["$MCGenTHANINpatient", -1] },
+            MCGenTHdateIPD: { $arrayElemAt: ["$MCGenTHdateIPD", -1] },
+            MCGenTHdatetoIPD: { $arrayElemAt: ["$MCGenTHdatetoIPD", -1] },
+//----
                     TREATMENT1:{$arrayElemAt:["$TREATMENT1",-1]},
                     TREATMENT2:{$arrayElemAt:["$TREATMENT2",-1]},
                     TREATMENT2Treatment:{$arrayElemAt:["$TREATMENT21",-1]},

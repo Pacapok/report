@@ -3,6 +3,7 @@ export declare class BaseReq {
     searchcriteria: string;
     organisationuid: string;
     patientuid: string;
+    reporttemplateuid: string;
     patientvisituid: string;
     fromdate: string;
     todate: string;
@@ -11,7 +12,6 @@ export declare class BaseReq {
     itemuid: string;
     itemmasteruid: string;
     ReceiptNumber: string;
-    reporttemplateuid: string;
     usersuid: string;
     keywordSearch: string;
     sequencenumber: string;
