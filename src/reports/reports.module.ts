@@ -10,6 +10,7 @@ import {MC5ENReportService} from './../reports/report.services/mc5en.report.serv
 import {MC5THReportService} from './../reports/report.services/mc5th.report.servie';
 import {MCAIRENReportService} from './../reports/report.services/mcairen.report.servie';
 import {MCAIRTHReportService} from './../reports/report.services/mcairth.report.servie';
+import { MCAIRTH2ReportService } from './../reports/report.services/mcairth2.report.service';
 import { MCGENENReportService } from './../reports/report.services/mcgenen.report.servie';
 import { MCGENTHReportService } from './../reports/report.services/mcgenth.report.servie';
 import {MCEXTENENReportService} from './../reports/report.services/mcextenen.report.servie';
@@ -152,6 +153,6 @@ import { TriagedetailsSchema } from './schemas/triagedetails.schema';
     CommonModule
   ],
   controllers: [ReportsController],
-  providers: [ReportsService, OPDClaimFormReportService, IPDClaimFormPart1ReportService, IPDClaimFormPart2ReportService, MC5ENReportService, MC5THReportService, MCAIRENReportService, MCAIRTHReportService, MCGENENReportService, MCGENTHReportService, MCEXTENENReportService, MCEXTENTHReportService, MCGEReportService, MCWORKENReportService, MCWORKTHReportService, PrinterListReportService, REFERENReportService, REFERTHReportService, SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService, STATMRDFolderLastVisitReportService, STATTRAUMAReportService]
+  providers: [ReportsService, OPDClaimFormReportService, IPDClaimFormPart1ReportService, IPDClaimFormPart2ReportService, MC5ENReportService, MC5THReportService, MCAIRENReportService, MCAIRTHReportService, MCAIRTH2ReportService, MCGENENReportService, MCGENTHReportService, MCEXTENENReportService, MCEXTENTHReportService, MCGEReportService, MCWORKENReportService, MCWORKTHReportService, PrinterListReportService, REFERENReportService, REFERTHReportService, SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService, STATMRDFolderLastVisitReportService, STATTRAUMAReportService]
 })
 export class ReportsModule { }

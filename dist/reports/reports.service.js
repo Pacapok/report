@@ -148,7 +148,7 @@ let ReportsService = class ReportsService {
                     { $addFields: { date: { $subtract: [{ $toInt: { $dateToString: { format: "%d", date: new Date(), timezone: "+07:00", onNull: "-" } } }, { $toInt: { $dateToString: { format: "%d", date: "$patients.dateofbirth", timezone: "+07:00", onNull: "-" } } }] } } },
                     { $addFields: { month1name: { $month: { $dateFromString: { dateString: { $dateToString: { date: "$patients.dateofbirth", timezone: "+07:00", onNull: null } } } } }, } },
                     { $addFields: { Month1nameTH: { $let: { vars: { monthsInString: ['', 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฏาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'] }, in: { $arrayElemAt: ['$$monthsInString', '$month1name'] } } } } },
-                    { $lookup: { from: "organisations", localField: "_id.orguid", foreignField: "_id", as: "organisations" } },
+                    { $lookup: { from: "organisations", localField: "orguid", foreignField: "_id", as: "organisations" } },
                     { $unwind: { path: "$organisations", preserveNullAndEmptyArrays: true } },
                     { $lookup: { from: "referencevalues", localField: "patients.nationalityuid", foreignField: "_id", as: "nationality" } },
                     { $unwind: { path: "$nationality", preserveNullAndEmptyArrays: true } },
@@ -256,6 +256,7 @@ let ReportsService = class ReportsService {
                             EN: "$visitid",
                             TYPE: { $cond: { if: { $lte: [{ $divide: [{ $subtract: [new Date(), "$patients.createdat"] }, (1000 * 3600 * 24)] }, 2] }, then: 'NEW', else: 'OLD' } },
                             AgeString: { $concat: [{ $toString: '$year2' }, ' ปี ', { $toString: '$month2' }, ' เดือน ', { $toString: '$date2' }, ' วัน'] },
+                            AgeStringE: { $concat: [{ $toString: '$year2' }, ' Y ', { $toString: '$month2' }, ' M ', { $toString: '$date2' }, ' D'] },
                             DOB: { $dateToString: { format: "%d/%m/%Y", date: "$patients.dateofbirth", timezone: "+07:00", onNull: "-" } },
                             admissionDttm: { $dateToString: { format: "%d/%m/%Y %H:%M", date: "$startdate", timezone: "+07:00", onNull: "-" } },
                             BedName: { $ifNull: ["$beds.name", "-"] },
@@ -680,6 +681,26 @@ let ReportsService = class ReportsService {
                                         }
                                     }
                                 },
+                                SumIpdEPay: {
+                                    $toInt: {
+                                        $cond: {
+                                            if: {
+                                                $and: [{ $eq: [{ $substr: ["$sequencenumber", 4, 1] }, "I"] },
+                                                    { $eq: ["$referencevalues.valuedescription", "E-Payment"] }]
+                                            }, then: "$paymentdetails.amount", else: 0
+                                        }
+                                    }
+                                },
+                                SumIpdQR: {
+                                    $toInt: {
+                                        $cond: {
+                                            if: {
+                                                $and: [{ $eq: [{ $substr: ["$sequencenumber", 4, 1] }, "I"] },
+                                                    { $eq: ["$referencevalues.valuedescription", "QR Code"] }]
+                                            }, then: "$paymentdetails.amount", else: 0
+                                        }
+                                    }
+                                },
                                 SumIpdDebit: {
                                     $toInt: {
                                         $cond: {
@@ -730,6 +751,26 @@ let ReportsService = class ReportsService {
                                         }
                                     }
                                 },
+                                SumOpdEPay: {
+                                    $toInt: {
+                                        $cond: {
+                                            if: {
+                                                $and: [{ $eq: [{ $substr: ["$sequencenumber", 4, 1] }, "O"] },
+                                                    { $eq: ["$referencevalues.valuedescription", "E-Payment"] }]
+                                            }, then: "$paymentdetails.amount", else: 0
+                                        }
+                                    }
+                                },
+                                SumOpdQR: {
+                                    $toInt: {
+                                        $cond: {
+                                            if: {
+                                                $and: [{ $eq: [{ $substr: ["$sequencenumber", 4, 1] }, "O"] },
+                                                    { $eq: ["$referencevalues.valuedescription", "QR Code"] }]
+                                            }, then: "$paymentdetails.amount", else: 0
+                                        }
+                                    }
+                                },
                                 SumOpdDebit: {
                                     $toInt: {
                                         $cond: {
@@ -768,22 +809,26 @@ let ReportsService = class ReportsService {
                             SumOpdCredit: { $sum: "$results.SumOpdCredit" },
                             SumOpdOnline: { $sum: "$results.SumOpdOnline" },
                             SumOpdDebit: { $sum: "$results.SumOpdDebit" },
+                            SumOpdEPay: { $sum: "$results.SumOpdEPay" },
+                            SumOpdQR: { $sum: "$results.SumOpdQR" },
                             SumOpdChequeAll: { $sum: "$results.SumOpdChequeAll" },
                             SumIpdCash: { $sum: "$results.SumIpdCash" },
                             SumIpdCredit: { $sum: "$results.SumIpdCredit" },
                             SumIpdOnline: { $sum: "$results.SumIpdOnline" },
                             SumIpdDebit: { $sum: "$results.SumIpdDebit" },
+                            SumIpdEPay: { $sum: "$results.SumIpdEPay" },
+                            SumIpdQR: { $sum: "$results.SumIpdQR" },
                             SumIpdChequeAll: { $sum: "$results.SumIpdChequeAll" }
                         }
                     },
                     {
                         $addFields: {
-                            SumOpd: { $sum: ['$SumOpdCash', '$SumOpdCredit', '$SumOpdOnline', '$SumOpdDebit', '$SumOpdChequeAll'] },
+                            SumOpd: { $sum: ['$SumOpdCash', '$SumOpdCredit', '$SumOpdOnline', '$SumOpdDebit', '$SumOpdChequeAll', '$SumOpdQR', '$SumOpdEPay'] },
                         }
                     },
                     {
                         $addFields: {
-                            SumIpd: { $sum: ['$SumIpdCash', '$SumIpdCredit', '$SumIpdOnline', '$SumIpdDebit', '$SumIpdChequeAll'] },
+                            SumIpd: { $sum: ['$SumIpdCash', '$SumIpdCredit', '$SumIpdOnline', '$SumIpdDebit', '$SumIpdChequeAll', '$SumIpdQR', '$SumIpdEPay'] },
                         }
                     }
                 ])
@@ -799,11 +844,15 @@ let ReportsService = class ReportsService {
                         SumOpdCredit: 0,
                         SumOpdOnline: 0,
                         SumOpdDebit: 0,
+                        SumOpdQR: 0,
+                        SumOpdEPay: 0,
                         SumOpdChequeAll: 0,
                         SumIpdCash: 0,
                         SumIpdCredit: 0,
                         SumIpdOnline: 0,
                         SumIpdDebit: 0,
+                        SumIpdQR: 0,
+                        SumIpdEPay: 0,
                         SumIpdChequeAll: 0,
                         SumIpd: 0,
                         SumOpd: 0
@@ -1068,7 +1117,17 @@ let ReportsService = class ReportsService {
                                                                                     else: {
                                                                                         $cond: {
                                                                                             if: { $eq: ['$_id.Payment', "Coupon"] }, then: "GCoupon",
-                                                                                            else: ''
+                                                                                            else: {
+                                                                                                $cond: {
+                                                                                                    if: { $eq: ['$_id.Payment', "E-Payment"] }, then: "HE-Payment",
+                                                                                                    else: {
+                                                                                                        $cond: {
+                                                                                                            if: { $eq: ['$_id.Payment', "QR Code"] }, then: "IQR Code",
+                                                                                                            else: ''
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
                                                                                         }
                                                                                     }
                                                                                 }
@@ -1893,7 +1952,17 @@ let ReportsService = class ReportsService {
                                                                                     else: {
                                                                                         $cond: {
                                                                                             if: { $eq: ['$_id.Payment', "Coupon"] }, then: "GCoupon",
-                                                                                            else: ''
+                                                                                            else: {
+                                                                                                $cond: {
+                                                                                                    if: { $eq: ['$_id.Payment', "E-Payment"] }, then: "HE-Payment",
+                                                                                                    else: {
+                                                                                                        $cond: {
+                                                                                                            if: { $eq: ['$_id.Payment', "QR Code"] }, then: "IQR Code",
+                                                                                                            else: ''
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
                                                                                         }
                                                                                     }
                                                                                 }
@@ -2047,6 +2116,28 @@ let ReportsService = class ReportsService {
                                         }, else: 0
                                     }
                                 },
+                                SumRFEPay: {
+                                    $cond: {
+                                        if: { $eq: [{ $cond: { if: { $eq: [{ $substr: ["$sequencenumber", 0, 2] }, "RF"] }, then: "RF", else: "DO" } }, "RF"] },
+                                        then: {
+                                            $cond: {
+                                                if: { $eq: [{ $cond: { if: { $eq: ["$referencevalues.valuedescription", "E-Payment"] }, then: "E-Payment", else: "No" } }, "E-Payment"] },
+                                                then: { $cond: { if: { $eq: ["$iscancelled", true] }, then: { $multiply: ["$amount", -1] }, else: "$amount" } }, else: 0
+                                            }
+                                        }, else: 0
+                                    }
+                                },
+                                SumRFQR: {
+                                    $cond: {
+                                        if: { $eq: [{ $cond: { if: { $eq: [{ $substr: ["$sequencenumber", 0, 2] }, "RF"] }, then: "RF", else: "DO" } }, "RF"] },
+                                        then: {
+                                            $cond: {
+                                                if: { $eq: [{ $cond: { if: { $eq: ["$referencevalues.valuedescription", "QR Code"] }, then: "QR Code", else: "No" } }, "QR Code"] },
+                                                then: { $cond: { if: { $eq: ["$iscancelled", true] }, then: { $multiply: ["$amount", -1] }, else: "$amount" } }, else: 0
+                                            }
+                                        }, else: 0
+                                    }
+                                },
                                 SumRFChequeAll: {
                                     $cond: {
                                         if: { $eq: [{ $cond: { if: { $eq: [{ $substr: ["$sequencenumber", 0, 2] }, "RF"] }, then: "RF", else: "DO" } }, "RF"] },
@@ -2118,6 +2209,28 @@ let ReportsService = class ReportsService {
                                         then: {
                                             $cond: {
                                                 if: { $eq: [{ $cond: { if: { $eq: ["$referencevalues.valuedescription", "Coupon"] }, then: "Coupon", else: "No" } }, "Coupon"] },
+                                                then: { $cond: { if: { $eq: ["$iscancelled", true] }, then: { $multiply: ["$amount", -1] }, else: "$amount" } }, else: 0
+                                            }
+                                        }, else: 0
+                                    }
+                                },
+                                SumDOEPay: {
+                                    $cond: {
+                                        if: { $eq: [{ $cond: { if: { $eq: [{ $substr: ["$sequencenumber", 3, 2] }, "DO"] }, then: "DO", else: "RF" } }, "DO"] },
+                                        then: {
+                                            $cond: {
+                                                if: { $eq: [{ $cond: { if: { $eq: ["$referencevalues.valuedescription", "E-Payment"] }, then: "E-Payment", else: "No" } }, "E-Payment"] },
+                                                then: { $cond: { if: { $eq: ["$iscancelled", true] }, then: { $multiply: ["$amount", -1] }, else: "$amount" } }, else: 0
+                                            }
+                                        }, else: 0
+                                    }
+                                },
+                                SumDOQR: {
+                                    $cond: {
+                                        if: { $eq: [{ $cond: { if: { $eq: [{ $substr: ["$sequencenumber", 3, 2] }, "DO"] }, then: "DO", else: "RF" } }, "DO"] },
+                                        then: {
+                                            $cond: {
+                                                if: { $eq: [{ $cond: { if: { $eq: ["$referencevalues.valuedescription", "QR Code"] }, then: "QR Code", else: "No" } }, "QR Code"] },
                                                 then: { $cond: { if: { $eq: ["$iscancelled", true] }, then: { $multiply: ["$amount", -1] }, else: "$amount" } }, else: 0
                                             }
                                         }, else: 0
@@ -10967,10 +11080,10 @@ let ReportsService = class ReportsService {
                 }
                 let patientbill = { $match: {} };
                 if (req.searchcriteria != '' && req.searchcriteria != null) {
-                    patientbill = { $match: { 'quantity': { $gt: 0 }, 'billno': '' } };
+                    patientbill = { $match: { 'chargecodes.patientbilluid': new mongoose_1.Types.ObjectId(req.searchcriteria) } };
                 }
                 else {
-                    patientbill = { $match: { 'quantity': { $gt: 0 }, 'billno': '*' } };
+                    patientbill = { $match: { 'chargecodes.patientbilluid': null } };
                 }
                 if (req.reporttemplateuid == '5bebdddc7a789a015391a428') {
                     patientbill = { $match: {} };
@@ -10997,18 +11110,12 @@ let ReportsService = class ReportsService {
                         };
                     }
                 }
-                let packageflag = { $match: {} };
-                if (req.ispackage == false) {
-                    packageflag = { $match: {
-                            'statusflag': 'A'
-                        } };
-                }
-                ;
                 const resultPatientbills = yield this.PatientchargecodesModel.aggregate([
                     {
                         $match: {
                             'patientvisituid': new mongoose_1.Types.ObjectId(req.patientvisituid),
                             "orguid": new mongoose_1.Types.ObjectId(req.organisationuid),
+                            'statusflag': 'A'
                         }
                     },
                     {
@@ -11144,14 +11251,6 @@ let ReportsService = class ReportsService {
                     { $lookup: { from: "patientorders", localField: "chargecodes.patientorderuid", foreignField: "_id", as: "patientorders1" } },
                     {
                         $unwind: { path: "$patientorders1", preserveNullAndEmptyArrays: true }
-                    },
-                    {
-                        $match: {
-                            "patientorders1.orderdate": {
-                                $gte: dateutils_1.default.convertGMTtoUTC(new Date(req.fromdate)),
-                                $lt: dateutils_1.default.convertGMTtoUTC(new Date(req.todate))
-                            }
-                        }
                     },
                     { $addFields: { orderdate: "$patientorders1.orderdate" } },
                     { $lookup: { from: "patientorders", localField: "chargecodes.patientorderitemuid", foreignField: "patientorderitems._id", as: "patientorders2" } },
@@ -14239,6 +14338,115 @@ let ReportsService = class ReportsService {
             return result;
         });
     }
+    findRTCommon310(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let result = [];
+            let careprovideruids = { $match: {} };
+            if (req.careprovideruids != '') {
+                careprovideruids = {
+                    $match: {
+                        'patientorders.patientorderitems.careprovideruid': new mongoose_1.Types.ObjectId(req.careprovideruids),
+                    }
+                };
+            }
+            try {
+                const _user = yield this.findOrgByLoginId(req.loginuid);
+                let fromdate = dateutils_1.default.convertISOtoDatetimeSlash(dateutils_1.default.convertUTCtoGMT(new Date(req.fromdate)));
+                let todate = dateutils_1.default.convertISOtoDatetimeSlash(dateutils_1.default.convertUTCtoGMT(new Date(req.todate)));
+                const resultPatientorders = yield this.patientbillsModel.aggregate([
+                    {
+                        $match: {
+                            "orguid": new mongoose_1.Types.ObjectId(req.organisationuid),
+                            'iscancelled': false,
+                            "statusflag": "A",
+                            'billdate': {
+                                $gte: new Date(req.fromdate),
+                                $lte: new Date(req.todate)
+                            },
+                        }
+                    },
+                    { $unwind: '$patientbilleditems' },
+                    { $lookup: { from: "orderitems", localField: "patientbilleditems.orderitemuid", foreignField: "_id", as: "orderitems" } },
+                    { $unwind: { path: "$orderitems", preserveNullAndEmptyArrays: true } },
+                    { $match: { 'orderitems.isdoctorshareitem': true } },
+                    { $lookup: { from: "patientorders", localField: "patientbilleditems.patientorderitemuid", foreignField: "patientorderitems._id", as: "patientorders" } },
+                    { $unwind: { path: "$patientorders", preserveNullAndEmptyArrays: true } },
+                    careprovideruids,
+                    { $lookup: { from: "users", localField: "patientorders.patientorderitems.careprovideruid", foreignField: "_id", as: "doctor" } },
+                    { $unwind: { path: "$doctor", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "departments", localField: "patientorders.orderdepartmentuid", foreignField: "_id", as: "departments" } },
+                    { $unwind: { path: "$departments", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "ordercategories", localField: "orderitems.ordercatuid", foreignField: "_id", as: "ordercategories2" } },
+                    { $unwind: { path: "$ordercategories2", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "referencevalues", localField: "patientorders.patientorderitems.statusuid", foreignField: "_id", as: "ordersts" } },
+                    { $unwind: { path: "$ordersts", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "users", localField: "patientorders.patientorderitems.executedby", foreignField: "_id", as: "executedby" } },
+                    { $unwind: { path: "$executedby", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "patientvisits", localField: "patientvisituid", foreignField: "_id", as: "patientvisits" } },
+                    { $unwind: { path: "$patientvisits", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "patients", localField: "patientuid", foreignField: "_id", as: "patients" } },
+                    { $unwind: { path: "$patients", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "referencevalues", localField: "patients.preflanguid", foreignField: "_id", as: "preflang" } },
+                    { $unwind: { path: "$preflang", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "referencevalues", localField: "patients.titleuid", foreignField: "_id", as: "nametitle" } },
+                    { $unwind: { path: "$nametitle", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "referencevalues", localField: "patients.localnametitleuid", foreignField: "_id", as: "localnametitle" } },
+                    { $unwind: { path: "$localnametitle", preserveNullAndEmptyArrays: true } },
+                    {
+                        $project: {
+                            fromdate: fromdate,
+                            todate: todate,
+                            user: _user.name,
+                            DoctorCode: { $ifNull: ['$doctor.code', '-'] },
+                            DoctorName: { $ifNull: ['$doctor.description', '-'] },
+                            Type: { $ifNull: [{ $cond: { if: { $eq: [{ $substr: ["$patientvisits.visitid", 0, 1] }, "I"] }, then: "I", else: "O" } }, '-'] },
+                            ordernumber: { $ifNull: ['$patientorders.ordernumber', '-'] },
+                            HN: { $ifNull: ['$patients.mrn', '-'] },
+                            EN: { $ifNull: ['$patientvisits.visitid', '-'] },
+                            PatientName: {
+                                $cond: {
+                                    if: { $eq: ["$preflang.valuedescription", "Thai"] },
+                                    then: {
+                                        $cond: {
+                                            if: { $eq: ["$patients.isanonymous", true] },
+                                            then: { $concat: [{ $ifNull: ['$localnametitle.valuedescription', ""] }, " Anonymous"] },
+                                            else: { $concat: [{ $ifNull: ["$localnametitle.valuedescription", ""] }, " ", { $ifNull: ["$patients.localfirstname", ""] }, " ", { $ifNull: ["$patients.localmiddlename", ""] }, " ", { $ifNull: ["$patients.locallastname", ""] }] }
+                                        }
+                                    },
+                                    else: {
+                                        $cond: {
+                                            if: { $eq: ["$patients.isanonymous", true] },
+                                            then: { $concat: [{ $ifNull: ['$nametitle.valuedescription', ""] }, " Anonymous"] },
+                                            else: { $concat: [{ $ifNull: ["$nametitle.valuedescription", ""] }, " ", { $ifNull: ["$patients.firstname", ""] }, " ", { $ifNull: ["$patients.middlename", ""] }, " ", { $ifNull: ["$patients.lastname", ""] }] }
+                                        }
+                                    }
+                                }
+                            },
+                            PatientOrderDate: { $dateToString: { format: "%d/%m/%Y %H:%M", date: "$patientorders.orderdate", timezone: "+07:00", onNull: "-" } },
+                            OrderItem: { $ifNull: ['$orderitems.name', '-'] },
+                            CodeOrder: { $ifNull: ['$orderitems.code', '-'] },
+                            DoctorFee: { $ifNull: ['$orderitems.isdoctorshareitem', '-'] },
+                            Execute: { $ifNull: ['$orderitems.istaskgenerationreqd', '-'] },
+                            DF: { $ifNull: ['$patientbilleditems.netamount', '-'] },
+                            StatusOrder: { $ifNull: ['$ordersts.valuedescription', '-'] },
+                            TypeOrder: { $ifNull: ['$ordercategories2.description', '-'] },
+                            Location: { $ifNull: ['$departments.name', '-'] },
+                            VerifyDate: { $dateToString: { format: "%d/%m/%Y", date: "$patientorders.waitingtime", timezone: "+07:00", onNull: "-" } },
+                            VerifyTime: { $dateToString: { format: "%H:%M", date: "$patientorders.waitingtime", timezone: "+07:00", onNull: "-" } },
+                            BillDate: { $dateToString: { format: "%d/%m/%Y", date: '$billdate', timezone: "+07:00", onNull: "-" } },
+                            BillNo: { $ifNull: ['$sequencenumber', '-'] },
+                            UserKey: { $ifNull: ['$executedby.description', '-'] },
+                        }
+                    }
+                ]).exec();
+                result = resultPatientorders;
+            }
+            catch (error) {
+                this.logger.error('findRTCommon310 error:', error);
+            }
+            return result;
+        });
+    }
     findRTCommon311(req) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = [];
@@ -15328,7 +15536,7 @@ let ReportsService = class ReportsService {
                     { $unwind: '$patientorderitems' },
                     careprovideruids,
                     { $match: { 'patientorderitems.isdoctorshareitem': true } },
-                    { $lookup: { from: "ordercategories", localField: "patientorderitems.ordercatuid", foreignField: "_id", as: "ordercategories2" } },
+                    { $lookup: { from: "ordercategories", localField: "orderitems.ordercatuid", foreignField: "_id", as: "ordercategories2" } },
                     { $unwind: { path: "$ordercategories2", preserveNullAndEmptyArrays: true } },
                     { $lookup: { from: "referencevalues", localField: "patientorderitems.statusuid", foreignField: "_id", as: "ordersts" } },
                     { $unwind: { path: "$ordersts", preserveNullAndEmptyArrays: true } },
@@ -15571,8 +15779,11 @@ let ReportsService = class ReportsService {
                     {
                         $unwind: { path: "$tpas", preserveNullAndEmptyArrays: true }
                     },
+                    { $lookup: { from: "organisations", localField: "orguid", foreignField: "_id", as: "organisations" } },
+                    { $unwind: { path: "$organisations", preserveNullAndEmptyArrays: true } },
                     {
                         $project: {
+                            orgname: { $ifNull: ["$organisations.name", "-"] },
                             groupCashier: { $ifNull: ["$users.description", "-"] },
                             groupType: { $cond: { if: { $eq: [{ $substr: ["$patientvisits.visitid", 0, 1] }, "I"] }, then: "IPD", else: "OPD" } },
                             sequencenumber: { $ifNull: ["$sequencenumber", "-"] },
@@ -15580,8 +15791,8 @@ let ReportsService = class ReportsService {
                             PatientName: { $concat: [{ $ifNull: ["$nametitle.valuedescription", ""] }, " ", { $ifNull: ["$patients.localfirstname", ""] }, " ", { $ifNull: ["$patients.localmiddlename", ""] }, " ", { $ifNull: ["$patients.locallastname", ""] }] },
                             description: { $ifNull: ["$tpas.description", "-"] },
                             totalbillamount: { $ifNull: ["$totalbillamount", 0] },
-                            startdate: dateutils_1.default.convertISOtoMonthTextUsingSpaceDatetime(dateutils_1.default.convertUTCtoGMT(new Date(req.fromdate))),
-                            enddate: dateutils_1.default.convertISOtoMonthTextUsingSpaceDatetime(dateutils_1.default.convertUTCtoGMT(new Date(req.todate))),
+                            startdate: { $dateToString: { format: "%d/%m/%Y", date: new Date(req.fromdate), timezone: "+07:00", onNull: "-" } },
+                            enddate: { $dateToString: { format: "%d/%m/%Y", date: new Date(req.todate), timezone: "+07:00", onNull: "-" } },
                             user: _user.name
                         }
                     },
@@ -15690,8 +15901,11 @@ let ReportsService = class ReportsService {
                     {
                         $unwind: { path: "$refPaymentmodeuid", preserveNullAndEmptyArrays: true }
                     },
+                    { $lookup: { from: "organisations", localField: "orguid", foreignField: "_id", as: "organisations" } },
+                    { $unwind: { path: "$organisations", preserveNullAndEmptyArrays: true } },
                     {
                         $project: {
+                            orgname: { $ifNull: ["$organisations.name", "-"] },
                             cashierCode: { $ifNull: ["$users.code", "-"] },
                             cashierDesc: { $ifNull: ["$users.description", "-"] },
                             Desc: { $ifNull: ["$refPaymentmodeuid.valuedescription", "-"] },
@@ -18265,7 +18479,7 @@ let ReportsService = class ReportsService {
                     { $lookup: { from: "ordercategories", localField: "patientorderitems.ordercatuid", foreignField: "_id", as: "ordercategories" } },
                     { $unwind: { path: "$ordercategories", preserveNullAndEmptyArrays: true } },
                     { $match: { "$or": [{ "ordercategories.description": "Medicine" }, { "ordercategories.description": "Drug Supply" }, { "ordercategories.description": "Medicine Supply" }] } },
-                    { $lookup: { from: "ordercategories", localField: "patientorderitems.ordersubcatuid", foreignField: "_id", as: "ordercategories2" } },
+                    { $lookup: { from: "ordercategories", localField: "orderitems.ordercatuid", foreignField: "_id", as: "ordercategories2" } },
                     { $unwind: { path: "$ordercategories2", preserveNullAndEmptyArrays: true } },
                     { $lookup: { from: "departments", localField: "orderdepartmentuid", foreignField: "_id", as: "departments" } },
                     { $unwind: { path: "$departments", preserveNullAndEmptyArrays: true } },
@@ -39348,11 +39562,11 @@ let ReportsService = class ReportsService {
                     { $addFields: { 'firstdiagnoses': { $arrayElemAt: ['$diagnoses', 0] } } },
                     { $unwind: { path: "$diagnoses", preserveNullAndEmptyArrays: true } },
                     { $addFields: { 'diagnosistext': { $ifNull: ['$diagnoses.diagnosistext', ""] } } },
-                    { $addFields: { 'firstdiag': { $arrayElemAt: ['$firstdiagnoses.diagnosis._id', 0] } } },
+                    { $addFields: { 'firstdiag': { $ifNull: [{ $arrayElemAt: ['$firstdiagnoses.diagnosis._id', 0] }, ""] } } },
                     { $unwind: { path: "$diagnoses.diagnosis", preserveNullAndEmptyArrays: true } },
                     { $addFields: { cd: { $cond: { if: { $eq: ["$diagnoses.createdat", { $ifNull: ['$diagnoses.diagnosis.createdat', "$diagnoses.createdat"] }] }, then: 'Y', else: 'N' } } } },
-                    { $addFields: { 'diag_id': '$diagnoses.diagnosis._id' } },
-                    { $addFields: { diagseq0: { $cond: { if: { $or: [{ $eq: ["$firstdiag", null] }, { $eq: ["$firstdiag", '$diag_id'] }] }, then: 'Y', else: 'N' } } } },
+                    { $addFields: { 'diag_id': { $ifNull: ['$diagnoses.diagnosis._id', ""] } } },
+                    { $addFields: { diagseq0: { $cond: { if: { $eq: ["$firstdiag", '$diag_id'] }, then: 'Y', else: 'N' } } } },
                     { $lookup: { from: "problems", localField: "diagnoses.diagnosis.problemuid", foreignField: "_id", as: "problems" } },
                     { $unwind: { path: "$problems", preserveNullAndEmptyArrays: true } },
                     { $lookup: { from: "users", localField: "diagnoses.diagnosis.careprovideruid", foreignField: "_id", as: "doctor" } },
@@ -39573,11 +39787,11 @@ let ReportsService = class ReportsService {
                     { $addFields: { 'firstdiagnoses': { $arrayElemAt: ['$diagnoses', 0] } } },
                     { $unwind: { path: "$diagnoses", preserveNullAndEmptyArrays: true } },
                     { $addFields: { 'diagnosistext': { $ifNull: ['$diagnoses.diagnosistext', ""] } } },
-                    { $addFields: { 'firstdiag': { $arrayElemAt: ['$firstdiagnoses.diagnosis._id', 0] } } },
+                    { $addFields: { 'firstdiag': { $ifNull: [{ $arrayElemAt: ['$firstdiagnoses.diagnosis._id', 0] }, ""] } } },
                     { $unwind: { path: "$diagnoses.diagnosis", preserveNullAndEmptyArrays: true } },
                     { $addFields: { cd: { $cond: { if: { $eq: ["$diagnoses.createdat", { $ifNull: ['$diagnoses.diagnosis.createdat', "$diagnoses.createdat"] }] }, then: 'Y', else: 'N' } } } },
-                    { $addFields: { 'diag_id': '$diagnoses.diagnosis._id' } },
-                    { $addFields: { diagseq0: { $cond: { if: { $or: [{ $eq: ["$firstdiag", null] }, { $eq: ["$firstdiag", '$diag_id'] }] }, then: 'Y', else: 'N' } } } },
+                    { $addFields: { 'diag_id': { $ifNull: ['$diagnoses.diagnosis._id', ""] } } },
+                    { $addFields: { diagseq0: { $cond: { if: { $eq: ["$firstdiag", '$diag_id'] }, then: 'Y', else: 'N' } } } },
                     { $lookup: { from: "problems", localField: "diagnoses.diagnosis.problemuid", foreignField: "_id", as: "problems" } },
                     { $unwind: { path: "$problems", preserveNullAndEmptyArrays: true } },
                     { $lookup: { from: "users", localField: "diagnoses.diagnosis.careprovideruid", foreignField: "_id", as: "doctor" } },
@@ -39824,6 +40038,7 @@ let ReportsService = class ReportsService {
                             SE: { $ifNull: [{ $trunc: { $divide: [{ $subtract: ["$ConsultationStarted", "$ScreeningCompleted"] }, 1000 * 60] } }, 0] },
                             CS: { $ifNull: [{ $trunc: { $divide: [{ $subtract: ["$ConsultationCompleted", "$ConsultationStarted"] }, 1000 * 60] } }, 0] },
                             MC: { $ifNull: [{ $trunc: { $divide: [{ $subtract: ["$MedicalDischarge", "$ConsultationCompleted"] }, 1000 * 60] } }, 0] },
+                            MS: { $ifNull: [{ $trunc: { $divide: [{ $subtract: ["$MedicalDischarge", "$ConsultationStarted"] }, 1000 * 60] } }, 0] },
                             BM: { $ifNull: [{ $trunc: { $divide: [{ $subtract: ["$BillingInprogress", "$MedicalDischarge"] }, 1000 * 60] } }, 0] },
                             FB: { $ifNull: [{ $trunc: { $divide: [{ $subtract: ["$FinancialDischarge", "$BillingInprogress"] }, 1000 * 60] } }, 0] },
                             ALL: { $ifNull: [{ $trunc: { $divide: [{ $subtract: ["$FinancialDischarge", "$_id.startdate"] }, 1000 * 60] } }, 0] },
@@ -39966,6 +40181,8 @@ let ReportsService = class ReportsService {
                                             { $and: [{ $eq: ['$ET', "H"] }, { $eq: ['$firstdepartmentflag', "Y"] }, { $and: [{ $ne: ['$visittype', "Health Promotion"] }, { $ne: ['$visittype', "Buy Medicine without see doctor"] },] }] }
                                         ] }, then: 1, else: 0 } } } },
                     { $addFields: { H: { $cond: { if: { $and: [{ $eq: ['$ET', "H"] }, { $eq: ['$firstdepartmentflag', "Y"] }, { $or: [{ $eq: ['$visittype', "Health Promotion"] }, { $eq: ['$visittype', "Buy Medicine without see doctor"] },] }] }, then: 1, else: 0 } } } },
+                    { $addFields: { H1: { $cond: { if: { $and: [{ $eq: ['$ET', "H"] }, { $eq: ['$firstdepartmentflag', "Y"] }, { $eq: ['$visittype', "Health Promotion"] }] }, then: 1, else: 0 } } } },
+                    { $addFields: { H2: { $cond: { if: { $and: [{ $eq: ['$ET', "H"] }, { $eq: ['$firstdepartmentflag', "Y"] }, { $eq: ['$visittype', "Buy Medicine without see doctor"] }] }, then: 1, else: 0 } } } },
                     { $addFields: { I: { $cond: { if: { $and: [{ $eq: ['$ET', "I"] }, { $eq: ['$firstdepartmentflag', "Y"] },] }, then: 1, else: 0 } } } },
                     { $addFields: { C: { $cond: { if: { $eq: ['$firstdepartmentflag', "N"] }, then: 1, else: 0 } } } },
                     { $addFields: { entype: { $cond: { if: { $eq: ['$E', 1] }, then: "E", else: { $cond: { if: { $eq: ['$O', 1] }, then: "O", else: { $cond: { if: { $eq: ['$H', 1] }, then: "H", else: { $cond: { if: { $eq: ['$I', 1] }, then: "I", else: { $cond: { if: { $eq: ['$C', 1] }, then: "C", else: "" } }
@@ -39986,6 +40203,8 @@ let ReportsService = class ReportsService {
                             E: '$E',
                             O: '$O',
                             H: '$H',
+                            H1: '$H1',
+                            H2: '$H2',
                             I: '$I',
                             C: '$C',
                             user: _user.name,
@@ -40074,9 +40293,12 @@ let ReportsService = class ReportsService {
                                             { $and: [{ $eq: ['$ET', "H"] }, { $eq: ['$firstdepartmentflag', "Y"] }, { $and: [{ $ne: ['$visittype', "Health Promotion"] }, { $ne: ['$visittype', "Buy Medicine without see doctor"] },] }] }
                                         ] }, then: 1, else: 0 } } } },
                     { $addFields: { H: { $cond: { if: { $and: [{ $eq: ['$ET', "H"] }, { $eq: ['$firstdepartmentflag', "Y"] }, { $or: [{ $eq: ['$visittype', "Health Promotion"] }, { $eq: ['$visittype', "Buy Medicine without see doctor"] },] }] }, then: 1, else: 0 } } } },
+                    { $addFields: { H1: { $cond: { if: { $and: [{ $eq: ['$ET', "H"] }, { $eq: ['$firstdepartmentflag', "Y"] }, { $eq: ['$visittype', "Health Promotion"] }] }, then: 1, else: 0 } } } },
+                    { $addFields: { H2: { $cond: { if: { $and: [{ $eq: ['$ET', "H"] }, { $eq: ['$firstdepartmentflag', "Y"] }, { $eq: ['$visittype', "Buy Medicine without see doctor"] }] }, then: 1, else: 0 } } } },
                     { $addFields: { I: { $cond: { if: { $and: [{ $eq: ['$ET', "I"] }, { $eq: ['$firstdepartmentflag', "Y"] },] }, then: 1, else: 0 } } } },
                     { $addFields: { C: { $cond: { if: { $eq: ['$firstdepartmentflag', "N"] }, then: 1, else: 0 } } } },
-                    { $addFields: { entype: { $cond: { if: { $eq: ['$E', 1] }, then: "E", else: { $cond: { if: { $eq: ['$O', 1] }, then: "O", else: { $cond: { if: { $eq: ['$H', 1] }, then: "H", else: { $cond: { if: { $eq: ['$I', 1] }, then: "I", else: { $cond: { if: { $eq: ['$C', 1] }, then: "C", else: "" } }
+                    { $addFields: { entype: { $cond: { if: { $eq: ['$E', 1] }, then: "E", else: { $cond: { if: { $eq: ['$O', 1] }, then: "O", else: { $cond: { if: { $eq: ['$H1', 1] }, then: "H1", else: { $cond: { if: { $eq: ['$I', 1] }, then: "I", else: { $cond: { if: { $eq: ['$C', 1] }, then: "C", else: { $cond: { if: { $eq: ['$H2', 1] }, then: "H2", else: "" } }
+                                                                } }
                                                         } }
                                                 } }
                                         } }
@@ -40094,6 +40316,8 @@ let ReportsService = class ReportsService {
                             E: '$E',
                             O: '$O',
                             H: '$H',
+                            H1: '$H1',
+                            H2: '$H2',
                             I: '$I',
                             C: '$C',
                             user: _user.name,
@@ -40620,7 +40844,7 @@ let ReportsService = class ReportsService {
                     if (req.storeuid != '' && req.storeuid != null) {
                         storeuid = {
                             $match: {
-                                'invstoreuid': new mongoose_1.Types.ObjectId(req.storeuid),
+                                'fromstoreuid': new mongoose_1.Types.ObjectId(req.storeuid),
                             }
                         };
                     }
@@ -40629,11 +40853,11 @@ let ReportsService = class ReportsService {
                     req.storeuid = '';
                 }
                 const _user = yield this.findOrgByLoginId(req.loginuid);
-                const resultpatientorders = yield this.patientordersModel.aggregate([
+                const resultpatientorders = yield this.StockdispensesModel.aggregate([
                     {
                         $match: {
                             'orguid': new mongoose_1.Types.ObjectId(req.organisationuid),
-                            'orderdate': {
+                            'dispensedate': {
                                 $gte: dateutils_1.default.convertGMTtoUTC(new Date(req.fromdate)),
                                 $lte: dateutils_1.default.convertGMTtoUTC(new Date(req.todate))
                             },
@@ -40642,37 +40866,38 @@ let ReportsService = class ReportsService {
                     }, storeuid,
                     { $lookup: { from: "organisations", localField: "orguid", foreignField: "_id", as: "organisations" } },
                     { $unwind: { path: "$organisations", preserveNullAndEmptyArrays: true } },
-                    { $unwind: { path: '$patientorderitems', preserveNullAndEmptyArrays: true } },
-                    { $match: { 'patientorderitems.ordercattype': 'SUPPLY' } },
-                    { $lookup: { from: 'referencevalues', localField: 'patientorderitems.statusuid', foreignField: '_id', as: 'referencevalues' } },
+                    { $lookup: { from: "patientorders", localField: "patientorderuid", foreignField: "_id", as: "patientorders" } },
+                    { $unwind: { path: "$patientorders", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: 'departments', localField: 'patientorders.orderdepartmentuid', foreignField: '_id', as: 'departments' } },
+                    { $unwind: { path: '$departments', preserveNullAndEmptyArrays: true } },
+                    { $unwind: { path: '$itemdetails', preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: 'referencevalues', localField: 'itemdetails.statusuid', foreignField: '_id', as: 'referencevalues' } },
                     { $unwind: { path: '$referencevalues', preserveNullAndEmptyArrays: true } },
                     { $match: { 'referencevalues.valuedescription': { $ne: 'Cancelled""' } } },
-                    { $lookup: { from: 'itemmasters', localField: 'patientorderitems.orderitemuid', foreignField: 'orderitemuid', as: 'itemmasters' } },
+                    { $lookup: { from: 'itemmasters', localField: 'itemdetails.itemmasteruid', foreignField: '_id', as: 'itemmasters' } },
                     { $unwind: { path: '$itemmasters', preserveNullAndEmptyArrays: true } },
-                    { $addFields: { p_index: { $indexOfArray: ['$itemmasters.handlingstores.storeuid', '$invstoreuid'] } } },
+                    { $addFields: { p_index: { $indexOfArray: ['$itemmasters.handlingstores.storeuid', '$fromstoreuid'] } } },
                     { $addFields: { p_storeuid: { $arrayElemAt: ['$itemmasters.handlingstores.storeuid', '$p_index'] } } },
                     { $unwind: { path: '$itemmasters.handlingstores', preserveNullAndEmptyArrays: true } },
-                    { $match: { $expr: { $eq: ['$itemmasters.handlingstores.storeuid', '$invstoreuid'] } } },
+                    { $match: { $expr: { $eq: ['$itemmasters.handlingstores.storeuid', '$fromstoreuid'] } } },
                     { $addFields: { p_binuid: '$itemmasters.handlingstores.binuid' } },
                     { $lookup: { from: 'inventorystores', localField: 'p_storeuid', foreignField: '_id', as: 'inventory' } },
                     { $unwind: { path: '$inventory', preserveNullAndEmptyArrays: true } },
                     { $addFields: { b_index: { $indexOfArray: ['$inventory.storebins._id', '$p_binuid'] } } },
                     { $addFields: { b_array: { $arrayElemAt: ['$inventory.storebins.name', { $cond: { if: { $eq: ['$b_index', -1] }, then: null, else: '$b_index' } }] }, } },
-                    { $lookup: { from: 'departments', localField: 'orderdepartmentuid', foreignField: '_id', as: 'departments' } },
-                    { $unwind: { path: '$departments', preserveNullAndEmptyArrays: true } },
-                    { $lookup: { from: 'referencevalues', localField: 'patientorderitems.quantityUOM', foreignField: '_id', as: 'uom' } },
+                    { $lookup: { from: 'referencevalues', localField: 'itemdetails.quantityuom', foreignField: '_id', as: 'uom' } },
                     { $unwind: { path: '$uom', preserveNullAndEmptyArrays: true } },
                     { $group: { _id: {
                                 department: '$departments.name',
-                                chargecode: '$patientorderitems.chargecode',
-                                orderitemname: '$patientorderitems.orderitemname',
+                                chargecode: '$itemmasters.code',
+                                orderitemname: '$itemmasters.name',
                                 binname: '$b_array',
                                 uom: '$uom.valuedescription',
                                 ordercattype: '$ordercattype',
                                 store: '$inventory.name',
                                 orgname: { $ifNull: ['$organisations.name', '-'] },
                             },
-                            quantity: { $sum: '$patientorderitems.quantity' },
+                            quantity: { $sum: '$itemdetails.quantity' },
                         } },
                     { $project: {
                             department: '$_id.department',
@@ -40837,11 +41062,11 @@ let ReportsService = class ReportsService {
                     { $addFields: { 'firstdiagnoses': { $arrayElemAt: ['$diagnoses', 0] } } },
                     { $unwind: { path: "$diagnoses", preserveNullAndEmptyArrays: true } },
                     { $addFields: { 'diagnosistext': { $ifNull: ['$diagnoses.diagnosistext', ""] } } },
-                    { $addFields: { 'firstdiag': { $arrayElemAt: ['$firstdiagnoses.diagnosis._id', 0] } } },
+                    { $addFields: { 'firstdiag': { $ifNull: [{ $arrayElemAt: ['$firstdiagnoses.diagnosis._id', 0] }, ""] } } },
                     { $unwind: { path: "$diagnoses.diagnosis", preserveNullAndEmptyArrays: true } },
                     { $addFields: { cd: { $cond: { if: { $eq: ["$diagnoses.createdat", { $ifNull: ['$diagnoses.diagnosis.createdat', "$diagnoses.createdat"] }] }, then: 'Y', else: 'N' } } } },
-                    { $addFields: { 'diag_id': '$diagnoses.diagnosis._id' } },
-                    { $addFields: { diagseq0: { $cond: { if: { $or: [{ $eq: ["$firstdiag", null] }, { $eq: ["$firstdiag", '$diag_id'] }] }, then: 'Y', else: 'N' } } } },
+                    { $addFields: { 'diag_id': { $ifNull: ['$diagnoses.diagnosis._id', ""] } } },
+                    { $addFields: { diagseq0: { $cond: { if: { $eq: ["$firstdiag", '$diag_id'] }, then: 'Y', else: 'N' } } } },
                     { $lookup: { from: "problems", localField: "diagnoses.diagnosis.problemuid", foreignField: "_id", as: "problems" } },
                     { $unwind: { path: "$problems", preserveNullAndEmptyArrays: true } },
                     { $lookup: { from: "users", localField: "diagnoses.diagnosis.careprovideruid", foreignField: "_id", as: "doctor" } },
@@ -41070,11 +41295,11 @@ let ReportsService = class ReportsService {
                     { $addFields: { 'firstdiagnoses': { $arrayElemAt: ['$diagnoses', 0] } } },
                     { $unwind: { path: "$diagnoses", preserveNullAndEmptyArrays: true } },
                     { $addFields: { 'diagnosistext': { $ifNull: ['$diagnoses.diagnosistext', ""] } } },
-                    { $addFields: { 'firstdiag': { $arrayElemAt: ['$firstdiagnoses.diagnosis._id', 0] } } },
+                    { $addFields: { 'firstdiag': { $ifNull: [{ $arrayElemAt: ['$firstdiagnoses.diagnosis._id', 0] }, ""] } } },
                     { $unwind: { path: "$diagnoses.diagnosis", preserveNullAndEmptyArrays: true } },
                     { $addFields: { cd: { $cond: { if: { $eq: ["$diagnoses.createdat", { $ifNull: ['$diagnoses.diagnosis.createdat', "$diagnoses.createdat"] }] }, then: 'Y', else: 'N' } } } },
-                    { $addFields: { 'diag_id': '$diagnoses.diagnosis._id' } },
-                    { $addFields: { diagseq0: { $cond: { if: { $or: [{ $eq: ["$firstdiag", null] }, { $eq: ["$firstdiag", '$diag_id'] }] }, then: 'Y', else: 'N' } } } },
+                    { $addFields: { 'diag_id': { $ifNull: ['$diagnoses.diagnosis._id', ""] } } },
+                    { $addFields: { diagseq0: { $cond: { if: { $eq: ["$firstdiag", '$diag_id'] }, then: 'Y', else: 'N' } } } },
                     { $lookup: { from: "problems", localField: "diagnoses.diagnosis.problemuid", foreignField: "_id", as: "problems" } },
                     { $unwind: { path: "$problems", preserveNullAndEmptyArrays: true } },
                     { $lookup: { from: "users", localField: "diagnoses.diagnosis.careprovideruid", foreignField: "_id", as: "doctor" } },
@@ -41272,6 +41497,19 @@ let ReportsService = class ReportsService {
             catch (res) {
                 req.ordersubcategoryuids = '';
             }
+            let patientt = { $match: {} };
+            try {
+                if (req.patientuid != '' && req.patientuid != null) {
+                    patientt = {
+                        $match: {
+                            'patientuid': new mongoose_1.Types.ObjectId(req.patientuid),
+                        }
+                    };
+                }
+            }
+            catch (res) {
+                req.patientuid = '';
+            }
             try {
                 const resultpatientvisits = yield this.patientordersModel.aggregate([
                     {
@@ -41282,6 +41520,7 @@ let ReportsService = class ReportsService {
                         }
                     },
                     { $unwind: { path: '$patientorderitems', preserveNullAndEmptyArrays: true } },
+                    patientt,
                     ordercategory,
                     ordersubcategory,
                     { $lookup: { from: "organisations", localField: "orguid", foreignField: "_id", as: "organisations" } },
@@ -41382,8 +41621,17 @@ let ReportsService = class ReportsService {
                         }
                     },
                     { $lookup: { from: "patientvisits", localField: "patientvisituid", foreignField: "_id", as: "patientvisits" } },
+                    { $addFields: { "reftypeuid": { $arrayElemAt: ["$patientvisits.refererdetail.reftypeuid", 0] } } },
+                    { $lookup: { from: "referencevalues", localField: "reftypeuid", foreignField: "_id", as: "referaltype" } },
+                    { $unwind: { path: "$referaltype", preserveNullAndEmptyArrays: true } },
                     { $unwind: { path: "$patientvisits", preserveNullAndEmptyArrays: true } },
                     { $lookup: { from: "patients", localField: "patientuid", foreignField: "_id", as: "patients" } },
+                    { $addFields: { "cityuid": { $arrayElemAt: ["$patients.address.cityuid", 0] } } },
+                    { $lookup: { from: "cities", localField: "cityuid", foreignField: "_id", as: "cities" } },
+                    { $unwind: { path: "$cities", preserveNullAndEmptyArrays: true } },
+                    { $addFields: { "stateuid": { $arrayElemAt: ["$patients.address.stateuid", 0] } } },
+                    { $lookup: { from: "states", localField: "stateuid", foreignField: "_id", as: "states" } },
+                    { $unwind: { path: "$states", preserveNullAndEmptyArrays: true } },
                     { $unwind: { path: "$patients", preserveNullAndEmptyArrays: true } },
                     { $lookup: { from: "referencevalues", localField: "patients.titleuid", foreignField: "_id", as: "nametitle" } },
                     { $unwind: { path: "$nametitle", preserveNullAndEmptyArrays: true } },
@@ -41401,9 +41649,14 @@ let ReportsService = class ReportsService {
                     { $unwind: { path: "$payors", preserveNullAndEmptyArrays: true } },
                     { $lookup: { from: "referencevalues", localField: "payors.payortypeuid", foreignField: "_id", as: "payortype" } },
                     { $unwind: { path: "$payortype", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "referencevalues", localField: "patients.patienttypeuid", foreignField: "_id", as: "patienttype" } },
+                    { $unwind: { path: "$patienttype", preserveNullAndEmptyArrays: true } },
                     {
                         $project: {
                             _id: 0,
+                            cities: { $ifNull: ['$cities.name', ''] },
+                            states: { $ifNull: ['$states.name', ''] },
+                            referaltype: { $ifNull: ['$referaltype.valuedescription', ''] },
                             mrn: { $ifNull: ['$patients.mrn', '-'] },
                             patientname: {
                                 $cond: {
@@ -41430,6 +41683,7 @@ let ReportsService = class ReportsService {
                             cashier: '$cashier.name',
                             printby: _user.name,
                             visitdate: { $dateToString: { format: "%Y-%m-%d %H:%M", date: "$patientvisits.startdate", timezone: "+07:00", onNull: "-" } },
+                            patienttype: { $ifNull: ['$patienttype.valuedescription', '-'] },
                         }
                     },
                 ]).exec();
@@ -41587,7 +41841,138 @@ let ReportsService = class ReportsService {
                 result = resultpatientvisits;
             }
             catch (error) {
-                this.logger.error('findRTCommon850:', error);
+                this.logger.error('findRTCommon851:', error);
+            }
+            return result;
+        });
+    }
+    findRTCommon854(req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let result = [];
+            try {
+                const resultOdrItms = yield this.patientvisitsModel.aggregate([
+                    { $match: {
+                            '_id': new mongoose_1.Types.ObjectId(req.patientvisituid)
+                        } },
+                    { $lookup: { from: "patients", localField: "patientuid", foreignField: "_id", as: "patients" } },
+                    { $unwind: { path: "$patients", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "patientchargecodes", localField: "_id", foreignField: "patientvisituid", as: "patientchargecodes" } },
+                    { $unwind: { path: "$patientchargecodes", preserveNullAndEmptyArrays: true } },
+                    { $unwind: { path: "$patientchargecodes.chargecodes", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "patientorders", localField: "_id", foreignField: "patientvisituid", as: "patientorders" } },
+                    { $unwind: { path: "$patientorders", preserveNullAndEmptyArrays: true } },
+                    { $match: { $expr: { $eq: ['$patientorders.ordernumber', '$patientchargecodes.chargecodes.ordernumber'] } } },
+                    { $lookup: { from: "orderitems", localField: "patientchargecodes.chargecodes.orderitemuid", foreignField: "_id", as: "orderitems" } },
+                    { $unwind: { path: "$orderitems", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "billingservices", localField: "orderitems.billingserviceuid", foreignField: "_id", as: "billingservice" } },
+                    { $unwind: { path: "$billingservice", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "billinggroups", localField: "patientchargecodes.chargecodes.billinggroupuid", foreignField: "_id", as: "billinggroup" } },
+                    { $unwind: { path: "$billinggroup", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "billinggroups", localField: "patientchargecodes.chargecodes.billingsubgroupuid", foreignField: "_id", as: "billingsubgroup" } },
+                    { $unwind: { path: "$billingsubgroup", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "referencevalues", localField: "entypeuid", foreignField: "_id", as: "entype" } },
+                    { $unwind: { path: "$entype", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "ordercategories", localField: "orderitems.ordercatuid", foreignField: "_id", as: "ordercate" } },
+                    { $unwind: { path: "$ordercate", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "ordercategories", localField: "orderitems.ordersubcatuid", foreignField: "_id", as: "ordersubcate" } },
+                    { $unwind: { path: "$ordersubcate", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "referencevalues", localField: "patients.preflanguid", foreignField: "_id", as: "preflang" } },
+                    { $unwind: { path: "$preflang", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "referencevalues", localField: "patients.titleuid", foreignField: "_id", as: "nametitle" } },
+                    { $unwind: { path: "$nametitle", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "referencevalues", localField: "patients.localnametitleuid", foreignField: "_id", as: "localnametitle" } },
+                    { $unwind: { path: "$localnametitle", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "referencevalues", localField: "orderitems.incomesourceuid", foreignField: "_id", as: "incomesource" } },
+                    { $unwind: { path: "$incomesource", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "patientbills", localField: "patientchargecodes.chargecodes.patientbilluid", foreignField: "_id", as: "patientbills" } },
+                    { $unwind: { path: "$patientbills", preserveNullAndEmptyArrays: true } },
+                    { $lookup: { from: "departments", localField: "patientchargecodes.chargecodes.departmentuid", foreignField: "_id", as: "departments" } },
+                    { $unwind: { path: "$departments", preserveNullAndEmptyArrays: true } },
+                    { $addFields: {
+                            cost_arry: {
+                                $filter: {
+                                    input: "$patientbills.patientbilleditems", as: "bill", cond: { $eq: ["$$bill.chargecodeuid", '$patientchargecodes.chargecodes._id'] },
+                                }
+                            }
+                        }
+                    },
+                    { $addFields: { unitcost: '$cost_arry.unitcost' } },
+                    { $unwind: { path: "$unitcost", preserveNullAndEmptyArrays: true } },
+                    {
+                        $addFields: {
+                            PatientNameEN: {
+                                $cond: {
+                                    if: { $eq: ["$patients.isanonymous", true] },
+                                    then: { $concat: [{ $ifNull: ['$nametitle.valuedescription', ""] }, " Anonymous"] },
+                                    else: {
+                                        $ifNull: [{
+                                                $concat: [{ $ifNull: ['$nametitle.valuedescription', ""] }, ' ', { $ifNull: ['$patients.firstname', ""] }, ' ',
+                                                    {
+                                                        $cond: { if: { $eq: [{ $ifNull: ["$patients.middlename", ""] }, ""] }, then: "", else: { $concat: ['$patients.middlename', ' '] } }
+                                                    },
+                                                    { $ifNull: [{ $ifNull: ['$patients.lastname', ""] }, ""] }]
+                                            }, '-']
+                                    }
+                                }
+                            },
+                        }
+                    },
+                    {
+                        $addFields: {
+                            PatientNameTH: {
+                                $cond: {
+                                    if: { $eq: ["$patients.isanonymous", true] },
+                                    then: { $concat: [{ $ifNull: ['$localnametitle.valuedescription', ""] }, " Anonymous"] },
+                                    else: {
+                                        $ifNull: [{
+                                                $concat: [{ $ifNull: ['$localnametitle.valuedescription', ""] }, ' ', { $ifNull: ["$patients.localfirstname", ""] }, ' ',
+                                                    {
+                                                        $cond: { if: { $eq: [{ $ifNull: ["$patients.localmiddlename", ""] }, ""] }, then: "", else: { $concat: ['$patients.localmiddlename', ' '] } }
+                                                    },
+                                                    { $ifNull: ["$patients.locallastname", ""] }]
+                                            }, '-']
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    { $project: {
+                            hn: '$patients.mrn',
+                            en: '$visitid',
+                            patientname: { $cond: { if: { $eq: ["$preflang.valuedescription", "Thai"] },
+                                    then: { $ifNull: [{ $ifNull: ["$PatientNameTH", ""] }, ""] },
+                                    else: { $ifNull: ["$PatientNameEN", ""] }
+                                }
+                            },
+                            encountertype: { $ifNull: ['$entype.valuedescription', ''] },
+                            visitstartdate: { $dateToString: { format: "%d/%m/%Y", date: "$startdate", timezone: "+07:00", onNull: "-" } },
+                            code: { $ifNull: ['$orderitems.code', ''] },
+                            itemname: { $ifNull: ['$orderitems.name', ''] },
+                            orderdate: { $dateToString: { format: "%d/%m/%Y %H:%M", date: "$patientorders.orderdate", timezone: "+07:00", onNull: "-" } },
+                            activeto: { $ifNull: ['$orderitems.activeto', ''] },
+                            itemcost: { $ifNull: ['$unitcost', 0] },
+                            itemsale: { $ifNull: ['$patientchargecodes.chargecodes.unitprice', ''] },
+                            quantity: { $ifNull: ['$patientchargecodes.chargecodes.quantity', ''] },
+                            amount: { $sum: ['$patientchargecodes.chargecodes.netamount', '$patientorderitems.payordiscount'] },
+                            discount: { $ifNull: ['$patientchargecodes.chargecodes.payordiscount', 0] },
+                            netamount: { $ifNull: ['$patientchargecodes.chargecodes.netamount', 0] },
+                            billingservice: { $ifNull: ['$billingservice.name', ''] },
+                            categorydescript: { $ifNull: ['$ordercate.description', ''] },
+                            billinggroupdescript: { $ifNull: ['$billinggroup.description', ''] },
+                            billingsubgroupdescript: { $ifNull: ['$billingsubgroup.description', ''] },
+                            servicecategory: { $ifNull: ['$ordercate.description', ''] },
+                            incomesource: { $ifNull: ['$incomesource.valuedescription', ''] },
+                            ordernumber: { $ifNull: ['$patientchargecodes.chargecodes.ordernumber', ''] },
+                            patientbilluid: { $ifNull: ['$patientbills.sequencenumber', ''] },
+                            statusflag: { $ifNull: ['$patientchargecodes.chargecodes.statusflag', ''] },
+                            chargecodetype: { $ifNull: ['$patientchargecodes.chargecodes.chargecodetype', ''] },
+                            department: { $ifNull: ['$departments.name', ''] },
+                        } },
+                ]).exec();
+                result = resultOdrItms;
+            }
+            catch (error) {
+                this.logger.error('findRTCommon854 error:', error);
             }
             return result;
         });

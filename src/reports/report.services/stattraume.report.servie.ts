@@ -65,7 +65,9 @@ export class STATTRAUMAReportService implements STATTRAUMAReportService {
                     $match: {
                         "patientvisits.startdate": { 
                         $gte: DateUtils.convertGMTtoUTC(new Date(req.fromdate)),
-                        $lte: DateUtils.convertGMTtoUTC(new Date(req.todate))}
+                        $lte: DateUtils.convertGMTtoUTC(new Date(req.todate))
+                            // $gte: new Date(req.fromdate), $lte: new Date(req.todate)
+                        }
                     }
                 },
                 {

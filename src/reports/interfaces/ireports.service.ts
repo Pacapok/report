@@ -60,6 +60,7 @@ import { Rt303Req } from 'models/rt303req';
 import { Rt304Req } from 'models/rt304req';
 import { Rt306Req } from 'models/rt306req';
 import { Rt308Req } from 'models/rt308req';
+
 import { Rt311Req } from 'models/rt311req';
 import { Rt316Req } from 'models/rt316req';
 import { Rt317Req } from 'models/rt317req';
@@ -206,6 +207,7 @@ export interface IReportsService {
     findRTCommon305(req : Rt305Req): Promise<any>;
     findRTCommon306(req : Rt306Req): Promise<any>;
     findRTCommon308(req : Rt308Req): Promise<any>;
+    findRTCommon310(req : Rt999Req): Promise<any>; 
     findRTCommon311(req : Rt311Req): Promise<any>;
     findRTCommon313(req : Rt313Req): Promise<any>;
     findRTCommon316(req : Rt316Req): Promise<any>;
@@ -284,6 +286,7 @@ export interface IReportsService {
     findRTCommon849(req : Rt999Req): Promise<any>;          
     findRTCommon850(req : Rt999Req): Promise<any>;          
     findRTCommon851(req : Rt999Req): Promise<any>;    
+    findRTCommon854(req : Rt999Req): Promise<any>;    
     findRTCommon999(req : Rt999Req): Promise<any>;
     findOrgByLoginId(loginId:String): Promise<any>;
     findRTCommondept1(req: Rt999Req): Promise<any>;

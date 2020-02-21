@@ -78,6 +78,46 @@ let MC5ENReportService = class MC5ENReportService {
                         }
                     },
                     {
+                        $lookup: {
+                            from: "departments",
+                            localField: "patientforms.departmentuid",
+                            foreignField: "_id",
+                            as: "departments"
+                        }
+                    },
+                    {
+                        $unwind: { path: "$departments", preserveNullAndEmptyArrays: true }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "patientforms.careprovideruid",
+                            foreignField: "_id",
+                            as: "careproviders"
+                        }
+                    },
+                    {
+                        $unwind: { path: "$careproviders", preserveNullAndEmptyArrays: true }
+                    },
+                    {
+                        $lookup: {
+                            from: "reportconfigurations",
+                            localField: "orguid",
+                            foreignField: "orguid",
+                            as: "reportconfigurations"
+                        }
+                    },
+                    {
+                        $unwind: { path: "$reportconfigurations", preserveNullAndEmptyArrays: true }
+                    },
+                    {
+                        $match: {
+                            "reportconfigurations.statusflag": "A",
+                            "reportconfigurations.orguid": new mongoose_1.Types.ObjectId(req.organisationuid),
+                            "reportconfigurations.reporttemplateuid": new mongoose_1.Types.ObjectId(req.reporttemplateuid)
+                        }
+                    },
+                    {
                         $addFields: {
                             HEADmcENPatientTitleName: { $arrayElemAt: [{
                                         $filter: {
@@ -632,6 +672,12 @@ let MC5ENReportService = class MC5ENReportService {
                     {
                         $group: {
                             _id: { patientvisituid: "$patientvisituid" },
+                            HEADmcDEPTCODE: { "$push": "$departments.code" },
+                            HEADmcDEPTNAME: { "$push": "$departments.name" },
+                            HEADmcDRCODE: { "$push": "$careproviders.code" },
+                            HEADmcDRNAME: { "$push": "$careproviders.name" },
+                            HEADmcREPORTTYPE: { "$push": "$reportconfigurations.documenttype" },
+                            HEADmcREPORTFM: { "$push": "$reportconfigurations.documentno" },
                             HEADmcENPatientTitle: { "$push": "$HEADmcENPatientTitleName.textvalue" },
                             HEADmcENPatientName: { "$push": "$HEADmcENPatientName.textvalue" },
                             HEADmcENMRN: { "$push": "$HEADmcENMRN.textvalue" },
@@ -682,6 +728,12 @@ let MC5ENReportService = class MC5ENReportService {
                     },
                     {
                         $project: {
+                            HEADmcDEPTCODE: { $arrayElemAt: ["$HEADmcDEPTCODE", -1] },
+                            HEADmcDEPTNAME: { $arrayElemAt: ["$HEADmcDEPTNAME", -1] },
+                            HEADmcDRCODE: { $arrayElemAt: ["$HEADmcDRCODE", -1] },
+                            HEADmcDRNAME: { $arrayElemAt: ["$HEADmcDRNAME", -1] },
+                            HEADmcREPORTTYPE: { $arrayElemAt: ["$HEADmcREPORTTYPE", -1] },
+                            HEADmcREPORTFM: { $arrayElemAt: ["$HEADmcREPORTFM", -1] },
                             HEADmcENPatientTitle: { $arrayElemAt: ["$HEADmcENPatientTitle", -1] },
                             HEADmcENPatientName: { $arrayElemAt: ["$HEADmcENPatientName", -1] },
                             HEADmcENMRN: { $arrayElemAt: ["$HEADmcENMRN", -1] },

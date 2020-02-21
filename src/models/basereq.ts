@@ -14,6 +14,9 @@ export class BaseReq {
     @ApiModelProperty({ description: 'patientuid', required: true, example: "5d4029eff15e720cb27d4458" })
     patientuid: string;
 
+    @ApiModelProperty({ description: 'reporttemplateuid', required: true, example: "" })
+    reporttemplateuid: string;
+
     @ApiModelProperty({ description: 'patientvisituid', required: true, example: "5d71cb4f643ea979b4dcdaf5" })
     patientvisituid: string;
 
@@ -37,9 +40,6 @@ export class BaseReq {
 
     @ApiModelProperty({ description: 'ReceiptNumber', required: true, example: "18-DRF18XXXXXX" })
     ReceiptNumber: string;
-
-    @ApiModelProperty({ description: 'reporttemplateuid', required: true, example: "" })
-    reporttemplateuid: string;
 
     @ApiModelProperty({ description: 'usersuid', required: true, example: "5bcfcb3997c3717f427d4c6a" })
     usersuid: string;

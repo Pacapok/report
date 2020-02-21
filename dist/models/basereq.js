@@ -29,6 +29,10 @@ __decorate([
     __metadata("design:type", String)
 ], BaseReq.prototype, "patientuid", void 0);
 __decorate([
+    swagger_1.ApiModelProperty({ description: 'reporttemplateuid', required: true, example: "" }),
+    __metadata("design:type", String)
+], BaseReq.prototype, "reporttemplateuid", void 0);
+__decorate([
     swagger_1.ApiModelProperty({ description: 'patientvisituid', required: true, example: "5d71cb4f643ea979b4dcdaf5" }),
     __metadata("design:type", String)
 ], BaseReq.prototype, "patientvisituid", void 0);
@@ -60,10 +64,6 @@ __decorate([
     swagger_1.ApiModelProperty({ description: 'ReceiptNumber', required: true, example: "18-DRF18XXXXXX" }),
     __metadata("design:type", String)
 ], BaseReq.prototype, "ReceiptNumber", void 0);
-__decorate([
-    swagger_1.ApiModelProperty({ description: 'reporttemplateuid', required: true, example: "" }),
-    __metadata("design:type", String)
-], BaseReq.prototype, "reporttemplateuid", void 0);
 __decorate([
     swagger_1.ApiModelProperty({ description: 'usersuid', required: true, example: "5bcfcb3997c3717f427d4c6a" }),
     __metadata("design:type", String)

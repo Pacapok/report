@@ -11,6 +11,7 @@ import { MCGENTHReportService } from './../reports/report.services/mcgenth.repor
 import { MCEXTENTHReportService } from './report.services/mcextenth.report.servie';
 import { MCEXTENENReportService } from './report.services/mcextenen.report.servie';
 import { MCAIRTHReportService } from './report.services/mcairth.report.servie';
+import { MCAIRTH2ReportService } from './report.services/mcairth2.report.service';
 import { MCAIRENReportService } from './report.services/mcairen.report.servie';
 import { MC5THReportService } from './report.services/mc5th.report.servie';
 import { MC5ENReportService } from './report.services/mc5en.report.servie';
@@ -192,6 +193,7 @@ export declare class ReportsController {
     private readonly MC5THReportService;
     private readonly MCAIRENReportService;
     private readonly MCAIRTHReportService;
+    private readonly MCAIRTH2ReportService;
     private readonly MCGENENReportService;
     private readonly MCGENTHReportService;
     private readonly MCEXTENENReportService;
@@ -208,7 +210,7 @@ export declare class ReportsController {
     private readonly STATMRDFolderLastVisitReportService;
     private readonly STATTraumaReportService;
     private logger;
-    constructor(reportsService: ReportsService, OPDClaimFormreportsService: OPDClaimFormReportService, IPDClaimFormPart1reportsService: IPDClaimFormPart1ReportService, IPDClaimFormPart2reportsService: IPDClaimFormPart2ReportService, MC5ENReportService: MC5ENReportService, MC5THReportService: MC5THReportService, MCAIRENReportService: MCAIRENReportService, MCAIRTHReportService: MCAIRTHReportService, MCGENENReportService: MCGENENReportService, MCGENTHReportService: MCGENTHReportService, MCEXTENENReportService: MCEXTENENReportService, MCEXTENTHReportService: MCEXTENTHReportService, MCGEReportService: MCGEReportService, MCWORKENReportService: MCWORKENReportService, MCWORKTHReportService: MCWORKTHReportService, REFERENReportService: REFERENReportService, REFERTHReportService: REFERTHReportService, SUBDIAGReportService: SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService: SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService: SUBLABRESULTSReportService, PrinterListReportService: PrinterListReportService, STATMRDFolderLastVisitReportService: STATMRDFolderLastVisitReportService, STATTraumaReportService: STATTRAUMAReportService, logger: ConsoleLogger);
+    constructor(reportsService: ReportsService, OPDClaimFormreportsService: OPDClaimFormReportService, IPDClaimFormPart1reportsService: IPDClaimFormPart1ReportService, IPDClaimFormPart2reportsService: IPDClaimFormPart2ReportService, MC5ENReportService: MC5ENReportService, MC5THReportService: MC5THReportService, MCAIRENReportService: MCAIRENReportService, MCAIRTHReportService: MCAIRTHReportService, MCAIRTH2ReportService: MCAIRTH2ReportService, MCGENENReportService: MCGENENReportService, MCGENTHReportService: MCGENTHReportService, MCEXTENENReportService: MCEXTENENReportService, MCEXTENTHReportService: MCEXTENTHReportService, MCGEReportService: MCGEReportService, MCWORKENReportService: MCWORKENReportService, MCWORKTHReportService: MCWORKTHReportService, REFERENReportService: REFERENReportService, REFERTHReportService: REFERTHReportService, SUBDIAGReportService: SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService: SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService: SUBLABRESULTSReportService, PrinterListReportService: PrinterListReportService, STATMRDFolderLastVisitReportService: STATMRDFolderLastVisitReportService, STATTraumaReportService: STATTRAUMAReportService, logger: ConsoleLogger);
     getReportMCGENEN(res: any, req: MCGENReq): Promise<any>;
     getReportMCGENTH(res: any, req: MCGENReq): Promise<any>;
     getReportREFERTH(res: any, req: REFERReq): Promise<any>;
@@ -216,6 +218,7 @@ export declare class ReportsController {
     getReportMCGE(res: any, req: MCGEReq): Promise<any>;
     getReportMCAIREN(res: any, req: MCAIRENReq): Promise<any>;
     getReportMCAIRTH(res: any, req: MCAIRTHReq): Promise<any>;
+    getReportMCAIRTH2(res: any, req: MCAIRTHReq): Promise<any>;
     getReportMC5TH(res: any, req: MC5THReq): Promise<any>;
     getReportMC5EN(res: any, req: MC5ENReq): Promise<any>;
     getReportMCEXTENEN(res: any, req: MCEXTENENReq): Promise<any>;
@@ -317,6 +320,7 @@ export declare class ReportsController {
     getReport305(res: any, req: Rt305Req): Promise<any>;
     getReport306(res: any, req: Rt306Req): Promise<any>;
     getReport308(res: any, req: Rt308Req): Promise<any>;
+    getReport310(res: any, req: Rt999Req): Promise<any>;
     getReport311(res: any, req: Rt311Req): Promise<any>;
     getReport313(res: any, req: Rt313Req): Promise<any>;
     getReport316(res: any, req: Rt316Req): Promise<any>;
@@ -421,6 +425,7 @@ export declare class ReportsController {
     getReport849(res: any, req: Rt999Req): Promise<any>;
     getReport850(res: any, req: Rt999Req): Promise<any>;
     getReport851(res: any, req: Rt999Req): Promise<any>;
+    getReport854(res: any, req: Rt999Req): Promise<any>;
     getReportOrganisation(res: any, req: OrganisationReq): Promise<any>;
     ping(res: any, req: any): Promise<any>;
 }

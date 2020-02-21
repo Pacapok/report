@@ -6,5 +6,4 @@ export declare class Rt286Req extends BaseReq {
     patientvisituid: string;
     billingSubGroupUids: string;
     billingGroupUids: string;
-    ispackage: boolean;
 }

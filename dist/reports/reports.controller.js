@@ -33,6 +33,7 @@ const mcgenth_report_servie_1 = require("./../reports/report.services/mcgenth.re
 const mcextenth_report_servie_1 = require("./report.services/mcextenth.report.servie");
 const mcextenen_report_servie_1 = require("./report.services/mcextenen.report.servie");
 const mcairth_report_servie_1 = require("./report.services/mcairth.report.servie");
+const mcairth2_report_service_1 = require("./report.services/mcairth2.report.service");
 const mcairen_report_servie_1 = require("./report.services/mcairen.report.servie");
 const mc5th_report_servie_1 = require("./report.services/mc5th.report.servie");
 const mc5en_report_servie_1 = require("./report.services/mc5en.report.servie");
@@ -208,7 +209,7 @@ const statconsultbydeptreq_1 = require("../models/statconsultbydeptreq");
 const statmrdfolderlastvisits_1 = require("../models/statmrdfolderlastvisits");
 const stattraumareq_1 = require("../models/stattraumareq");
 let ReportsController = class ReportsController {
-    constructor(reportsService, OPDClaimFormreportsService, IPDClaimFormPart1reportsService, IPDClaimFormPart2reportsService, MC5ENReportService, MC5THReportService, MCAIRENReportService, MCAIRTHReportService, MCGENENReportService, MCGENTHReportService, MCEXTENENReportService, MCEXTENTHReportService, MCGEReportService, MCWORKENReportService, MCWORKTHReportService, REFERENReportService, REFERTHReportService, SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService, PrinterListReportService, STATMRDFolderLastVisitReportService, STATTraumaReportService, logger) {
+    constructor(reportsService, OPDClaimFormreportsService, IPDClaimFormPart1reportsService, IPDClaimFormPart2reportsService, MC5ENReportService, MC5THReportService, MCAIRENReportService, MCAIRTHReportService, MCAIRTH2ReportService, MCGENENReportService, MCGENTHReportService, MCEXTENENReportService, MCEXTENTHReportService, MCGEReportService, MCWORKENReportService, MCWORKTHReportService, REFERENReportService, REFERTHReportService, SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService, PrinterListReportService, STATMRDFolderLastVisitReportService, STATTraumaReportService, logger) {
         this.reportsService = reportsService;
         this.OPDClaimFormreportsService = OPDClaimFormreportsService;
         this.IPDClaimFormPart1reportsService = IPDClaimFormPart1reportsService;
@@ -217,6 +218,7 @@ let ReportsController = class ReportsController {
         this.MC5THReportService = MC5THReportService;
         this.MCAIRENReportService = MCAIRENReportService;
         this.MCAIRTHReportService = MCAIRTHReportService;
+        this.MCAIRTH2ReportService = MCAIRTH2ReportService;
         this.MCGENENReportService = MCGENENReportService;
         this.MCGENTHReportService = MCGENTHReportService;
         this.MCEXTENENReportService = MCEXTENENReportService;
@@ -293,6 +295,15 @@ let ReportsController = class ReportsController {
             this.logger.log("Start findMCAIRTH");
             this.logger.debug('Req', req);
             const data = yield this.MCAIRTHReportService.findMCAIRTH(req);
+            this.logger.debug('Res', data);
+            return res.status(common_1.HttpStatus.OK).json(data);
+        });
+    }
+    getReportMCAIRTH2(res, req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.logger.log("Start findMCAIRTH2");
+            this.logger.debug('Req', req);
+            const data = yield this.MCAIRTH2ReportService.findMCAIRTH2(req);
             this.logger.debug('Res', data);
             return res.status(common_1.HttpStatus.OK).json(data);
         });
@@ -1278,6 +1289,16 @@ let ReportsController = class ReportsController {
             const data = yield this.reportsService.findRTCommon308(req);
             this.logger.debug('Res', data);
             this.logger.log('End rt_common_308');
+            return res.status(common_1.HttpStatus.OK).json(data);
+        });
+    }
+    getReport310(res, req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.logger.log("Start rt_common_310");
+            this.logger.debug('Req', req);
+            const data = yield this.reportsService.findRTCommon310(req);
+            this.logger.debug('Res', data);
+            this.logger.log('End rt_common_310');
             return res.status(common_1.HttpStatus.OK).json(data);
         });
     }
@@ -2313,6 +2334,16 @@ let ReportsController = class ReportsController {
             return res.status(common_1.HttpStatus.OK).json(data);
         });
     }
+    getReport854(res, req) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.logger.log("Start rt_common_854");
+            this.logger.debug('Req', req);
+            const data = yield this.reportsService.findRTCommon854(req);
+            this.logger.debug('Res', data);
+            this.logger.log('End rt_common_854');
+            return res.status(common_1.HttpStatus.OK).json(data);
+        });
+    }
     getReportOrganisation(res, req) {
         return __awaiter(this, void 0, void 0, function* () {
             this.logger.log("Start Organisation");
@@ -2400,6 +2431,16 @@ __decorate([
     __metadata("design:paramtypes", [Object, mcairthreq_1.MCAIRTHReq]),
     __metadata("design:returntype", Promise)
 ], ReportsController.prototype, "getReportMCAIRTH", null);
+__decorate([
+    common_1.Post('/mcairth2'),
+    swagger_1.ApiResponse({ status: 403, description: 'Forbidden.' }),
+    swagger_1.ApiResponse({ status: 400, description: "Missing info: parameter" }),
+    swagger_1.ApiResponse({ status: 200, description: "OK" }),
+    __param(0, common_1.Response()), __param(1, common_1.Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, mcairthreq_1.MCAIRTHReq]),
+    __metadata("design:returntype", Promise)
+], ReportsController.prototype, "getReportMCAIRTH2", null);
 __decorate([
     common_1.Post('/mc5th'),
     swagger_1.ApiResponse({ status: 403, description: 'Forbidden.' }),
@@ -3410,6 +3451,16 @@ __decorate([
     __metadata("design:paramtypes", [Object, rt308req_1.Rt308Req]),
     __metadata("design:returntype", Promise)
 ], ReportsController.prototype, "getReport308", null);
+__decorate([
+    common_1.Post('/rt_common_310'),
+    swagger_1.ApiResponse({ status: 403, description: 'Forbidden.' }),
+    swagger_1.ApiResponse({ status: 400, description: "Missing info: parameter" }),
+    swagger_1.ApiResponse({ status: 200, description: "OK" }),
+    __param(0, common_1.Response()), __param(1, common_1.Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, rt999req_1.Rt999Req]),
+    __metadata("design:returntype", Promise)
+], ReportsController.prototype, "getReport310", null);
 __decorate([
     common_1.Post('/rt_common_311'),
     swagger_1.ApiResponse({ status: 403, description: 'Forbidden.' }),
@@ -4451,6 +4502,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ReportsController.prototype, "getReport851", null);
 __decorate([
+    common_1.Post('/rt_common_854'),
+    swagger_1.ApiResponse({ status: 403, description: 'Forbidden.' }),
+    swagger_1.ApiResponse({ status: 400, description: "Missing info: parameter" }),
+    swagger_1.ApiResponse({ status: 200, description: "OK" }),
+    __param(0, common_1.Response()), __param(1, common_1.Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, rt999req_1.Rt999Req]),
+    __metadata("design:returntype", Promise)
+], ReportsController.prototype, "getReport854", null);
+__decorate([
     common_1.Post('/rtorganisation'),
     swagger_1.ApiResponse({ status: 403, description: 'Forbidden.' }),
     swagger_1.ApiResponse({ status: 400, description: "Missing info: parameter" }),
@@ -4481,6 +4542,7 @@ ReportsController = __decorate([
         mc5th_report_servie_1.MC5THReportService,
         mcairen_report_servie_1.MCAIRENReportService,
         mcairth_report_servie_1.MCAIRTHReportService,
+        mcairth2_report_service_1.MCAIRTH2ReportService,
         mcgenen_report_servie_1.MCGENENReportService,
         mcgenth_report_servie_1.MCGENTHReportService,
         mcextenen_report_servie_1.MCEXTENENReportService,

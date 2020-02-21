@@ -65,6 +65,48 @@ async findMCWORKTH(req: MCWORKTHReq): Promise<any> {
                     "patientforms.patientuid": new Types.ObjectId(req.patientuid),
                 }
             },
+            //-----
+            {
+                $lookup: {
+                    from: "departments",
+                    localField: "patientforms.departmentuid",
+                    foreignField: "_id",
+                    as: "departments"
+                }
+            },
+            {
+                $unwind: { path: "$departments", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "patientforms.careprovideruid",
+                    foreignField: "_id",
+                    as: "careproviders"
+                }
+            },
+            {
+                $unwind: { path: "$careproviders", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $lookup: {
+                    from: "reportconfigurations",
+                    localField: "orguid",
+                    foreignField: "orguid",
+                    as: "reportconfigurations"
+                }
+            },
+            {
+                $unwind: { path: "$reportconfigurations", preserveNullAndEmptyArrays: true }
+            },
+            {
+                $match: {
+                    "reportconfigurations.statusflag": "A",
+                    "reportconfigurations.orguid": new Types.ObjectId(req.organisationuid),
+                    "reportconfigurations.reporttemplateuid": new Types.ObjectId(req.reporttemplateuid)
+                }
+            },
+//-----
     //AddFileds สร้างชื่อ field ใหม่
     {
             $addFields:{
@@ -644,6 +686,12 @@ async findMCWORKTH(req: MCWORKTHReq): Promise<any> {
     {
         $group:{
                     _id:{patientvisituid:"$patientvisituid"},
+            HEADmcDEPTCODE: { "$push": "$departments.code" },
+            HEADmcDEPTNAME: { "$push": "$departments.name" },
+            HEADmcDRCODE: { "$push": "$careproviders.code" },
+            HEADmcDRNAME: { "$push": "$careproviders.name" },
+            HEADmcREPORTTYPE: { "$push": "$reportconfigurations.documenttype" },
+            HEADmcREPORTFM: { "$push": "$reportconfigurations.documentno" },
                     HEADmcTHPatientTitle:{"$push":"$HEADmcTHPatientTitleName.textvalue"},
                     HEADmcTHPatientName:{"$push":"$HEADmcTHPatientName.textvalue"},
                     HEADmcTHMRN:{"$push":"$HEADmcTHMRN.textvalue"},
@@ -694,6 +742,12 @@ async findMCWORKTH(req: MCWORKTHReq): Promise<any> {
     // //Project
     {
         $project:{
+            HEADmcDEPTCODE: { $arrayElemAt: ["$HEADmcDEPTCODE", -1] },
+            HEADmcDEPTNAME: { $arrayElemAt: ["$HEADmcDEPTNAME", -1] },
+            HEADmcDRCODE: { $arrayElemAt: ["$HEADmcDRCODE", -1] },
+            HEADmcDRNAME: { $arrayElemAt: ["$HEADmcDRNAME", -1] },
+            HEADmcREPORTTYPE: { $arrayElemAt: ["$HEADmcREPORTTYPE", -1] },
+            HEADmcREPORTFM: { $arrayElemAt: ["$HEADmcREPORTFM", -1] },
                     HEADmcTHPatientTitle:{$arrayElemAt:["$HEADmcTHPatientTitle",-1]},
                     HEADmcTHPatientName:{$arrayElemAt:["$HEADmcTHPatientName",-1]},
                     HEADmcTHMRN:{$arrayElemAt:["$HEADmcTHMRN",-1]},
