@@ -1,1 +1,0 @@
-{"version":3,"file":"billinggroups.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/billinggroups.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,mBAAmB,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IACnD,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IACnC,WAAW,EAAE,MAAM;CAEtB,CAAC,CAAC"}

@@ -106,9 +106,11 @@ async findPrinterlist(req: PrinterlistReq): Promise<any> {
                     ,ActiveFrom2:{ 
                                         "$dateToString": { "format": "%Y-%m-%d %H:%M", "date": "$ActiveFrom",timezone: "+07:00" }
                     }
+                    , ActiveFrom3:"$ActiveFrom"
                     ,ActiveTo2:{ 
                                         "$dateToString": { "format": "%Y-%m-%d %H:%M", "date": "$ActiveTo",timezone: "+07:00" }
                     }
+                    , ActiveTo3: "$ActiveTo"
                     ,Reportuid2: "$Reportuid"
                     ,Reportpath2: "$Reportpath"
                     ,Reportname2:"$reportinfo.name"

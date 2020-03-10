@@ -1,1 +1,0 @@
-{"version":3,"file":"allergies.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/allergies.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,eAAe,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IAC/C,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IACnC,eAAe,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IAC/C,aAAa,EAAG,CAAC;YACb,YAAY,EAAG,MAAM;SACxB,CAAC;CACL,CAAC,CAAC"}

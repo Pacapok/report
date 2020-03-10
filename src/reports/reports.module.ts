@@ -87,7 +87,9 @@ import { OrdersetsSchema } from './schemas/ordersets.schema';
 import { PrinterconfiguraitonsSchema } from './schemas/printerconfigurations.schema';
 import { CreditnotesSchema } from './schemas/creditnotes.schema';
 import { TriagedetailsSchema } from './schemas/triagedetails.schema';
-
+import { DeathrecordsSchema } from './schemas/deathrecords.schema';
+import { OrrecordsSchema } from './schemas/orrecords.schema';
+import { ObservationsSchema } from './schemas/observations.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -149,6 +151,9 @@ import { TriagedetailsSchema } from './schemas/triagedetails.schema';
       { name: 'printerconfigurations', schema: PrinterconfiguraitonsSchema },
       { name: 'creditnotes', schema: CreditnotesSchema },
       { name: 'triagedetails', schema: TriagedetailsSchema},
+      { name: 'deathrecords', schema: DeathrecordsSchema },
+      { name: 'orrecords', schema: OrrecordsSchema },
+      { name: 'observations', schema: ObservationsSchema },
     ]),
     CommonModule
   ],
