@@ -43210,14 +43210,22 @@ async findRTCommon812(req: Rt999Req): Promise<any> {
             const _user = await this.findOrgByLoginId(req.loginuid);
             const resultStockledgers = await this.StockledgersModel.aggregate([
                 storeuid,
-                {
-                    $match:
-                    {
-                        'orguid': new Types.ObjectId(req.organisationuid),
+                //Old Matching
+                // { $match:{
+                //         'orguid': new Types.ObjectId(req.organisationuid),
+                //         'statusflag': "A",
+                //         'quantity': { $gt: 0 },
+                //  }},
+                //New Update Matching
+                { $match : { 
+                        'ledgerdetails.comments' : {$ne:null},
                         'statusflag': "A",
                         'quantity': { $gt: 0 },
-                    }
-                },
+                        $and : [
+                            {'ledgerdetails.transactiondate':{ $gt : new Date(req.fromdate)}},
+                            {'ledgerdetails.transactiondate':{ $lt : new Date(req.todate)}},
+                        ],
+                }},
                 {
                     $addFields:
                     {
