@@ -1,1 +1,0 @@
-{"version":3,"file":"mrdfolders.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/mrdfolders.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,gBAAgB,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IAChD,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IAEnC,IAAI,EAAE,MAAM;CACf,CAAC,CAAC"}

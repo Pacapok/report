@@ -1,1 +1,0 @@
-{"version":3,"file":"tpas.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/tpas.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,UAAU,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IAC1C,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IACnC,IAAI,EAAE,MAAM;IACZ,IAAI,EAAG,MAAM;IACb,WAAW,EAAG,MAAM;IACpB,aAAa,EAAG,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;CACjD,CAAC,CAAC"}

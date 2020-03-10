@@ -20,7 +20,4 @@ export class Rt286Req extends BaseReq{
     @ApiModelProperty({ description: 'billingGroupUids', required: true, example: "5b8a09cd3238d86bf08fb581" })
     billingGroupUids: string;
 
-    @ApiModelProperty({ description: 'ispackage', required: true, example: true })
-    ispackage: boolean;
-
 }

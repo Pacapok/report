@@ -1,1 +1,0 @@
-{"version":3,"file":"creditnotes.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/creditnotes.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,iBAAiB,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IACjD,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IACnC,cAAc,EAAE,MAAM;CACzB,CAAC,CAAC"}

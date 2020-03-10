@@ -1,1 +1,0 @@
-{"version":3,"file":"states.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/states.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,YAAY,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IAC5C,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IAEnC,IAAI,EAAE,MAAM;CACf,CAAC,CAAC"}

@@ -6,22 +6,22 @@ import { InjectModel } from '@nestjs/mongoose';
 import {ConsoleLogger} from '../../service/logger'
 import { IPatientformdetails } from '../document/patientformdetails.interface';
 import { ObjectID } from 'bson';
-import {MCAIRENReq} from '../../models/mcairenreq';
+import {MCAIRTHReq} from '../../models/mcairthreq';
 import { from } from 'rxjs';
 
 
 @Injectable()
-export class MCAIRENReportService implements MCAIRENReportService {
+export class MCAIRTH2ReportService implements MCAIRTH2ReportService {
     constructor(
         private logger: ConsoleLogger,
         @InjectModel('patientformdetails') private readonly PatientformdetailsModel: Model<IPatientformdetails>,        
     ) { }
 
-//IPD Medical Certificate for Air Travel EN
-async findMCAIREN(req: MCAIRENReq): Promise<any> {
+//IPD Medical Certificate for Air Travel TH
+async findMCAIRTH2(req: MCAIRTHReq): Promise<any> {
     let result = [];
     try {
-        const resultMCAIREN = await this.PatientformdetailsModel.aggregate([
+        const resultMCAIRTH2 = await this.PatientformdetailsModel.aggregate([
             {
                 $match: {
                     statusflag: "A",
@@ -43,7 +43,7 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
                 {
                 $match:{
-                    "formtemplates.code":"RT_COMMON_131"
+                    "formtemplates.code":"RT_COMMON_131TH"
                     }
             },
             {
@@ -110,12 +110,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             //AddFileds
             {
                 $addFields:{
-                    HEADmcENPatientTitleName:{$arrayElemAt:
+                    HEADmcTHPatientTitle:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","HEADmcENPatientTitleName"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHPatientTitle"]}
                                                         }
                                                     },-1]
                                                 }
@@ -123,12 +123,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    HEADmcENPatientName:{$arrayElemAt:
+                    HEADmcTHPatientName:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","HEADmcENPatientName"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHPatientName"]}
                                                         }
                                                     },-1]
                                                 }
@@ -136,12 +136,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    HEADmcENMRN:{$arrayElemAt:
+                    HEADmcTHMRN:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","HEADmcENMRN"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHMRN"]}
                                                         }
                                                     },-1]
                                                 }
@@ -149,12 +149,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    HEADmcENPatientVisitDate:{$arrayElemAt:
+                    HEADmcTHVisitDate:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","HEADmcENPatientVisitDate"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHVisitDate"]}
                                                         }
                                                     },-1]
                                                 }
@@ -162,12 +162,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    HEADmcENBirthday:{$arrayElemAt:
+                    HEADmcTHPatientBirthday:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","HEADmcENBirthday"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHPatientBirthday"]}
                                                         }
                                                     },-1]
                                                 }
@@ -175,12 +175,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    HEADmcENPatientAge:{$arrayElemAt:
+                    HEADmcTHPatientAge:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","HEADmcENPatientAge"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHPatientAge"]}
                                                         }
                                                     },-1]
                                                 }
@@ -188,12 +188,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    HEADmcENGender:{$arrayElemAt:
+                    HEADmcTHPatientGender:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","HEADmcENGender"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHPatientGender"]}
                                                         }
                                                     },-1]
                                                 }
@@ -201,12 +201,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    HEADmcENPatientDep:{$arrayElemAt:
+                    HEADmcTHPatientDep:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","HEADmcENPatientDep"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHPatientDep"]}
                                                         }
                                                     },-1]
                                                 }
@@ -214,12 +214,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    HEADmcENBED:{$arrayElemAt:
+                    HEADmcTHPatientBed:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","HEADmcENBED"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHPatientBed"]}
                                                         }
                                                     },-1]
                                                 }
@@ -227,12 +227,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    HEADmcENPhysicianName:{$arrayElemAt:
+                    HEADmcTHTitleEN:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","HEADmcENPhysicianName"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHTitleEN"]}
                                                         }
                                                     },-1]
                                                 }
@@ -240,12 +240,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    HEADmcENLicenseNo:{$arrayElemAt:
+                    HEADmcTHPhysicianName:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","HEADmcENLicenseNo"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHPhysicianName"]}
                                                         }
                                                     },-1]
                                                 }
@@ -253,12 +253,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    HEADmcENAllergies:{$arrayElemAt:
+                    HEADmcTHLicenseNo:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","HEADmcENAllergies"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHLicenseNo"]}
                                                         }
                                                     },-1]
                                                 }
@@ -266,12 +266,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelEnCareprovider:{$arrayElemAt:
+                    HEADmcTHAllergies:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelEnCareprovider"]}
+                                                            cond:{$eq:["$$vs.attributename","HEADmcTHAllergies"]}
                                                         }
                                                     },-1]
                                                 }
@@ -279,12 +279,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENMedLicensNo:{$arrayElemAt:
+                    MCTravelTHCareprovider:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENMedLicensNo"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHCareprovider"]}
                                                         }
                                                     },-1]
                                                 }
@@ -292,12 +292,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENAddr:{$arrayElemAt:
+                    MCTravelTHmedlicense:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENAddr"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHmedlicense"]}
                                                         }
                                                     },-1]
                                                 }
@@ -305,12 +305,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENPTname:{$arrayElemAt:
+                    MCTravelTHAddr:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENPTname"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHAddr"]}
                                                         }
                                                     },-1]
                                                 }
@@ -318,12 +318,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENTypeofPatient:{$arrayElemAt:
+                    MCTravelTHPatientName:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENTypeofPatient"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHPatientName"]}
                                                         }
                                                     },-1]
                                                 }
@@ -331,12 +331,26 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENOUTENcounter:{$arrayElemAt:
+                    MCTravelTHPTHN:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENOUTENcounter"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHPTHN"]}
+                                                        }
+                                                    },-1]
+                                                }
+                            }
+            },
+//------
+            {
+                $addFields:{
+                    MCGenTHTypeofPatient:{$arrayElemAt:
+                                                    [{ 
+                                                        $filter:{
+                                                            input:"$attributes",
+                                                            as:"vs",
+                                                            cond: { $eq: ["$$vs.attributename","MCGenTHTypeofPatient"]}
                                                         }
                                                     },-1]
                                                 }
@@ -344,12 +358,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENOUTVisitid:{$arrayElemAt:
+                    MCGenTHOUTENcounter:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENOUTVisitid"]}
+                                                            cond: { $eq: ["$$vs.attributename","MCGenTHOUTENcounter"]}
                                                         }
                                                     },-1]
                                                 }
@@ -357,12 +371,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENOUTdate:{$arrayElemAt:
+                    MCGenTHOUTVisitid:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENOUTdate"]}
+                                                            cond: { $eq: ["$$vs.attributename","MCGenTHOUTVisitid"]}
                                                         }
                                                     },-1]
                                                 }
@@ -370,12 +384,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENINVisitEncounter:{$arrayElemAt:
+                    MCGenTHOUTdate:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENINVisitEncounter"]}
+                                                            cond: { $eq: ["$$vs.attributename","MCGenTHOUTdate"]}
                                                         }
                                                     },-1]
                                                 }
@@ -383,12 +397,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENANINpatient:{$arrayElemAt:
+                    MCGenTHINVisitEncounter:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENANINpatient"]}
+                                                            cond: { $eq: ["$$vs.attributename","MCGenTHINVisitEncounter"]}
                                                         }
                                                     },-1]
                                                 }
@@ -396,12 +410,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENdateIPD:{$arrayElemAt:
+                    MCGenTHANINpatient:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENdateIPD"]}
+                                                            cond: { $eq: ["$$vs.attributename","MCGenTHANINpatient"]}
                                                         }
                                                     },-1]
                                                 }
@@ -409,12 +423,40 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENMed:{$arrayElemAt:
+                    MCGenTHdateIPD:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENMed"]}
+                                                            cond: { $eq: ["$$vs.attributename","MCGenTHdateIPD"]}
+                                                        }
+                                                    },-1]
+                                                }
+                            }
+            },
+            {
+                $addFields: {
+                    MCGenTHdatetoIPD: {
+                        $arrayElemAt:
+                            [{
+                                $filter: {
+                                    input: "$attributes",
+                                    as: "vs",
+                                    cond: { $eq: ["$$vs.attributename", "MCGenTHdatetoIPD"] }
+                                }
+                            }, -1]
+                    }
+                }
+            },
+//------------
+            {
+                $addFields:{
+                    MCTravelTHTreatmentChkBox:{$arrayElemAt:
+                                                    [{ 
+                                                        $filter:{
+                                                            input:"$attributes",
+                                                            as:"vs",
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHTreatmentChkBox"]}
                                                         }
                                                     },-1]
                                                 }
@@ -422,12 +464,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENOther:{$arrayElemAt:
+                    MCTravelTHOthertChkBox:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENOther"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHOthertChkBox"]}
                                                         }
                                                     },-1]
                                                 }
@@ -448,12 +490,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENRadioButtonEscortBy:{$arrayElemAt:
+                    MCTravelTHCheckboxPHYSICIANRECOM2:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENRadioButtonEscortBy"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHCheckboxPHYSICIANRECOM2"]}
                                                         }
                                                     },-1]
                                                 }
@@ -461,12 +503,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENRadioButtonSeatType:{$arrayElemAt:
+                    MCTravelTHCheckboxPHYSICIANRECOM3:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENRadioButtonSeatType"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHCheckboxPHYSICIANRECOM3"]}
                                                         }
                                                     },-1]
                                                 }
@@ -474,12 +516,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENCheckboxWheelChairAssestance:{$arrayElemAt:
+                    MCTravelTHRadioButtonEscortBy:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENCheckboxWheelChairAssestance"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHRadioButtonEscortBy"]}
                                                         }
                                                     },-1]
                                                 }
@@ -487,12 +529,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENRadioButtonWheelChairAssestanceDetail:{$arrayElemAt:
+                    MCTravelTHRadioButtonSeatType:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENRadioButtonWheelChairAssestanceDetail"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHRadioButtonSeatType"]}
                                                         }
                                                     },-1]
                                                 }
@@ -500,12 +542,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENCheckboxOxygen:{$arrayElemAt:
+                    MCTravelTHCheckboxWheelChairAssestance:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENCheckboxOxygen"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHCheckboxWheelChairAssestance"]}
                                                         }
                                                     },-1]
                                                 }
@@ -513,12 +555,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENRadiobuttonOxygenAt:{$arrayElemAt:
+                    MCTravelTHCheckboxWheelChairAssestance:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENRadiobuttonOxygenAt"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHCheckboxWheelChairAssestance"]}
                                                         }
                                                     },-1]
                                                 }
@@ -526,12 +568,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENRadiobuttonOxygenFlow:{$arrayElemAt:
+                    MCTravelTHRadioButtonWheelChairAssestanceDetail:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENRadiobuttonOxygenFlow"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHRadioButtonWheelChairAssestanceDetail"]}
                                                         }
                                                     },-1]
                                                 }
@@ -539,12 +581,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENRadiobuttonOxygenType:{$arrayElemAt:
+                    MCTravelTHCheckboxOxygen:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENRadiobuttonOxygenType"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHCheckboxOxygen"]}
                                                         }
                                                     },-1]
                                                 }
@@ -552,12 +594,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENCheckboxGroundAm:{$arrayElemAt:
+                    MCTravelTHRadiobuttonOxygenAt:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENCheckboxGroundAm"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHRadiobuttonOxygenAt"]}
                                                         }
                                                     },-1]
                                                 }
@@ -565,12 +607,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENCheckboxGroundAmTrans:{$arrayElemAt:
+                    MCTravelTHRadiobuttonOxygenFlow:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENCheckboxGroundAmTrans"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHRadiobuttonOxygenFlow"]}
                                                         }
                                                     },-1]
                                                 }
@@ -578,12 +620,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENCheckboxGroundAmSpc:{$arrayElemAt:
+                    MCTravelTHRadiobuttonOxygenType:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENCheckboxGroundAmSpc"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHRadiobuttonOxygenType"]}
                                                         }
                                                     },-1]
                                                 }
@@ -591,12 +633,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENCheckboxDest:{$arrayElemAt:
+                    MCTravelTHCheckboxGroundAm:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENCheckboxDest"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHCheckboxGroundAm"]}
                                                         }
                                                     },-1]
                                                 }
@@ -604,12 +646,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENRediobuttomDestAtHosp:{$arrayElemAt:
+                    MCTravelTHCheckboxGroundAmTrans:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENRediobuttomDestAtHosp"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHCheckboxGroundAmTrans"]}
                                                         }
                                                     },-1]
                                                 }
@@ -617,12 +659,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENCheckboxOth:{$arrayElemAt:
+                    MCTraveltyTHCheckboxGroundAmSpc:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENCheckboxOth"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTraveltyTHCheckboxGroundAmSpc"]}
                                                         }
                                                     },-1]
                                                 }
@@ -630,12 +672,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENFromOrigin:{$arrayElemAt:
+                    MCTravelTHCheckboxDest:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENFromOrigin"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHCheckboxDest"]}
                                                         }
                                                     },-1]
                                                 }
@@ -643,12 +685,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENToDestination:{$arrayElemAt:
+                    MCTravelTHRediobuttomDestAtHosp:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENToDestination"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHRediobuttomDestAtHosp"]}
                                                         }
                                                     },-1]
                                                 }
@@ -656,12 +698,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENNotFit:{$arrayElemAt:
+                    MCTravelTHCheckboxOth:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENNotFit"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHCheckboxOth"]}
                                                         }
                                                     },-1]
                                                 }
@@ -669,12 +711,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENMedLicen:{$arrayElemAt:
+                    MCTravelTHFromOrigin:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENMedLicen"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHFromOrigin"]}
                                                         }
                                                     },-1]
                                                 }
@@ -682,12 +724,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENDoctorsignDateTime:{$arrayElemAt:
+                    MCTravelTHToDestination:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENDoctorsignDateTime"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHToDestination"]}
                                                         }
                                                     },-1]
                                                 }
@@ -695,12 +737,12 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENDrPrintname:{$arrayElemAt:
+                    MCTravelTHNotFit:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENDrPrintname"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHNotFit"]}
                                                         }
                                                     },-1]
                                                 }
@@ -708,12 +750,51 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             {
                 $addFields:{
-                    MCTravelENPatientName:{$arrayElemAt:
+                    MCTravelTHMedLicen:{$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$attributes",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.attributename","MCTravelENPatientName"]}
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHMedLicen"]}
+                                                        }
+                                                    },-1]
+                                                }
+                            }
+            },
+            {
+                $addFields:{
+                    MCTravelTHDoctorsignDateTime:{$arrayElemAt:
+                                                    [{ 
+                                                        $filter:{
+                                                            input:"$attributes",
+                                                            as:"vs",
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHDoctorsignDateTime"]}
+                                                        }
+                                                    },-1]
+                                                }
+                            }
+            },
+            {
+                $addFields:{
+                    MCTravelTHDrPrintname:{$arrayElemAt:
+                                                    [{ 
+                                                        $filter:{
+                                                            input:"$attributes",
+                                                            as:"vs",
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHDrPrintname"]}
+                                                        }
+                                                    },-1]
+                                                }
+                            }
+            },
+            {
+                $addFields:{
+                    MCTravelTHPatientName:{$arrayElemAt:
+                                                    [{ 
+                                                        $filter:{
+                                                            input:"$attributes",
+                                                            as:"vs",
+                                                            cond:{$eq:["$$vs.attributename","MCTravelTHPatientName"]}
                                                         }
                                                     },-1]
                                                 }
@@ -789,63 +870,69 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
                     HEADmcDRNAME: { "$push": "$careproviders.name" },
                     HEADmcREPORTTYPE: { "$push": "$reportconfigurations.documenttype" },
                     HEADmcREPORTFM: { "$push": "$reportconfigurations.documentno" },
-                    HEADmcENPatientTitleName:{"$push":"$HEADmcENPatientTitleName.textvalue"},
-                    HEADmcENPatientName:{"$push":"$HEADmcENPatientName.textvalue"},
-                    HEADmcENMRN:{"$push":"$HEADmcENMRN.textvalue"},
-                    HEADmcENPatientVisitDate:{"$push":"$HEADmcENPatientVisitDate.textvalue"},
-                    HEADmcENBirthday:{"$push":"$HEADmcENBirthday.textvalue"},
-                    HEADmcENPatientAge:{"$push":"$HEADmcENPatientAge.textvalue"},
-                    HEADmcENGender:{"$push":"$HEADmcENGender.textvalue"},
-                    HEADmcENPatientDep:{"$push":"$HEADmcENPatientDep.textvalue"},
-                    HEADmcENBED:{"$push":"$HEADmcENBED.textvalue"},
-                    HEADmcENPhysicianName:{"$push":"$HEADmcENPhysicianName.textvalue"},
-                    HEADmcENLicenseNo:{"$push":"$HEADmcENLicenseNo.textvalue"},
-                    HEADmcENAllergies:{"$push":"$HEADmcENAllergies.textvalue"},
-                    MCTravelEnCareprovider:{"$push":"$MCTravelEnCareprovider.textvalue"},
-                    MCTravelENMedLicensNo:{"$push":"$MCTravelENMedLicensNo.textvalue"},
-                    MCTravelENAddr:{"$push":"$MCTravelENAddr.textvalue"},
-                    MCTravelENPTname:{"$push":"$MCTravelENPTname.textvalue"},
-                    MCTravelENTypeofPatient:{"$push":"$MCTravelENTypeofPatient.textvalue"},
-                    MCTravelENOUTENcounter:{"$push":"$MCTravelENOUTENcounter.textvalue"},
-                    MCTravelENOUTVisitid:{"$push":"$MCTravelENOUTVisitid.textvalue"},
-                    MCTravelENOUTdate:{"$push":"$MCTravelENOUTdate.textvalue"},
-                    MCTravelENINVisitEncounter:{"$push":"$MCTravelENINVisitEncounter.textvalue"},
-                    MCTravelENANINpatient:{"$push":"$MCTravelENANINpatient.textvalue"},
-                    MCTravelENdateIPD:{"$push":"$MCTravelENdateIPD.textvalue"},
-                    MCTravelENMed:{"$push":"$MCTravelENMed.textvalue"},
-                    MCTravelENOther:{"$push":"$MCTravelENOther.textvalue"},
-                    MCTravelENOtherDetail:{"$push":"$MCTravelENOther.actualvalue.additionalvalue"},
+                    HEADmcTHPatientTitle:{"$push":"$HEADmcTHPatientTitle.textvalue"},
+                    HEADmcTHPatientName:{"$push":"$HEADmcTHPatientName.textvalue"},
+                    HEADmcTHMRN:{"$push":"$HEADmcTHMRN.textvalue"},
+                    HEADmcTHVisitDate:{"$push":"$HEADmcTHVisitDate.textvalue"},
+                    HEADmcTHPatientBirthday:{"$push":"$HEADmcTHPatientBirthday.textvalue"},
+                    HEADmcTHPatientAge:{"$push":"$HEADmcTHPatientAge.textvalue"},
+                    HEADmcTHPatientGender:{"$push":"$HEADmcTHPatientGender.textvalue"},
+                    HEADmcTHPatientDep:{"$push":"$HEADmcTHPatientDep.textvalue"},
+                    HEADmcTHPatientBed:{"$push":"$HEADmcTHPatientBed.textvalue"},
+                    HEADmcTHTitleEN:{"$push":"$HEADmcTHTitleEN.textvalue"},
+                    HEADmcTHPhysicianName:{"$push":"$HEADmcTHPhysicianName.textvalue"},
+                    HEADmcTHLicenseNo:{"$push":"$HEADmcTHLicenseNo.textvalue"},
+                    HEADmcTHAllergies:{"$push":"$HEADmcTHAllergies.textvalue"},
+                    MCTravelTHCareprovider:{"$push":"$MCTravelTHCareprovider.textvalue"},
+                    MCTravelTHmedlicense:{"$push":"$MCTravelTHmedlicense.textvalue"},
+                    MCTravelTHAddr:{"$push":"$MCTravelTHAddr.textvalue"},
+                    MCTravelTHPatientName:{"$push":"$MCTravelTHPatientName.textvalue"},
+                    MCTravelTHPTHN:{"$push":"$MCTravelTHPTHN.textvalue"},
+                    //-----
+                    MCGenTHTypeofPatient: { "$push":"$MCGenTHTypeofPatient.textvalue"},
+                    MCGenTHOUTENcounter: { "$push":"$MCGenTHOUTENcounter.textvalue"},
+                    MCGenTHOUTVisitid: { "$push":"$MCGenTHOUTVisitid.textvalue"},
+                    MCGenTHOUTdate: { "$push":"$MCGenTHOUTdate.textvalue"},
+                    MCGenTHINVisitEncounter: { "$push":"$MCGenTHINVisitEncounter.textvalue"},
+                    MCGenTHANINpatient: { "$push":"$MCGenTHANINpatient.textvalue"},
+                    MCGenTHdateIPD: { "$push": "$MCGenTHdateIPD.textvalue" }, 
+                    MCGenTHdatetoIPD: { "$push": "$MCGenTHdatetoIPD.textvalue" },
+                    //---
+                    MCTravelTHTreatmentChkBox:{"$push":"$MCTravelTHTreatmentChkBox.textvalue"},
+                    MCTravelTHOthertChkBox:{"$push":"$MCTravelTHOthertChkBox.textvalue"},
+                    MCTravelTHOthertChkBoxDetail:{"$push":"$MCTravelTHOthertChkBox.actualvalue.additionalvalue"},
                     MCTravelTHCheckboxPHYSICIANRECOM1:{"$push":"$MCTravelTHCheckboxPHYSICIANRECOM1.textvalue"},
-                    MCTravelENRadioButtonEscortBy:{"$push":"$MCTravelENRadioButtonEscortBy.textvalue"},
-                    MCTravelENRadioButtonSeatType:{"$push":"$MCTravelENRadioButtonSeatType.textvalue"},
-                    MCTravelENCheckboxWheelChairAssestance:{"$push":"$MCTravelENCheckboxWheelChairAssestance.textvalue"},
-                    MCTravelENRadioButtonWheelChairAssestanceDetail:{"$push":"$MCTravelENRadioButtonWheelChairAssestanceDetail.textvalue"},
-                    MCTravelENCheckboxOxygen:{"$push":"$MCTravelENCheckboxOxygen.textvalue"},
-                    MCTravelENRadiobuttonOxygenAt:{"$push":"$MCTravelENRadiobuttonOxygenAt.textvalue"},
-                    MCTravelENRadiobuttonOxygenFlow:{"$push":"$MCTravelENRadiobuttonOxygenFlow.textvalue"},
-                    MCTravelENRadiobuttonOxygenType:{"$push":"$MCTravelENRadiobuttonOxygenType.textvalue"},
-                    MCTravelENCheckboxGroundAm:{"$push":"$MCTravelENCheckboxGroundAm.textvalue"},
-                    MCTravelENCheckboxGroundAmTrans:{"$push":"$MCTravelENCheckboxGroundAmTrans.textvalue"},
-                    MCTravelENCheckboxGroundAmSpc:{"$push":"$MCTravelENCheckboxGroundAmSpc.textvalue"},
-                    MCTravelENCheckboxDest:{"$push":"$MCTravelENCheckboxDest.textvalue"},
-                    MCTravelENRediobuttomDestAtHosp:{"$push":"$MCTravelENRediobuttomDestAtHosp.textvalue"},
-                    MCTravelENCheckboxOth:{"$push":"$MCTravelENCheckboxOth.textvalue"},
-                    MCTravelENCheckboxOthDetail:{"$push":"$MCTravelENCheckboxOth.actualvalue.additionalvalue"},
-                    MCTravelENFromOrigin:{"$push":"$MCTravelENFromOrigin.textvalue"},
-                    MCTravelENToDestination:{"$push":"$MCTravelENToDestination.textvalue"},
-                    MCTravelENNotFit:{"$push":"$MCTravelENNotFit.textvalue"},
-                    MCTravelENNotFitDetail:{"$push":"$MCTravelENNotFit.actualvalue.additionalvalue"},
-                    MCTravelENMedLicen:{"$push":"$MCTravelENMedLicen.textvalue"},
-                    MCTravelENDoctorsignDateTime:{"$push":"$MCTravelENDoctorsignDateTime.textvalue"},
-                    MCTravelENDrPrintname:{"$push":"$MCTravelENDrPrintname.textvalue"},
-                    MCTravelENPatientName:{"$push":"$MCTravelENPatientName.textvalue"},
+                    MCTravelTHCheckboxPHYSICIANRECOM2:{"$push":"$MCTravelTHCheckboxPHYSICIANRECOM2.textvalue"},
+                    MCTravelTHCheckboxPHYSICIANRECOM3:{"$push":"$MCTravelTHCheckboxPHYSICIANRECOM3.textvalue"},
+                    MCTravelTHRadioButtonEscortBy:{"$push":"$MCTravelTHRadioButtonEscortBy.textvalue"},
+                    MCTravelTHRadioButtonSeatType:{"$push":"$MCTravelTHRadioButtonSeatType.textvalue"},
+                    MCTravelTHCheckboxWheelChairAssestance:{"$push":"$MCTravelTHCheckboxWheelChairAssestance.textvalue"},
+                    MCTravelTHRadioButtonWheelChairAssestanceDetail:{"$push":"$MCTravelTHRadioButtonWheelChairAssestanceDetail.textvalue"},
+                    MCTravelTHCheckboxOxygen:{"$push":"$MCTravelTHCheckboxOxygen.textvalue"},
+                    MCTravelTHRadiobuttonOxygenAt:{"$push":"$MCTravelTHRadiobuttonOxygenAt.textvalue"},
+                    MCTravelTHRadiobuttonOxygenFlow:{"$push":"$MCTravelTHRadiobuttonOxygenFlow.textvalue"},
+                    MCTravelTHRadiobuttonOxygenType:{"$push":"$MCTravelTHRadiobuttonOxygenType.textvalue"},
+                    MCTravelTHCheckboxGroundAm:{"$push":"$MCTravelTHCheckboxGroundAm.textvalue"},
+                    MCTravelTHCheckboxGroundAmTrans:{"$push":"$MCTravelTHCheckboxGroundAmTrans.textvalue"},
+                    MCTraveltyTHCheckboxGroundAmSpc:{"$push":"$MCTraveltyTHCheckboxGroundAmSpc.textvalue"},
+                    MCTravelTHCheckboxDest:{"$push":"$MCTravelTHCheckboxDest.textvalue"},
+                    MCTravelTHRediobuttomDestAtHosp:{"$push":"$MCTravelTHRediobuttomDestAtHosp.textvalue"},
+                    MCTravelTHCheckboxOth:{"$push":"$MCTravelTHCheckboxOth.textvalue"},
+                    MCTravelTHCheckboxOthDetail:{"$push":"$MCTravelTHCheckboxOth.actualvalue.additionalvalue"},
+                    MCTravelTHFromOrigin:{"$push":"$MCTravelTHFromOrigin.textvalue"},
+                    MCTravelTHToDestination:{"$push":"$MCTravelTHToDestination.textvalue"},
+                    MCTravelTHNotFit:{"$push":"$MCTravelTHNotFit.textvalue"},
+                    MCTravelTHNotFitDetail:{"$push":"$MCTravelTHNotFit.actualvalue.additionalvalue"},
+                    MCTravelTHMedLicen:{"$push":"$MCTravelTHMedLicen.textvalue"},
+                    MCTravelTHDoctorsignDateTime:{"$push":"$MCTravelTHDoctorsignDateTime.textvalue"},
+                    MCTravelTHDrPrintname:{"$push":"$MCTravelTHDrPrintname.textvalue"},
                     CHIEFCOMPLAINTS:{"$push":
                                                 {$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$CHIEFCOMPLAINTS",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.sectionname","Chief Complaint"]}
+                                                            cond:{$eq:["$$vs.sectionname","5"]}
                                                         }
                                                     },-1]
                                                 }},
@@ -855,7 +942,7 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
                                                         $filter:{
                                                             input:"$PRESENTILLNESS",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.sectionname","Chief Complaint"]}
+                                                            cond:{$eq:["$$vs.sectionname","5"]}
                                                         }
                                                     },-1]
                                                 }},
@@ -865,27 +952,17 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
                                                         $filter:{
                                                             input:"$DIAGNOSIS",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.sectionname","Diagnosis (In case of skin lesion specify the location)"]}
+                                                            cond:{$eq:["$$vs.sectionname","6"]}
                                                         }
                                                     },-1]
                                                 }},
-                    PROCEDURESDIAG:{"$push":
+                    PROCEDURES:{"$push":
                                                 {$arrayElemAt:
                                                     [{ 
                                                         $filter:{
                                                             input:"$PROCEDURES",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.sectionname","Diagnosis (In case of skin lesion specify the location)"]}
-                                                        }
-                                                    },-1]
-                                                }},
-                    PROCEDURESTM:{"$push":
-                                                {$arrayElemAt:
-                                                    [{ 
-                                                        $filter:{
-                                                            input:"$PROCEDURES",
-                                                            as:"vs",
-                                                            cond:{$eq:["$$vs.sectionname","Treatment / Investigation"]}
+                                                            cond:{$eq:["$$vs.sectionname","7"]}
                                                         }
                                                     },-1]
                                                 }},
@@ -895,7 +972,7 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
                                                         $filter:{
                                                             input:"$SURGERYREQUEST",
                                                             as:"vs",
-                                                            cond:{$eq:["$$vs.sectionname","Treatment / Investigation"]}
+                                                            cond:{$eq:["$$vs.sectionname","7"]}
                                                         }
                                                     },-1]
                                                 }},
@@ -903,89 +980,92 @@ async findMCAIREN(req: MCAIRENReq): Promise<any> {
             },
             //Project
             {
-                $project:{
+                $project :{
                     HEADmcDEPTCODE: { $arrayElemAt: ["$HEADmcDEPTCODE", -1] },
                     HEADmcDEPTNAME: { $arrayElemAt: ["$HEADmcDEPTNAME", -1] },
                     HEADmcDRCODE: { $arrayElemAt: ["$HEADmcDRCODE", -1] },
                     HEADmcDRNAME: { $arrayElemAt: ["$HEADmcDRNAME", -1] },
                     HEADmcREPORTTYPE: { $arrayElemAt: ["$HEADmcREPORTTYPE", -1] },
                     HEADmcREPORTFM: { $arrayElemAt: ["$HEADmcREPORTFM", -1] },
-                        HEADmcENPatientTitleName:{$arrayElemAt:["$HEADmcENPatientTitleName",-1]},
-                        HEADmcENPatientName:{$arrayElemAt:["$HEADmcENPatientName",-1]},
-                        HEADmcENMRN:{$arrayElemAt:["$HEADmcENMRN",-1]},
-                        HEADmcENPatientVisitDate:{$arrayElemAt:["$HEADmcENPatientVisitDate",-1]},
-                        HEADmcENBirthday:{$arrayElemAt:["$HEADmcENBirthday",-1]},
-                        HEADmcENPatientAge:{$arrayElemAt:["$HEADmcENPatientAge",-1]},
-                        HEADmcENGender:{$arrayElemAt:["$HEADmcENGender",-1]},
-                        HEADmcENPatientDep:{$arrayElemAt:["$HEADmcENPatientDep",-1]},
-                        HEADmcENBED:{$arrayElemAt:["$HEADmcENBED",-1]},
-                        HEADmcENPhysicianName:{$arrayElemAt:["$HEADmcENPhysicianName",-1]},
-                        HEADmcENLicenseNo:{$arrayElemAt:["$HEADmcENLicenseNo",-1]},
-                        HEADmcENAllergies:{$arrayElemAt:["$HEADmcENAllergies",-1]},
-                        MCTravelEnCareprovider:{$arrayElemAt:["$MCTravelEnCareprovider",-1]},
-                        MCTravelENMedLicensNo:{$arrayElemAt:["$MCTravelENMedLicensNo",-1]},
-                        MCTravelENAddr:{$arrayElemAt:["$MCTravelENAddr",-1]},
-                        MCTravelENPTname:{$arrayElemAt:["$MCTravelENPTname",-1]},
-                        MCTravelENTypeofPatient:{$arrayElemAt:["$MCTravelENTypeofPatient",-1]},
-                        MCTravelENOUTENcounter:{$arrayElemAt:["$MCTravelENOUTENcounter",-1]},
-                        MCTravelENOUTVisitid:{$arrayElemAt:["$MCTravelENOUTVisitid",-1]},
-                        MCTravelENOUTdate:{$arrayElemAt:["$MCTravelENOUTdate",-1]},
-                        MCTravelENINVisitEncounter:{$arrayElemAt:["$MCTravelENINVisitEncounter",-1]},
-                        MCTravelENANINpatient:{$arrayElemAt:["$MCTravelENANINpatient",-1]},
-                        MCTravelENdateIPD:{$arrayElemAt:["$MCTravelENdateIPD",-1]},
-                        MCTravelENMed:{$arrayElemAt:["$MCTravelENMed",-1]},
-                        MCTravelENOther:{$arrayElemAt:["$MCTravelENOther",-1]},
-                        MCTravelENOtherDetail:{$arrayElemAt:["$MCTravelENOtherDetail",-1]},
-                        MCTravelTHCheckboxPHYSICIANRECOM1:{$arrayElemAt:["$MCTravelTHCheckboxPHYSICIANRECOM1",-1]},
-                        MCTravelENRadioButtonEscortBy:{$arrayElemAt:["$MCTravelENRadioButtonEscortBy",-1]},
-                        MCTravelENRadioButtonSeatType:{$arrayElemAt:["$MCTravelENRadioButtonSeatType",-1]},
-                        MCTravelENCheckboxWheelChairAssestance:{$arrayElemAt:["$MCTravelENCheckboxWheelChairAssestance",-1]},
-                        MCTravelENRadioButtonWheelChairAssestanceDetail:{$arrayElemAt:["$MCTravelENRadioButtonWheelChairAssestanceDetail",-1]},
-                        MCTravelENCheckboxOxygen:{$arrayElemAt:["$MCTravelENCheckboxOxygen",-1]},
-                        MCTravelENRadiobuttonOxygenAt:{$arrayElemAt:["$MCTravelENRadiobuttonOxygenAt",-1]},
-                        MCTravelENRadiobuttonOxygenFlow:{$arrayElemAt:["$MCTravelENRadiobuttonOxygenFlow",-1]},
-                        MCTravelENRadiobuttonOxygenType:{$arrayElemAt:["$MCTravelENRadiobuttonOxygenType",-1]},
-                        MCTravelENCheckboxGroundAm:{$arrayElemAt:["$MCTravelENCheckboxGroundAm",-1]},
-                        MCTravelENCheckboxGroundAmTrans:{$arrayElemAt:["$MCTravelENCheckboxGroundAmTrans",-1]},
-                        MCTravelENCheckboxGroundAmSpc:{$arrayElemAt:["$MCTravelENCheckboxGroundAmSpc",-1]},
-                        MCTravelENCheckboxDest:{$arrayElemAt:["$MCTravelENCheckboxDest",-1]},
-                        MCTravelENRediobuttomDestAtHosp:{$arrayElemAt:["$MCTravelENRediobuttomDestAtHosp",-1]},
-                        MCTravelENCheckboxOth:{$arrayElemAt:["$MCTravelENCheckboxOth",-1]},
-                        MCTravelENCheckboxOthDetail:{$arrayElemAt:["$MCTravelENCheckboxOthDetail",-1]},
-                        MCTravelENFromOrigin:{$arrayElemAt:["$MCTravelENFromOrigin",-1]},
-                        MCTravelENToDestination:{$arrayElemAt:["$MCTravelENToDestination",-1]},
-                        MCTravelENNotFit:{$arrayElemAt:["$MCTravelENNotFit",-1]},
-                        MCTravelENNotFitDetail:{$arrayElemAt:["$MCTravelENNotFitDetail",-1]},
-                        MCTravelENMedLicen:{$arrayElemAt:["$MCTravelENMedLicen",-1]},
-                        MCTravelENDoctorsignDateTime:{$arrayElemAt:["$MCTravelENDoctorsignDateTime",-1]},
-                        MCTravelENDrPrintname:{$arrayElemAt:["$MCTravelENDrPrintname",-1]},
-                        MCTravelENPatientName:{$arrayElemAt:["$MCTravelENPatientName",-1]},
-                        CHIEFCOMPLAINTS:{$arrayElemAt:["$CHIEFCOMPLAINTS.htmldatavalue",-1]},
-                        CHIEFCOMPLAINTSTB:{$arrayElemAt:["$CHIEFCOMPLAINTS.tabledata",-1]},
-                        CHIEFCOMPLAINTSRT:{$arrayElemAt:["$CHIEFCOMPLAINTS.richtextdata",-1]},
-                        PRESENTILLNESS:{$arrayElemAt:["$PRESENTILLNESS.htmldatavalue",-1]},
-                        PRESENTILLNESSTB:{$arrayElemAt:["$PRESENTILLNESS.tabledata",-1]},
-                        PRESENTILLNESSRT:{$arrayElemAt:["$PRESENTILLNESS.richtextdata",-1]},
-                        DIAGNOSIS:{$arrayElemAt:["$DIAGNOSIS.htmldatavalue",-1]},
-                        DIAGNOSISTB:{$arrayElemAt:["$DIAGNOSIS.tabledata",-1]},
-                        DIAGNOSISRT:{$arrayElemAt:["$DIAGNOSIS.richtextdata",-1]},
-                        PROCEDURESDIAG:{$arrayElemAt:["$PROCEDURESDIAG.htmldatavalue",-1]},
-                        PROCEDURESDIAGTB:{$arrayElemAt:["$PROCEDURESDIAG.tabledata",-1]},
-                        PROCEDURESDIAGRT:{$arrayElemAt:["$PROCEDURESDIAG.richtextdata",-1]},
-                        PROCEDURESTM:{$arrayElemAt:["$PROCEDURESTM.htmldatavalue",-1]},
-                        PROCEDURESTMTB:{$arrayElemAt:["$PROCEDURESTM.tabledata",-1]},
-                        PROCEDURESTMRT:{$arrayElemAt:["$PROCEDURESTM.richtextdata",-1]},
-                        SURGERYREQUEST:{$arrayElemAt:["$SURGERYREQUEST.htmldatavalue",-1]},
-                        SURGERYREQUESTTB:{$arrayElemAt:["$SURGERYREQUEST.tabledata",-1]},
-                        SURGERYREQUESTRT:{$arrayElemAt:["$SURGERYREQUEST.richtextdata",-1]}
+                    HEADmcTHPatientTitle:{$arrayElemAt:["$HEADmcTHPatientTitle",-1]},
+                    HEADmcTHPatientName:{$arrayElemAt:["$HEADmcTHPatientName",-1]},
+                    HEADmcTHMRN:{$arrayElemAt:["$HEADmcTHMRN",-1]},
+                    HEADmcTHVisitDate:{$arrayElemAt:["$HEADmcTHVisitDate",-1]},
+                    HEADmcTHPatientBirthday:{$arrayElemAt:["$HEADmcTHPatientBirthday",-1]},
+                    HEADmcTHPatientAge:{$arrayElemAt:["$HEADmcTHPatientAge",-1]},
+                    HEADmcTHPatientGender:{$arrayElemAt:["$HEADmcTHPatientGender",-1]},
+                    HEADmcTHPatientDep:{$arrayElemAt:["$HEADmcTHPatientDep",-1]},
+                    HEADmcTHPatientBed:{$arrayElemAt:["$HEADmcTHPatientBed",-1]},
+                    HEADmcTHTitleEN:{$arrayElemAt:["$HEADmcTHTitleEN",-1]},
+                    HEADmcTHPhysicianName:{$arrayElemAt:["$HEADmcTHPhysicianName",-1]},
+                    HEADmcTHLicenseNo:{$arrayElemAt:["$HEADmcTHLicenseNo",-1]},
+                    HEADmcTHAllergies:{$arrayElemAt:["$HEADmcTHAllergies",-1]},
+                    MCTravelTHCareprovider:{$arrayElemAt:["$MCTravelTHCareprovider",-1]},
+                    MCTravelTHmedlicense:{$arrayElemAt:["$MCTravelTHmedlicense",-1]},
+                    MCTravelTHAddr:{$arrayElemAt:["$MCTravelTHAddr",-1]},
+                    MCTravelTHPatientName:{$arrayElemAt:["$MCTravelTHPatientName",-1]},
+                    MCTravelTHPTHN:{$arrayElemAt:["$MCTravelTHPTHN",-1]},
+                    //-----
+                    MCGenTHTypeofPatient: { $arrayElemAt: ["$MCGenTHTypeofPatient",-1]},
+                    MCGenTHOUTENcounter: { $arrayElemAt: ["$MCGenTHOUTENcounter",-1]},
+                    MCGenTHOUTVisitid: { $arrayElemAt: ["$MCGenTHOUTVisitid",-1]},
+                    MCGenTHOUTdate: { $arrayElemAt: ["$MCGenTHOUTdate",-1]},
+                    MCGenTHINVisitEncounter: { $arrayElemAt: ["$MCGenTHINVisitEncounter",-1]},
+                    MCGenTHANINpatient: { $arrayElemAt: ["$MCGenTHANINpatient",-1]},
+                    MCGenTHdateIPD: { $arrayElemAt: ["$MCGenTHdateIPD",-1]},
+                    MCGenTHdatetoIPD: { $arrayElemAt: ["$MCGenTHdatetoIPD", -1] },
+                    //-----
+                    MCTravelTHTreatmentChkBox:{$arrayElemAt:["$MCTravelTHTreatmentChkBox",-1]},
+                    MCTravelTHOthertChkBox:{$arrayElemAt:["$MCTravelTHOthertChkBox",-1]},
+                    MCTravelTHOthertChkBoxDetail:{$arrayElemAt:["$MCTravelTHOthertChkBoxDetail",-1]},
+                    MCTravelTHCheckboxPHYSICIANRECOM1:{$arrayElemAt:["$MCTravelTHCheckboxPHYSICIANRECOM1",-1]},
+                    MCTravelTHCheckboxPHYSICIANRECOM2:{$arrayElemAt:["$MCTravelTHCheckboxPHYSICIANRECOM2",-1]},
+                    MCTravelTHCheckboxPHYSICIANRECOM3:{$arrayElemAt:["$MCTravelTHCheckboxPHYSICIANRECOM3",-1]},
+                    MCTravelTHRadioButtonEscortBy:{$arrayElemAt:["$MCTravelTHRadioButtonEscortBy",-1]},
+                    MCTravelTHRadioButtonSeatType:{$arrayElemAt:["$MCTravelTHRadioButtonSeatType",-1]},
+                    MCTravelTHCheckboxWheelChairAssestance:{$arrayElemAt:["$MCTravelTHCheckboxWheelChairAssestance",-1]},
+                    MCTravelTHRadioButtonWheelChairAssestanceDetail:{$arrayElemAt:["$MCTravelTHRadioButtonWheelChairAssestanceDetail",-1]},
+                    MCTravelTHCheckboxOxygen:{$arrayElemAt:["$MCTravelTHCheckboxOxygen",-1]},
+                    MCTravelTHRadiobuttonOxygenAt:{$arrayElemAt:["$MCTravelTHRadiobuttonOxygenAt",-1]},
+                    MCTravelTHRadiobuttonOxygenFlow:{$arrayElemAt:["$MCTravelTHRadiobuttonOxygenFlow",-1]},
+                    MCTravelTHRadiobuttonOxygenType:{$arrayElemAt:["$MCTravelTHRadiobuttonOxygenType",-1]},
+                    MCTravelTHCheckboxGroundAm:{$arrayElemAt:["$MCTravelTHCheckboxGroundAm",-1]},
+                    MCTravelTHCheckboxGroundAmTrans:{$arrayElemAt:["$MCTravelTHCheckboxGroundAmTrans",-1]},
+                    MCTraveltyTHCheckboxGroundAmSpc:{$arrayElemAt:["$MCTraveltyTHCheckboxGroundAmSpc",-1]},
+                    MCTravelTHCheckboxDest:{$arrayElemAt:["$MCTravelTHCheckboxDest",-1]},
+                    MCTravelTHRediobuttomDestAtHosp:{$arrayElemAt:["$MCTravelTHRediobuttomDestAtHosp",-1]},
+                    MCTravelTHCheckboxOth:{$arrayElemAt:["$MCTravelTHCheckboxOth",-1]},
+                    MCTravelTHCheckboxOthDetail:{$arrayElemAt:["$MCTravelTHCheckboxOthDetail",-1]},
+                    MCTravelTHFromOrigin:{$arrayElemAt:["$MCTravelTHFromOrigin",-1]},
+                    MCTravelTHToDestination:{$arrayElemAt:["$MCTravelTHToDestination",-1]},
+                    MCTravelTHNotFit:{$arrayElemAt:["$MCTravelTHNotFit",-1]},
+                    MCTravelTHNotFitDetail:{$arrayElemAt:["$MCTravelTHNotFitDetail",-1]},
+                    MCTravelTHMedLicen:{$arrayElemAt:["$MCTravelTHMedLicen",-1]},
+                    MCTravelTHDoctorsignDateTime:{$arrayElemAt:["$MCTravelTHDoctorsignDateTime",-1]},
+                    MCTravelTHDrPrintname:{$arrayElemAt:["$MCTravelTHDrPrintname",-1]},
+                    CHIEFCOMPLAINTS:{$arrayElemAt:["$CHIEFCOMPLAINTS.htmldatavalue",-1]},
+                    CHIEFCOMPLAINTSTB:{$arrayElemAt:["$CHIEFCOMPLAINTS.tabledata",-1]},
+                    CHIEFCOMPLAINTSRT:{$arrayElemAt:["$CHIEFCOMPLAINTS.richtextdata",-1]},
+                    PRESENTILLNESS:{$arrayElemAt:["$PRESENTILLNESS.htmldatavalue",-1]},
+                    PRESENTILLNESSTB:{$arrayElemAt:["$PRESENTILLNESS.tabledata",-1]},
+                    PRESENTILLNESSRT:{$arrayElemAt:["$PRESENTILLNESS.richtextdata",-1]},
+                    DIAGNOSIS:{$arrayElemAt:["$DIAGNOSIS.htmldatavalue",-1]},
+                    DIAGNOSISTB:{$arrayElemAt:["$DIAGNOSIS.tabledata",-1]},
+                    DIAGNOSISRT:{$arrayElemAt:["$DIAGNOSIS.richtextdata",-1]},
+                    PROCEDURES:{$arrayElemAt:["$PROCEDURES.htmldatavalue",-1]},
+                    PROCEDURESTB:{$arrayElemAt:["$PROCEDURES.tabledata",-1]},
+                    PROCEDURESRT:{$arrayElemAt:["$PROCEDURES.richtextdata",-1]},
+                    SURGERYREQUEST:{$arrayElemAt:["$SURGERYREQUEST.htmldatavalue",-1]},
+                    SURGERYREQUESTTB:{$arrayElemAt:["$SURGERYREQUEST.tabledata",-1]},
+                    SURGERYREQUESTRT:{$arrayElemAt:["$SURGERYREQUEST.richtextdata",-1]},
                 }
-     }
-]).exec()
-        result = resultMCAIREN
-    } catch (error) {
-        this.logger.error('findMCAIREN error:', error);
-    }
-    return result;
-}
+            }
+        ]).exec()
+        result = resultMCAIRTH2
+        } catch (error) {
+        this.logger.error('findMCAIRTH2 error:', error);
+        }
+        return result;
+        }
 
 }

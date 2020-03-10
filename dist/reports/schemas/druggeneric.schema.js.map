@@ -1,1 +1,0 @@
-{"version":3,"file":"druggeneric.schema.js","sourceRoot":"","sources":["../../../src/reports/schemas/druggeneric.schema.ts"],"names":[],"mappings":";;AAAA,qCAAqC;AAExB,QAAA,iBAAiB,GAAG,IAAI,QAAQ,CAAC,MAAM,CAAC;IACjD,GAAG,EAAE,QAAQ,CAAC,MAAM,CAAC,KAAK,CAAC,QAAQ;IACnC,WAAW,EAAG,MAAM;CACvB,CAAC,CAAC"}
