@@ -1,30 +1,50 @@
-import { STATMRDFolderLastVisitReportService } from './report.services/statmrdfolderlastvisit.report.servie';
-import { STATTRAUMAReportService } from './report.services/stattraume.report.servie';
-import { SUBLABRESULTSReportService } from './report.services/sublabresults.report.servie';
-import { SUBRADIOLOGYRESULTSReportService } from './report.services/subradio.report.servie';
-import { PrinterListReportService } from './report.services/printerlist.report.servie';
+import { STATMRDFolderLastVisitReportService } from './report.services/statmrdfolderlastvisit.report.service';
+import { STATTRAUMAReportService } from './report.services/stattraume.report.service';
+
+import { STATCODERICD10ReportService } from './report.services/statcodericd10.report.service';
+import { STATCODERICD10OPDReportService } from './report.services/statcodericd10opd.report.service';
+import { STATCODERICD10IPDReportService } from './report.services/statcodericd10ipd.report.service';
+import { STATCODERICD10TOPRECORDReportService } from './report.services/statcodericd10toprecord.report.service';
+import { STATCODERICD10TOPRECORDOPDReportService } from './report.services/statcodericd10toprecordopd.report.service';
+import { STATCODERICD10TOPRECORDIPDReportService } from './report.services/statcodericd10toprecordipd.report.service';
+import { STATCODERICD10DETAILReportService } from './report.services/statcodericd10detail.report.service';
+
+import { STATCODERICD9ReportService } from './report.services/statcodericd9.report.service';
+import { STATCODERICD9OPDReportService } from './report.services/statcodericd9opd.report.service';
+import { STATCODERICD9IPDReportService } from './report.services/statcodericd9ipd.report.service';
+import { STATCODERICD9TOPRECORDReportService } from './report.services/statcodericd9toprecord.report.service';
+import { STATCODERICD9TOPRECORDOPDReportService } from './report.services/statcodericd9toprecordopd.report.service';
+import { STATCODERICD9TOPRECORDIPDReportService } from './report.services/statcodericd9toprecordipd.report.service';
+import { STATCODERICD9DETAILReportService } from './report.services/statcodericd9detail.report.service';
+
+
+import { PrinterListReportService } from './report.services/printerlist.report.service';
 import { PrinterconfiguraitonsSchema } from './schemas/printerconfigurations.schema';
-import { MCWORKTHReportService } from './report.services/mcworkth.report.servie';
-import { MCWORKENReportService } from './report.services/mcworken.report.servie';
-import { MCGEReportService } from './report.services/mcge.report.servie';
-import { MCGENENReportService } from './../reports/report.services/mcgenen.report.servie';
-import { MCGENTHReportService } from './../reports/report.services/mcgenth.report.servie';
-import { MCEXTENTHReportService } from './report.services/mcextenth.report.servie';
-import { MCEXTENENReportService } from './report.services/mcextenen.report.servie';
-import { MCAIRTHReportService } from './report.services/mcairth.report.servie';
+import { MCWORKTHReportService } from './report.services/mcworkth.report.service';
+import { MCWORKENReportService } from './report.services/mcworken.report.service';
+import { MCGEReportService } from './report.services/mcge.report.service';
+import { MCGENENReportService } from './report.services/mcgenen.report.service';
+import { MCGENTHReportService } from './report.services/mcgenth.report.service';
+import { MCEXTENTHReportService } from './report.services/mcextenth.report.service';
+import { MCEXTENENReportService } from './report.services/mcextenen.report.service';
+import { MCAIRTHReportService } from './report.services/mcairth.report.service';
 import { MCAIRTH2ReportService } from './report.services/mcairth2.report.service';
-import { MCAIRENReportService } from './report.services/mcairen.report.servie';
-import { MC5THReportService } from './report.services/mc5th.report.servie';
-import { MC5ENReportService } from './report.services/mc5en.report.servie';
-import { REFERENReportService } from './report.services/referen.report.servie';
-import { REFERTHReportService } from './report.services/referth.report.servie';
+import { MCAIRENReportService } from './report.services/mcairen.report.service';
+import { MC5THReportService } from './report.services/mc5th.report.service';
+import { MC5ENReportService } from './report.services/mc5en.report.service';
+import { REFERENReportService } from './report.services/referen.report.service';
+import { REFERTHReportService } from './report.services/referth.report.service';
 import { Controller, Get, Response, HttpStatus, Post, Body, Header, Request } from '@nestjs/common';
 
 import { ReportsService } from './reports.service';
-import {OPDClaimFormReportService} from './report.services/opdclaimform.report.servie';
-import {IPDClaimFormPart1ReportService} from './report.services/ipdclaimformpart1.report.servie';
-import {IPDClaimFormPart2ReportService} from './../reports/report.services/ipdclaimformpart2.report.servie';
-import { SUBDIAGReportService } from './../reports/report.services/subdiagnosis.report.servie';
+import {OPDClaimFormReportService} from './report.services/opdclaimform.report.service';
+import {IPDClaimFormPart1ReportService} from './report.services/ipdclaimformpart1.report.service';
+import {IPDClaimFormPart2ReportService} from './report.services/ipdclaimformpart2.report.service';
+
+import { SUBDIAGReportService } from './report.services/subdiagnosis.report.service';
+import { SUBLABRESULTSReportService } from './report.services/sublabresults.report.service';
+import { SUBRADIOLOGYRESULTSReportService } from './report.services/subradio.report.service';
+import {SUBMEDORDERReportService} from './report.services/submedorders.report.service';
 
 import { ConsoleLogger } from '../service/logger';
 import { ApiUseTags, ApiResponse } from '@nestjs/swagger';
@@ -187,6 +207,7 @@ import {REFERReq} from '../models/referreq';
 import { SUBDIAGReq } from '../models/subdiagreq';
 import { SUBRADIOLOGYRESULTSReq } from '../models/subradiologyresultsreq';
 import { SUBLABRESULTSReq } from '../models/sublabresultsreq';
+import {SUBMEDORDERReq} from '../models/submedorderreq';
 
 import {STATPTVIPReq} from '../models/statptvipreq';
 import {PTRevisit2DayReq} from '../models/ptrevisit2dayreq';
@@ -197,6 +218,8 @@ import {STATConsultDeptReq} from '../models/statconsultdeptreq';
 import {STATConsultByDeptReq} from '../models/statconsultbydeptreq';
 import {STATMRDFolderLastVisitReq} from '../models/statmrdfolderlastvisits'
 import { STATTRAUMAReq } from '../models/stattraumareq'
+import { STATCODERICD10Req } from '../models/statcodericd10req'
+import { STATCODERICD9Req } from '../models/statcodericd9req'
 
 import { from } from 'rxjs';
 
@@ -225,9 +248,24 @@ export class ReportsController {
         private readonly SUBDIAGReportService: SUBDIAGReportService,
         private readonly SUBRADIOLOGYRESULTSReportService: SUBRADIOLOGYRESULTSReportService,
         private readonly SUBLABRESULTSReportService: SUBLABRESULTSReportService,
+        private readonly SUBMEDORDERReportService: SUBMEDORDERReportService,
         private readonly PrinterListReportService: PrinterListReportService,
         private readonly STATMRDFolderLastVisitReportService: STATMRDFolderLastVisitReportService,
         private readonly STATTraumaReportService: STATTRAUMAReportService,
+        private readonly STATCoderICD10ReportService: STATCODERICD10ReportService,
+        private readonly STATCoderICD10OPDReportService: STATCODERICD10OPDReportService,
+        private readonly STATCoderICD10IPDReportService: STATCODERICD10IPDReportService,
+        private readonly STATCoderICD10TOPRECORDReportService: STATCODERICD10TOPRECORDReportService,
+        private readonly STATCoderICD10TOPRECORDOPDReportService: STATCODERICD10TOPRECORDOPDReportService,
+        private readonly STATCoderICD10TOPRECORDIPDReportService: STATCODERICD10TOPRECORDIPDReportService,
+        private readonly STATCoderICD10DETAILReportService: STATCODERICD10DETAILReportService,
+        private readonly STATCoderICD9ReportService: STATCODERICD9ReportService,
+        private readonly STATCoderICD9OPDReportService: STATCODERICD9OPDReportService,
+        private readonly STATCoderICD9IPDReportService: STATCODERICD9IPDReportService,
+        private readonly STATCoderICD9TOPRECORDReportService: STATCODERICD9TOPRECORDReportService,
+        private readonly STATCoderICD9TOPRECORDOPDReportService: STATCODERICD9TOPRECORDOPDReportService,
+        private readonly STATCoderICD9TOPRECORDIPDReportService: STATCODERICD9TOPRECORDIPDReportService,
+        private readonly STATCoderICD9DETAILReportService: STATCODERICD9DETAILReportService,
         private logger: ConsoleLogger,
         // private jasper: JasperService
     ) {
@@ -473,6 +511,18 @@ export class ReportsController {
         return res.status(HttpStatus.OK).json(data);
     }
 
+    @Post('/submedorders')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportsubmedorder(@Response() res, @Body() req: SUBMEDORDERReq) {
+        this.logger.log("Start Organisation");
+        this.logger.debug('Req', req);
+        const data = await this.SUBMEDORDERReportService.findSUBMEDORDER(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+
     @Post('/statmrdfolderlastvisit')
     @ApiResponse({ status: 403, description: 'Forbidden.' })
     @ApiResponse({ status: 400, description: "Missing info: parameter" })
@@ -493,6 +543,174 @@ export class ReportsController {
         this.logger.log("Start Triagedetails");
         this.logger.debug('Req', req);
         const data = await this.STATTraumaReportService.findSTATTRAUMA(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+//-----ICD9-----//
+    @Post('/statcodericd9')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd9(@Response() res, @Body() req: STATCODERICD9Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD9ReportService.findSTATCODERICD9(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+     @Post('/statcodericd9opd')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd9opd(@Response() res, @Body() req: STATCODERICD9Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD9OPDReportService.findSTATCODERICD9OPD(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/statcodericd9ipd')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd9ipd(@Response() res, @Body() req: STATCODERICD9Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD9IPDReportService.findSTATCODERICD9IPD(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/statcodericd9toprecord')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd9TopRecord(@Response() res, @Body() req: STATCODERICD9Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD9TOPRECORDReportService.findSTATCODERICD9TOPRECORD(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/statcodericd9toprecordopd')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd9TopRecordopd(@Response() res, @Body() req: STATCODERICD9Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD9TOPRECORDOPDReportService.findSTATCODERICD9TOPRECORDOPD(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/statcodericd9toprecordipd')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd9TopRecordipd(@Response() res, @Body() req: STATCODERICD9Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD9TOPRECORDIPDReportService.findSTATCODERICD9TOPRECORDIPD(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/statcodericd9detail')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd9Detail(@Response() res, @Body() req: STATCODERICD9Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD9DETAILReportService.findSTATCODERICD9DETAIL(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+//-----ICD10-----//
+    @Post('/statcodericd10')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd10(@Response() res, @Body() req: STATCODERICD10Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD10ReportService.findSTATCODERICD10(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/statcodericd10opd')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd10opd(@Response() res, @Body() req: STATCODERICD10Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD10OPDReportService.findSTATCODERICD10OPD(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/statcodericd10ipd')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd10ipd(@Response() res, @Body() req: STATCODERICD10Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD10IPDReportService.findSTATCODERICD10IPD(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/statcodericd10toprecord')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd10TopRecord(@Response() res, @Body() req: STATCODERICD10Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD10TOPRECORDReportService.findSTATCODERICD10TOPRECORD(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/statcodericd10toprecordopd')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd10TopRecordopd(@Response() res, @Body() req: STATCODERICD10Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD10TOPRECORDOPDReportService.findSTATCODERICD10TOPRECORDOPD(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/statcodericd10toprecordipd')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd10TopRecordipd(@Response() res, @Body() req: STATCODERICD10Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD10TOPRECORDIPDReportService.findSTATCODERICD10TOPRECORDIPD(req);
+        this.logger.debug('Res', data)
+        return res.status(HttpStatus.OK).json(data);
+    }
+    
+    @Post('/statcodericd10detail')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReportresultSTATCodericd10Detail(@Response() res, @Body() req: STATCODERICD10Req) {
+        this.logger.log("Start Triagedetails");
+        this.logger.debug('Req', req);
+        const data = await this.STATCoderICD10DETAILReportService.findSTATCODERICD10DETAIL(req);
         this.logger.debug('Res', data)
         return res.status(HttpStatus.OK).json(data);
     }
@@ -2652,6 +2870,19 @@ export class ReportsController {
         const data = await this.reportsService.findRTCommon801(req);
         this.logger.debug('Res', data);
         this.logger.log('End rt_common_801');
+        return res.status(HttpStatus.OK).json(data);
+    }
+
+    @Post('/rt_common_806')
+    @ApiResponse({ status: 403, description: 'Forbidden.' })
+    @ApiResponse({ status: 400, description: "Missing info: parameter" })
+    @ApiResponse({ status: 200, description: "OK" })
+    public async getReport806(@Response() res, @Body() req: Rt999Req) {
+        this.logger.log("Start rt_common_806");
+        this.logger.debug('Req', req);
+        const data = await this.reportsService.findRTCommon806(req);
+        this.logger.debug('Res', data);
+        this.logger.log('End rt_common_806');
         return res.status(HttpStatus.OK).json(data);
     }
 

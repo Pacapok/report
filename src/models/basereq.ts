@@ -8,7 +8,7 @@ export class BaseReq {
     @ApiModelProperty({ description: 'searchcriteria', required: true, example: "" })
     searchcriteria: string;
 
-    @ApiModelProperty({ description: 'organisationuid', required: true, example: "5b20f438d1202e29ce16f711" })
+    @ApiModelProperty({ description: 'organisationuid', required: true, example: "5b20f438d1202e29ce16f712" })
     organisationuid: string;
 
     @ApiModelProperty({ description: 'patientuid', required: true, example: "5d4029eff15e720cb27d4458" })
@@ -20,10 +20,10 @@ export class BaseReq {
     @ApiModelProperty({ description: 'patientvisituid', required: true, example: "5d71cb4f643ea979b4dcdaf5" })
     patientvisituid: string;
 
-    @ApiModelProperty({ description: 'fromdate', required: true, example: "2018-01-01T17:00:00.000Z" })
+    @ApiModelProperty({ description: 'fromdate', required: true, example: "2020-01-31T17:00:00.000Z" })
     fromdate: string;
 
-    @ApiModelProperty({ description: 'todate', required: true, example: "2018-11-31T16:59:59.999Z" })
+    @ApiModelProperty({ description: 'todate', required: true, example: "2020-02-12T16:59:59.999Z" })
     todate: string;
 
     @ApiModelProperty({ description: 'incomesource', required: true, example: "5b20f40dd1202e29ce16f4eb" })

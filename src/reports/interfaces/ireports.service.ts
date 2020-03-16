@@ -262,6 +262,7 @@ export interface IReportsService {
     findRTCommon435(req : Rt435Req): Promise<any>;
     findRTCommon434(req : Rt434Req): Promise<any>;
     findRTCommon717(req : Rt717Req): Promise<any>;
+    findRTCommon806(req : Rt999Req): Promise<any>;
     findRTCommon810(req : Rt999Req): Promise<any>;
     findRTCommon812(req : Rt999Req): Promise<any>;
     findRTCommon813(req : Rt999Req): Promise<any>;

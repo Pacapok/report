@@ -3,29 +3,46 @@ import { Module } from '@nestjs/common';
 import { ReportsController } from './reports.controller';
 
 import { ReportsService } from './reports.service';
-import {OPDClaimFormReportService} from './report.services/opdclaimform.report.servie';
-import {IPDClaimFormPart1ReportService} from './report.services/ipdclaimformpart1.report.servie';
-import {IPDClaimFormPart2ReportService} from './../reports/report.services/ipdclaimformpart2.report.servie';
-import {MC5ENReportService} from './../reports/report.services/mc5en.report.servie';
-import {MC5THReportService} from './../reports/report.services/mc5th.report.servie';
-import {MCAIRENReportService} from './../reports/report.services/mcairen.report.servie';
-import {MCAIRTHReportService} from './../reports/report.services/mcairth.report.servie';
+import {OPDClaimFormReportService} from './report.services/opdclaimform.report.service';
+import {IPDClaimFormPart1ReportService} from './report.services/ipdclaimformpart1.report.service';
+import {IPDClaimFormPart2ReportService} from './report.services/ipdclaimformpart2.report.service';
+import {MC5ENReportService} from './report.services/mc5en.report.service';
+import {MC5THReportService} from './report.services/mc5th.report.service';
+import {MCAIRENReportService} from './report.services/mcairen.report.service';
+import {MCAIRTHReportService} from './report.services/mcairth.report.service';
 import { MCAIRTH2ReportService } from './../reports/report.services/mcairth2.report.service';
-import { MCGENENReportService } from './../reports/report.services/mcgenen.report.servie';
-import { MCGENTHReportService } from './../reports/report.services/mcgenth.report.servie';
-import {MCEXTENENReportService} from './../reports/report.services/mcextenen.report.servie';
-import {MCEXTENTHReportService} from './report.services/mcextenth.report.servie';
-import {MCGEReportService} from './../reports/report.services/mcge.report.servie';
-import {MCWORKENReportService} from './../reports/report.services/mcworken.report.servie';
-import {MCWORKTHReportService} from './../reports/report.services/mcworkth.report.servie';
-import {PrinterListReportService} from './../reports/report.services/printerlist.report.servie';
-import {REFERENReportService} from './../reports/report.services/referen.report.servie';
-import { REFERTHReportService } from './../reports/report.services/referth.report.servie';
-import { SUBDIAGReportService } from './../reports/report.services/subdiagnosis.report.servie';
-import { SUBLABRESULTSReportService } from './report.services/sublabresults.report.servie';
-import { SUBRADIOLOGYRESULTSReportService } from './report.services/subradio.report.servie';
-import { STATMRDFolderLastVisitReportService } from './report.services/statmrdfolderlastvisit.report.servie';
-import {STATTRAUMAReportService} from './report.services/stattraume.report.servie';
+import { MCGENENReportService } from './report.services/mcgenen.report.service';
+import { MCGENTHReportService } from './report.services/mcgenth.report.service';
+import {MCEXTENENReportService} from './report.services/mcextenen.report.service';
+import {MCEXTENTHReportService} from './report.services/mcextenth.report.service';
+import {MCGEReportService} from './report.services/mcge.report.service';
+import {MCWORKENReportService} from './report.services/mcworken.report.service';
+import {MCWORKTHReportService} from './report.services/mcworkth.report.service';
+import {PrinterListReportService} from './report.services/printerlist.report.service';
+import {REFERENReportService} from './report.services/referen.report.service';
+import { REFERTHReportService } from './report.services/referth.report.service';
+
+import { SUBDIAGReportService } from './report.services/subdiagnosis.report.service';
+import { SUBLABRESULTSReportService } from './report.services/sublabresults.report.service';
+import { SUBRADIOLOGYRESULTSReportService } from './report.services/subradio.report.service';
+import { SUBMEDORDERReportService} from './report.services/submedorders.report.service';
+
+import { STATMRDFolderLastVisitReportService } from './report.services/statmrdfolderlastvisit.report.service';
+import {STATTRAUMAReportService} from './report.services/stattraume.report.service';
+import { STATCODERICD10ReportService } from './report.services/statcodericd10.report.service';
+import { STATCODERICD10OPDReportService } from './report.services/statcodericd10opd.report.service';
+import { STATCODERICD10IPDReportService } from './report.services/statcodericd10ipd.report.service';
+import { STATCODERICD10DETAILReportService } from './report.services/statcodericd10detail.report.service';
+import {STATCODERICD10TOPRECORDReportService} from './report.services/statcodericd10toprecord.report.service';
+import { STATCODERICD10TOPRECORDOPDReportService } from './report.services/statcodericd10toprecordopd.report.service';
+import { STATCODERICD10TOPRECORDIPDReportService } from './report.services/statcodericd10toprecordipd.report.service';
+import { STATCODERICD9ReportService } from './report.services/statcodericd9.report.service';
+import { STATCODERICD9OPDReportService } from './report.services/statcodericd9opd.report.service';
+import { STATCODERICD9IPDReportService } from './report.services/statcodericd9ipd.report.service';
+import { STATCODERICD9DETAILReportService } from './report.services/statcodericd9detail.report.service';
+import { STATCODERICD9TOPRECORDReportService } from './report.services/statcodericd9toprecord.report.service';
+import { STATCODERICD9TOPRECORDOPDReportService } from './report.services/statcodericd9toprecordopd.report.service';
+import { STATCODERICD9TOPRECORDIPDReportService } from './report.services/statcodericd9toprecordipd.report.service';
 
 import { CommonModule } from '../common/common.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -158,6 +175,15 @@ import { ObservationsSchema } from './schemas/observations.schema';
     CommonModule
   ],
   controllers: [ReportsController],
-  providers: [ReportsService, OPDClaimFormReportService, IPDClaimFormPart1ReportService, IPDClaimFormPart2ReportService, MC5ENReportService, MC5THReportService, MCAIRENReportService, MCAIRTHReportService, MCAIRTH2ReportService, MCGENENReportService, MCGENTHReportService, MCEXTENENReportService, MCEXTENTHReportService, MCGEReportService, MCWORKENReportService, MCWORKTHReportService, PrinterListReportService, REFERENReportService, REFERTHReportService, SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService, STATMRDFolderLastVisitReportService, STATTRAUMAReportService]
+  providers: [
+                ReportsService, 
+                OPDClaimFormReportService, IPDClaimFormPart1ReportService, IPDClaimFormPart2ReportService, 
+                MC5ENReportService, MC5THReportService, MCAIRENReportService, MCAIRTHReportService, MCAIRTH2ReportService, MCGENENReportService, MCGENTHReportService, MCEXTENENReportService, MCEXTENTHReportService, MCGEReportService, MCWORKENReportService, MCWORKTHReportService, 
+                PrinterListReportService, 
+                REFERENReportService, REFERTHReportService, 
+                SUBDIAGReportService, SUBRADIOLOGYRESULTSReportService, SUBLABRESULTSReportService, SUBMEDORDERReportService,
+                STATMRDFolderLastVisitReportService, STATTRAUMAReportService, STATCODERICD10ReportService, STATCODERICD10DETAILReportService, STATCODERICD10OPDReportService, STATCODERICD10IPDReportService, STATCODERICD10TOPRECORDReportService, STATCODERICD10TOPRECORDOPDReportService, STATCODERICD10TOPRECORDIPDReportService, 
+                STATCODERICD9ReportService, STATCODERICD9OPDReportService, STATCODERICD9IPDReportService, STATCODERICD9TOPRECORDReportService, STATCODERICD9TOPRECORDOPDReportService, STATCODERICD9TOPRECORDIPDReportService, STATCODERICD9DETAILReportService
+              ]
 })
 export class ReportsModule { }

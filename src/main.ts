@@ -11,11 +11,11 @@ async function bootstrap() {
   // .setTitle('Report API UAT Environment')
   // .setTitle('Report API GLS Environment')
   // .setTitle('Report API MR Environment')
-  //.setTitle('Report API Production Environment')
+  // .setTitle('Report API Production Environment')
   .setDescription('<h1>The Report API description</h1>'
                   )
   // .setVersion('1.0')
-  .setVersion('version 1.0.10.1')
+  .setVersion('version 1.0.10.2')
     .addTag('reports')
     .build();
   const document = SwaggerModule.createDocument(app, options);
