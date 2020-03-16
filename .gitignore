@@ -2,3 +2,5 @@
 logs/aareports.log
 
 dist/
+
+src/config/appconfig.ts
